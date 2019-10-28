@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import io from "socket.io-client";
-//import { withRouter, BrowserRouter as Router } from 'react-router-dom';
 
 class Join extends Component {
   constructor(props) {

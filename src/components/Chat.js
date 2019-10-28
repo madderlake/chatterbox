@@ -17,7 +17,6 @@ class Chat extends Component {
     });
 
     const addMessage = data => {
-      console.log(data);
       this.setState({
         messageList: [...this.state.messageList, data],
         userList: [...this.state.userList, data["author"]]
@@ -26,7 +25,6 @@ class Chat extends Component {
 
     this.sendMessage = ev => {
       ev.preventDefault();
-      let error = "";
       if (this.state.message && this.state.username) {
         this.socket.emit("SEND_MESSAGE", {
           author: this.state.username,
@@ -35,9 +33,6 @@ class Chat extends Component {
         this.setState({
           message: ""
         });
-      } else {
-        error = "Can't send a blank message";
-        return false;
       }
     };
   }
@@ -80,13 +75,7 @@ class Chat extends Component {
               value={this.state.message}
               onChange={ev => this.setState({ message: ev.target.value })}
             />
-            <span class="error">{this.error}</span>
-            <input
-              type="submit"
-              className="btn btn-primary"
-              value="Send"
-              //onClick={this.sendMessage}
-            />
+            <input type="submit" className="btn btn-primary" value="Send" />
           </form>
         </div>
       </div>
