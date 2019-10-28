@@ -5,8 +5,7 @@ class Join extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      username: "",
-      userList: []
+      username: ""
     };
     this.socket = io("localhost:8083");
 

@@ -6,7 +6,7 @@ class Chat extends Component {
     super(props);
     this.state = {
       username: this.props.match.params.username,
-      userList: this.props.userList ? this.props.userList : [],
+      userList: [],
       message: "",
       messageList: []
     };
