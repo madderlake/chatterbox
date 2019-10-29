@@ -2,9 +2,9 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 ### Installation
 After cloning the repo (from root directory):
-  1. npm install
-  2. npm start
-  3. node server. js [may need to change port in server.js, join.js, and chat.js if there is a conflict]
+  1. `npm install`
+  2. `npm start`
+  3. `node server.js` [may need to change port in server.js, join.js, and chat.js if there is a conflict]
   
 ### Tech Stack
   1. React (CRA)
