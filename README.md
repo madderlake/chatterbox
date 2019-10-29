@@ -10,7 +10,7 @@ After cloning the repo (from root directory):
   1. React (CRA)
   2. React Router
   3. Sockets.io
-  4. Bootstrap (not my favorite, but makes prototyping easier 🤷🏻‍♀️
+  4. Bootstrap (not my favorite, but makes prototyping easier 🤷🏻‍♀️)
   5. Etc (dependencies)
 
 ### Overview
