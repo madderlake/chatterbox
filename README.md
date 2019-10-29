@@ -22,6 +22,7 @@ I wanted to have a global list of users who are online. I started with Local Sto
   1. Implement Redux or Local Storage for global user list 
   2. Implement Auth system
   3. Channels and topics
+  4. "Somebody is typing..."
   
   
 
