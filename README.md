@@ -14,7 +14,7 @@ After cloning the repo (from root directory):
   5. Etc (dependencies)
 
 ### Overview
-This is a basic chat app that took a few hours. I wanted to play around with sockets for real-time functionality, and router, so I could have the beginnings of an auth system. No need to burden you with logins and passwords at this point though, right?
+This is a basic chat app with websockets. I wanted to play around with sockets for real-time functionality, and router, so I could have the beginnings of an auth system. No need to burden you with logins and passwords at this point though, right?
 
 I wanted to have a global list of users who are online. I started with Local Storage, but that would need to be managed, as it just keeps growing for each new user. It wouldn't be hard to implement a "Leave" functionality that would remove the user from the list, if I had had more time. Right now, user is added to the list only after they send a message, which prevents us from knowing about lurkers :)
 
