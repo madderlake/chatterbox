@@ -4,11 +4,18 @@ import io from "socket.io-client";
 class Chat extends Component {
   constructor(props) {
     super(props);
+    this.paramUser = this.props.match.params.username;
     this.state = {
-      username: this.props.match.params.username,
+      username: this.paramUser,
       userList: [],
       message: "",
       messageList: []
+    };
+    const addMessage = data => {
+      this.setState({
+        messageList: [...this.state.messageList, data],
+        userList: [...this.state.userList, this.paramUser]
+      });
     };
 
     this.socket = io("localhost:8083");
@@ -16,11 +23,10 @@ class Chat extends Component {
       addMessage(data);
     });
 
-    const addMessage = data => {
-      this.setState({
-        messageList: [...this.state.messageList, data],
-        userList: [...this.state.userList, data["author"]]
-      });
+    this.updateUserList = username => {
+      this.setState(state => ({
+        userList: [...this.state.userList, username]
+      }));
     };
 
     this.sendMessage = ev => {
@@ -35,6 +41,9 @@ class Chat extends Component {
         });
       }
     };
+  }
+  componentDidMount() {
+    this.updateUserList(this.paramUser);
   }
   render() {
     const messages = this.state.messageList;
