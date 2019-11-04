@@ -2,25 +2,19 @@ import React, { Component } from "react";
 import io from "socket.io-client";
 
 class Join extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      username: ""
-    };
-    this.socket = io("localhost:8083");
+  socket = io("localhost:8083");
 
-    this.sendUserAndGo = ev => {
-      ev.preventDefault();
-      if (this.state.username) {
-        this.socket.emit("SEND_MESSAGE", {
-          username: this.state.username
-        });
+  sendUserAndGo = ev => {
+    ev.preventDefault();
+    if (this.state.username) {
+      this.socket.emit("SEND_MESSAGE", {
+        username: this.state.username
+      });
 
-        this.props.history.push(`/chat/${this.state.username}`);
-      }
-      return false;
-    };
-  }
+      this.props.history.push(`/chat/${this.state.username}`);
+    }
+    return false;
+  };
 
   render() {
     return (
@@ -31,7 +25,6 @@ class Join extends Component {
             type="text"
             name="username"
             placeholder="Type your Name to Join Chat"
-            value={this.state.username}
             onChange={ev => this.setState({ username: ev.target.value })}
           />
           <input type="submit" className="btn btn-primary" value="Join" />
