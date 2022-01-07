@@ -1,26 +1,29 @@
 import React, {useState, useContext} from 'react';
-import io from 'socket.io-client';
-const socket = io('http://localhost:8083');
+import {v4 as uuidv4} from 'uuid';
+import {SocketContext} from '../context/socket';
 
 const Join = ({...props}) => {
+  const socket = useContext(SocketContext);
+  socket.connect();
+
   const [state, setState] = useState({
     username: '',
     room: '',
-    id: '',
+    id: uuidv4(),
   });
 
   const handleSubmit = (ev) => {
     ev.preventDefault();
-    console.log(socket.id);
     state.username &&
       state.room &&
+      //socket.on('connect', () => {
       socket.emit('joinRoom', {
         username: state.username,
         room: state.room,
-        id: socket.id,
+        id: state.id,
+        //});
       });
-    setState({...state, id: socket.id});
-    console.log(state.id);
+
     props.history.push(`${state.room}/${state.username}/${state.id}`);
   };
 
@@ -35,9 +38,7 @@ const Join = ({...props}) => {
               name="username"
               className="w-100"
               placeholder="Type your Name to Join Chat"
-              onChange={(ev) =>
-                setState({...state, username: ev.target.value, id: socket.id})
-              }
+              onChange={(ev) => setState({...state, username: ev.target.value})}
             />
           </div>
           <div className="col-12 my-3">

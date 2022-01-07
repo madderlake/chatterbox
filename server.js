@@ -10,6 +10,8 @@ const io = new Server(httpServer, {
   cors: {
     origin: `http://localhost:3000`,
     methods: ['GET', 'POST'],
+    credentials: true,
+    transports: ['websocket', 'polling'],
   },
 });
 const cors = require('cors');
@@ -31,9 +33,9 @@ httpServer.listen(PORT, function () {
 
 io.on('connection', (socket) => {
   console.log(`${socket.id} connected `);
-
-  socket.on('joinRoom', ({username, room}) => {
-    userJoin(socket.id, username, room);
+  // console.log(io.engine.clientsCount);
+  socket.on('joinRoom', ({id, username, room}) => {
+    userJoin({id, username, room});
   });
 
   // Welcome current user
@@ -47,18 +49,23 @@ io.on('connection', (socket) => {
       users: getRoomUsers(room),
     });
   });
+
+  socket.on('chatMessage', ({author, text}) => {
+    captureMessage({author, text});
+  });
   // Runs when client disconnects
   socket.on('userLeaving', ({id}) => {
+    console.log('somebody is leaving!');
     const user = userLeave(id);
     socket.on('disconnect', () => {
       if (user) {
-        io.to(user.room).emit(
+        socket.to(user.room).emit(
           'message'
           //formatMessage(botName, `${user.username} has left the chat`)
         );
 
         // Send users and room info
-        io.to(user.room).emit('roomUsers', {
+        socket.to(user.room).emit('roomUsers', {
           room: user.room,
           users: getRoomUsers(user.room),
         });

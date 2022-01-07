@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
-import {Route, Link, BrowserRouter as Router} from 'react-router-dom';
+//import {Route, Link, BrowserRouter as Router} from 'react-router-dom';
 // import Chat from './components/Chat-class';
 // import Join from './components/Join';
 // import {GlobalProvider} from './context/GlobalState';

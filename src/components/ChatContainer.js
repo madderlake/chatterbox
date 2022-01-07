@@ -1,13 +1,12 @@
-import React, {useState} from 'react';
-import {GlobalProvider} from '../context/GlobalState';
+import React, {useState, useContext} from 'react';
 import UserList from './UserList';
 import MessageList from './MessageList';
 import AddMessage from './AddMessage';
-import io from 'socket.io-client';
-const socketUrl = 'http://localhost:8083';
+import {SocketContext} from '../context/socket';
 
 const ChatContainer = ({...props}) => {
-  // const {addUserToList, messageList} = useContext(GlobalContext);
+  const socket = useContext(SocketContext);
+
   const [userList, setUserList] = useState([]);
   const [messageList, setMessageList] = useState([]);
   const {username, room, id} = props.match.params;
@@ -17,9 +16,6 @@ const ChatContainer = ({...props}) => {
     room,
     id,
   });
-
-  const socket = io(socketUrl);
-  console.log(socket);
 
   const handleUserLeave = () => {
     socket.emit('userLeaving', {
@@ -35,16 +31,16 @@ const ChatContainer = ({...props}) => {
   };
 
   React.useEffect(() => {
-    socket.on('connect', function () {
-      console.log(`client connected`);
+    //socket.on('connect', function () {
+    console.log(`client connected - ${socket.id}`);
 
-      socket.emit('readyForUsers', {
-        room: room,
-      });
-      socket.on('roomUsers', ({room, users}) => {
-        setUserList(users);
-      });
+    socket.emit('readyForUsers', {
+      room: room,
     });
+    socket.on('roomUsers', ({room, users}) => {
+      setUserList(users);
+    });
+    //});
     // socket.on('message', ({room, messages}) => {
     //   setMessageList(messages);
     // });
@@ -53,34 +49,32 @@ const ChatContainer = ({...props}) => {
     });
     // CLEAN UP
     return () => socket.disconnect();
-  }, []);
+  }, [setUserList]);
 
   return (
-    <GlobalProvider>
-      <div className="container">
-        <div className="row">
-          <div className="header">
-            <div className="col-8">
-              <h3>{room} on Chatterbox</h3>
-            </div>
-            <div className="col-4 d-flex justify-content-end">
-              <button className="btn btn-secondary" onClick={handleUserLeave}>
-                Leave Room
-              </button>
-            </div>
+    <div className="container">
+      <div className="row">
+        <div className="header">
+          <div className="col-8">
+            <h3>{room} on Chatterbox</h3>
           </div>
-          <div className="sidebar col-4">
-            <UserList userList={userList} />
-          </div>
-          <div className="messages col-8">
-            <MessageList messageList={messageList} socket={socket} />
+          <div className="col-4 d-flex justify-content-end">
+            <button className="btn btn-secondary" onClick={handleUserLeave}>
+              Leave Room
+            </button>
           </div>
         </div>
-        <div className="add-message row">
-          <AddMessage author={currentUser} socket={socket} />
+        <div className="sidebar col-4">
+          <UserList userList={userList} />
+        </div>
+        <div className="messages col-8">
+          <MessageList messageList={messageList} socket={socket} />
         </div>
       </div>
-    </GlobalProvider>
+      <div className="add-message row">
+        <AddMessage author={currentUser} socket={socket} />
+      </div>
+    </div>
   );
 };
 

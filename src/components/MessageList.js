@@ -1,6 +1,5 @@
-import React, {useContext} from 'react';
+import React from 'react';
 import Message from './Message';
-//import {GlobalContext} from '../context/GlobalState';
 
 const MessageList = ({...props}) => {
   const messages = props.messageList;
