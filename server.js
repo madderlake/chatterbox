@@ -23,7 +23,11 @@ const {
   getRoomUsers,
 } = require('./src/utils/users');
 
-const {formatMessage, captureMessage} = require('./src/utils/messages');
+const {
+  formatMessage,
+  captureMessage,
+  getRoomMessages,
+} = require('./src/utils/messages');
 
 app.use(cors());
 
@@ -52,6 +56,10 @@ io.on('connection', (socket) => {
 
   socket.on('chatMessage', ({author, text}) => {
     captureMessage({author, text});
+    io.to(author.room).emit('roomMessages', {
+      room: author.room,
+      messages: getRoomMessages(author.room),
+    });
   });
   // Runs when client disconnects
   socket.on('userLeaving', ({id}) => {

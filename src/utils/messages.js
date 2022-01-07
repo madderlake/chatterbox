@@ -12,15 +12,15 @@ function captureMessage({author, text}) {
 }
 
 function formatMessage({author, text}) {
-  //   const name = author.username;
-  //   return {
-  //     name,
-  //     text,
-  //     time: moment().format('h:mm a'),
-  //};
+  const name = author.username;
+  return {
+    name,
+    text,
+    time: moment().format('h:mm a'),
+  };
 }
 
-// Get room users
+// Get room messages
 function getRoomMessages(room) {
   console.log(
     'room messages',
@@ -28,11 +28,11 @@ function getRoomMessages(room) {
   );
   //return messages.filter((msg) => msg.author.room === room);
   const roomMessages = messages.filter((msg) => msg.author.room === room);
-  //   console.log(
-  //     'formatted msgs',
-  //     roomMessages.map((msg) => formatMessage(msg))
-  //   );
-  //   return roomMessages.map((msg) => formatMessage(msg));
+  console.log(
+    'formatted msgs',
+    roomMessages.map((msg) => formatMessage(msg))
+  );
+  return roomMessages.map((msg) => formatMessage(msg));
 }
 module.exports = {
   captureMessage,

@@ -31,7 +31,6 @@ const ChatContainer = ({...props}) => {
   };
 
   React.useEffect(() => {
-    //socket.on('connect', function () {
     console.log(`client connected - ${socket.id}`);
 
     socket.emit('readyForUsers', {
@@ -40,7 +39,9 @@ const ChatContainer = ({...props}) => {
     socket.on('roomUsers', ({room, users}) => {
       setUserList(users);
     });
-    //});
+    socket.on('roomMessages', ({room, messages}) => {
+      setMessageList(messages);
+    });
     // socket.on('message', ({room, messages}) => {
     //   setMessageList(messages);
     // });

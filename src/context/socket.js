@@ -5,5 +5,4 @@ import io from 'socket.io-client';
 const socketUrl = 'http://localhost:8083';
 
 export const socket = io.connect(socketUrl);
-console.log(socket);
 export const SocketContext = createContext();
