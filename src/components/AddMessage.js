@@ -10,6 +10,7 @@ const AddMessage = ({...props}) => {
 
   const handleSubmit = (ev) => {
     ev.preventDefault();
+    //console.log('author', message.author);
     if (message.author && message.text) {
       console.log('ready to send');
       socket.emit('chatMessage', {
@@ -17,7 +18,7 @@ const AddMessage = ({...props}) => {
         text: message.text,
       });
     }
-    //setMessage({...message, message: {}});
+    setMessage({});
   };
   return (
     <form onSubmit={handleSubmit}>

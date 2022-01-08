@@ -1,14 +1,31 @@
 import React from 'react';
-import {Route, Switch, BrowserRouter as Router} from 'react-router-dom';
+import {
+  Route,
+  Switch,
+  Redirect,
+  BrowserRouter as Router,
+} from 'react-router-dom';
 import Join from './Join';
 import ChatContainer from './ChatContainer';
 
+const ProtectedChat = ({component: Component, ...rest}) => (
+  <Route
+    {...rest}
+    render={(props) =>
+      props.location.state ? (
+        <Component {...props} />
+      ) : (
+        <Redirect to={{pathname: '/'}} />
+      )
+    }
+  />
+);
 const Routes = () => {
   return (
     <Router>
       <Switch>
         <Route exact path="/" component={Join} />
-        <Route path="/:room/:username/:id" component={ChatContainer} />
+        <ProtectedChat path="/:room" component={ChatContainer} />
       </Switch>
     </Router>
   );

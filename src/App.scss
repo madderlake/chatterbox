@@ -45,13 +45,13 @@ form {
   flex-basis: 100%;
   padding: 1rem;
 
-  input[type="text"] {
+  input[type='text'] {
     padding: 1rem;
     margin-right: 1rem;
     width: 80%;
     border: 1px solid #dddddd;
   }
-  input[type="submit"] {
+  input[type='submit'] {
     width: 20%;
     background-color: rgb(8, 181, 238);
   }
@@ -59,4 +59,29 @@ form {
 .user-list {
   list-style-type: none;
   padding-left: 0.5rem;
+
+  .user {
+    &.current {
+      font-weight: 600;
+      color: black;
+    }
+  }
+}
+
+.message-list {
+  max-height: 20rem;
+  overflow-y: scroll;
+  .message {
+    background-color: #f5f5f5;
+    margin: 0.5rem 0;
+    padding: 0.25rem 0.35rem;
+    border-radius: 0.25rem;
+
+    &.bot-message {
+      background-color: rgba(8, 181, 238, 0.15);
+    }
+  }
+  hr {
+    margin: 0.5rem 0;
+  }
 }

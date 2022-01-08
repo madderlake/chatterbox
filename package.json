@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "bootstrap": "^4.6.1",
+    "classnames": "^2.3.1",
     "cors": "^2.8.5",
     "express": "^4.17.2",
     "moment": "^2.29.1",

@@ -35,15 +35,23 @@ httpServer.listen(PORT, function () {
   console.log(`listening on port ${PORT}`);
 });
 
+const chatBot = {username: 'Chatterbug', id: '0', room: ''};
 io.on('connection', (socket) => {
-  console.log(`${socket.id} connected `);
+  socket.connected === true && console.log(`${socket.id} connected `);
   // console.log(io.engine.clientsCount);
   socket.on('joinRoom', ({id, username, room}) => {
     userJoin({id, username, room});
+    captureMessage({
+      author: chatBot,
+      text: `🤗 Welcome to the ${room} room, ${username}! `,
+    });
+    chatBot.room = room;
+    // Welcome current user
+    io.to(room).emit('roomMessages', {
+      room: room,
+      messages: getRoomMessages(room),
+    });
   });
-
-  // Welcome current user
-  //socket.emit('message', formatMessage(botName, 'Welcome to ChatCord!'));
 
   // Send users and room info
   socket.on('readyForUsers', ({room}) => {
@@ -54,24 +62,35 @@ io.on('connection', (socket) => {
     });
   });
 
+  socket.on('readyForMessages', ({room}) => {
+    io.to(room).emit('roomMessages', {
+      room: room,
+      messages: getRoomMessages(room),
+    });
+  });
+
   socket.on('chatMessage', ({author, text}) => {
     captureMessage({author, text});
+    console.log(author.room, getRoomMessages(author.room));
     io.to(author.room).emit('roomMessages', {
-      room: author.room,
+      // room: author.room,
       messages: getRoomMessages(author.room),
     });
   });
   // Runs when client disconnects
   socket.on('userLeaving', ({id}) => {
-    console.log('somebody is leaving!');
     const user = userLeave(id);
+    captureMessage({
+      author: chatBot,
+      text: `😥 ${user.username} has left the chat `,
+    });
+    chatBot.room = user.room;
+    io.to(user.room).emit('roomMessages', {
+      room: user.room,
+      messages: getRoomMessages(user.room),
+    });
     socket.on('disconnect', () => {
       if (user) {
-        socket.to(user.room).emit(
-          'message'
-          //formatMessage(botName, `${user.username} has left the chat`)
-        );
-
         // Send users and room info
         socket.to(user.room).emit('roomUsers', {
           room: user.room,

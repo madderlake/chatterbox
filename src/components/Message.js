@@ -1,15 +1,20 @@
 import React from 'react';
+import cn from 'classnames';
 
 export default function Message({message}) {
   return (
-    <div className="message">
-      <p>
-        <span>
+    <>
+      <div
+        className={cn('message', {
+          'bot-message': message.name === 'Chatterbug',
+        })}>
+        <span className="small font-italic">
           {message.name} at {message.time}
         </span>
         <br />
-        {message.text}
-      </p>
-    </div>
+        <span>{message.text}</span>
+      </div>
+      {/* <hr /> */}
+    </>
   );
 }

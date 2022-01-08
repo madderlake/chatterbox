@@ -24,7 +24,16 @@ const Join = ({...props}) => {
         //});
       });
 
-    props.history.push(`${state.room}/${state.username}/${state.id}`);
+    //props.history.push(`${state.room}/${state.username}/${state.id}`);
+    props.history.push({
+      pathname: `/${state.room}`,
+      from: 'join',
+      state: {
+        username: state.username,
+        room: state.room,
+        id: state.id,
+      },
+    });
   };
 
   return (
@@ -34,6 +43,7 @@ const Join = ({...props}) => {
         <div className="row w-100">
           <div className="col-12 my-3">
             <input
+              required
               type="text"
               name="username"
               className="w-100"
