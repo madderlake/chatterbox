@@ -16,12 +16,10 @@ const Join = ({...props}) => {
     ev.preventDefault();
     state.username &&
       state.room &&
-      //socket.on('connect', () => {
       socket.emit('joinRoom', {
         username: state.username,
         room: state.room,
         id: state.id,
-        //});
       });
 
     //props.history.push(`${state.room}/${state.username}/${state.id}`);

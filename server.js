@@ -36,10 +36,12 @@ httpServer.listen(PORT, function () {
 });
 
 const chatBot = {username: 'Chatterbug', id: '0', room: ''};
+
 io.on('connection', (socket) => {
   socket.connected === true && console.log(`${socket.id} connected `);
-  // console.log(io.engine.clientsCount);
-  socket.on('joinRoom', ({id, username, room}) => {
+
+  socket.once('joinRoom', ({id, username, room}) => {
+    const user = {id, username, room};
     userJoin({id, username, room});
     captureMessage({
       author: chatBot,
@@ -71,7 +73,6 @@ io.on('connection', (socket) => {
 
   socket.on('chatMessage', ({author, text}) => {
     captureMessage({author, text});
-    console.log(author.room, getRoomMessages(author.room));
     io.to(author.room).emit('roomMessages', {
       // room: author.room,
       messages: getRoomMessages(author.room),
@@ -80,12 +81,12 @@ io.on('connection', (socket) => {
   // Runs when client disconnects
   socket.on('userLeaving', ({id}) => {
     const user = userLeave(id);
+    chatBot.room = user.room;
     captureMessage({
       author: chatBot,
       text: `😥 ${user.username} has left the chat `,
     });
-    chatBot.room = user.room;
-    io.to(user.room).emit('roomMessages', {
+    io.to(user.room).broadcast('roomMessages', {
       room: user.room,
       messages: getRoomMessages(user.room),
     });

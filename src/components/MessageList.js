@@ -6,7 +6,6 @@ const MessageList = ({...props}) => {
   const divRef = useRef(null);
 
   useEffect(() => {
-    console.log('use effect');
     divRef.current.scrollTop = divRef.current.scrollHeight;
   }, [props.messageList]);
   return (

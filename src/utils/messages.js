@@ -25,6 +25,7 @@ function getRoomMessages(room) {
   const roomMessages = messages.filter((msg) => msg.author.room === room);
   return roomMessages.map((msg) => formatMessage(msg));
 }
+
 module.exports = {
   captureMessage,
   formatMessage,

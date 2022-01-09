@@ -2,7 +2,6 @@ import React from 'react';
 import cn from 'classnames';
 
 const UserList = ({userList, currentUser, ...props}) => {
-  console.log(currentUser);
   return (
     <>
       <h4>Who's Online?</h4>

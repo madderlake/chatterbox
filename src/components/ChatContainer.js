@@ -17,7 +17,6 @@ const ChatContainer = ({...props}) => {
     room,
     id,
   });
-  //console.log(currentUser);
   const handleUserLeave = () => {
     socket.emit('userLeaving', {
       id: id,
@@ -33,9 +32,6 @@ const ChatContainer = ({...props}) => {
 
   React.useEffect(() => {
     console.log(`client connected - ${socket.id}`);
-    // socket.emit('getMessages', {
-    //   room: room,
-    // });
     socket.emit('readyForUsers', {
       room: room,
     });
@@ -46,9 +42,6 @@ const ChatContainer = ({...props}) => {
       room: room,
     });
     socket.on('roomMessages', ({messages}) => {
-      setMessageList(messages);
-    });
-    socket.on('botMessage', ({messages}) => {
       setMessageList(messages);
     });
     socket.on('disconnect', () => {
