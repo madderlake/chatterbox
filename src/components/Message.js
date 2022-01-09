@@ -6,10 +6,10 @@ export default function Message({message}) {
     <>
       <div
         className={cn('message', {
-          'bot-message': message.name === 'Chatterbug',
+          'bot-message': message.author.username === 'Chatterbug',
         })}>
         <span className="small font-italic">
-          {message.name} at {message.time}
+          {message.author.username} at {message.time}
         </span>
         <br />
         <span>{message.text}</span>

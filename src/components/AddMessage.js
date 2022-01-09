@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useRef, useEffect, useState} from 'react';
 import {SocketContext} from '../context/socket';
 
 const AddMessage = ({...props}) => {
@@ -10,9 +10,7 @@ const AddMessage = ({...props}) => {
 
   const handleSubmit = (ev) => {
     ev.preventDefault();
-    //console.log('author', message.author);
     if (message.author && message.text) {
-      console.log('ready to send');
       socket.emit('chatMessage', {
         author: message.author,
         text: message.text,
@@ -20,10 +18,16 @@ const AddMessage = ({...props}) => {
     }
     setMessage({});
   };
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    inputRef.current && inputRef.current.focus();
+  });
   return (
     <form onSubmit={handleSubmit}>
       <input
         type="text"
+        ref={inputRef}
         placeholder="Type your Message"
         value={message.text || ''}
         onChange={(ev) =>

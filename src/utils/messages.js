@@ -5,9 +5,8 @@ const messages = [];
 // Add message to chat
 function captureMessage({author, text}) {
   const message = {author, text};
-  //console.log(formatMessage(message));
+  message.time = moment().format('h:mm a');
   messages.push(message);
-  //console.log('messages', messages);
   return message;
 }
 
@@ -16,14 +15,13 @@ function formatMessage({author, text}) {
   return {
     name,
     text,
-    time: moment().format('h:mm a'),
+    time,
   };
 }
 
 // Get room messages
 function getRoomMessages(room) {
-  const roomMessages = messages.filter((msg) => msg.author.room === room);
-  return roomMessages.map((msg) => formatMessage(msg));
+  return messages.filter((msg) => msg.author.room === room);
 }
 
 module.exports = {

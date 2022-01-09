@@ -40,18 +40,14 @@ const chatBot = {username: 'Chatterbug', id: '0', room: ''};
 io.on('connection', (socket) => {
   socket.connected === true && console.log(`${socket.id} connected `);
 
-  socket.once('joinRoom', ({id, username, room}) => {
-    const user = {id, username, room};
+  socket.on('joinRoom', ({id, username, room}) => {
     userJoin({id, username, room});
+
+    // Welcome current user
+    chatBot.room = room;
     captureMessage({
       author: chatBot,
       text: `🤗 Welcome to the ${room} room, ${username}! `,
-    });
-    chatBot.room = room;
-    // Welcome current user
-    io.to(room).emit('roomMessages', {
-      room: room,
-      messages: getRoomMessages(room),
     });
   });
 
@@ -74,7 +70,6 @@ io.on('connection', (socket) => {
   socket.on('chatMessage', ({author, text}) => {
     captureMessage({author, text});
     io.to(author.room).emit('roomMessages', {
-      // room: author.room,
       messages: getRoomMessages(author.room),
     });
   });

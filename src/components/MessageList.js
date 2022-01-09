@@ -3,19 +3,27 @@ import Message from './Message';
 
 const MessageList = ({...props}) => {
   const messages = props.messageList;
-  const divRef = useRef(null);
-
+  const msgsEndRef = useRef(null);
+  const scrollToBottom = () => {
+    return (
+      msgsEndRef.current &&
+      msgsEndRef.current.scrollIntoView({
+        behavior: 'smooth',
+      })
+    );
+  };
   useEffect(() => {
-    divRef.current.scrollTop = divRef.current.scrollHeight;
-  }, [props.messageList]);
+    scrollToBottom();
+  }, [messages]);
   return (
     <>
       <h4>Chat Feed</h4>
-      <div className="message-list" ref={divRef}>
+      <div className="message-list">
         {messages &&
           messages.map((msg, index) => {
             return <Message message={msg} key={`msg-${index + 1}`} />;
           })}
+        <div ref={msgsEndRef} />
       </div>
     </>
   );
