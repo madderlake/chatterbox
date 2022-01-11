@@ -3,8 +3,8 @@ const moment = require('moment');
 const messages = [];
 
 // Add message to chat
-function captureMessage({author, text}) {
-  const message = {author, text};
+function captureMessage({author, text, room}) {
+  const message = {author, text, room};
   message.time = moment().format('h:mm a');
   messages.push(message);
   return message;
@@ -21,7 +21,8 @@ function formatMessage({author, text}) {
 
 // Get room messages
 function getRoomMessages(room) {
-  return messages.filter((msg) => msg.author.room === room);
+  console.log(messages.filter((msg) => msg.room === room));
+  return messages.filter((msg) => msg.room === room);
 }
 
 module.exports = {

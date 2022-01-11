@@ -44,10 +44,10 @@ io.on('connection', (socket) => {
     userJoin({id, username, room});
 
     // Welcome current user
-    chatBot.room = room;
     captureMessage({
       author: chatBot,
       text: `🤗 Welcome to the ${room} room, ${username}! `,
+      room: room,
     });
   });
 
@@ -81,7 +81,7 @@ io.on('connection', (socket) => {
       author: chatBot,
       text: `😥 ${user.username} has left the chat `,
     });
-    io.to(user.room).broadcast('roomMessages', {
+    io.to(user.room).emit('roomMessages', {
       room: user.room,
       messages: getRoomMessages(user.room),
     });
