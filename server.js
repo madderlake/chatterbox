@@ -17,7 +17,8 @@ const io = new Server(httpServer, {
 const cors = require('cors');
 
 const {
-  userJoin,
+  addUser,
+  updateUser,
   getCurrentUser,
   userLeave,
   getRoomUsers,
@@ -41,14 +42,32 @@ io.on('connection', (socket) => {
   socket.connected === true && console.log(`${socket.id} connected `);
 
   socket.on('joinRoom', ({id, username, room}) => {
-    userJoin({id, username, room});
+    socket.join(room);
+    if (getCurrentUser(id) === undefined) {
+      addUser({id, username, room});
+    } else {
+      updateUser(id, 'room', room);
+    }
 
     // Welcome current user
     captureMessage({
       author: chatBot,
-      text: `🤗 Welcome to the ${room} room, ${username}! `,
+      text: `🤗 Welcome to the ${room} room, ${username}! `,
       room: room,
     });
+    io.to(room).emit('currentUser', {
+      currentUser: getCurrentUser(id),
+    });
+    io.to(room).emit('roomUsers', {
+      room: room,
+      users: getRoomUsers(room),
+    });
+
+    io.to(room).emit('roomMessages', {
+      room: room,
+      messages: getRoomMessages(room),
+    });
+    console.log('current user', getCurrentUser(id));
   });
 
   // Send users and room info
@@ -75,23 +94,30 @@ io.on('connection', (socket) => {
   });
   // Runs when client disconnects
   socket.on('userLeaving', ({id}) => {
-    const user = userLeave(id);
-    chatBot.room = user.room;
+    const user = getCurrentUser(id);
+    userLeave(id);
+    //chatBot.room = user.room;
     captureMessage({
       author: chatBot,
-      text: `😥 ${user.username} has left the chat `,
+      text: `😥 ${user.username} has left the chat `,
+      room: user.room,
     });
     io.to(user.room).emit('roomMessages', {
       room: user.room,
       messages: getRoomMessages(user.room),
     });
+    io.to(user.room).emit('roomUsers', {
+      room: user.room,
+      users: getRoomUsers(user.room),
+    });
     socket.on('disconnect', () => {
+      socket.leave(user.room);
       if (user) {
         // Send users and room info
-        socket.to(user.room).emit('roomUsers', {
-          room: user.room,
-          users: getRoomUsers(user.room),
-        });
+        // io.to(user.room).emit('roomUsers', {
+        //   room: user.room,
+        //   users: getRoomUsers(user.room),
+        // });
       }
     });
   });

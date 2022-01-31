@@ -8,24 +8,24 @@ import {
 import Join from './Join';
 import ChatContainer from './ChatContainer';
 
-const ProtectedChat = ({component: Component, ...rest}) => (
-  <Route
-    {...rest}
-    render={(props) =>
-      props.location.state ? (
-        <Component {...props} />
-      ) : (
-        <Redirect to={{pathname: '/'}} />
-      )
-    }
-  />
-);
+// const ProtectedChat = ({component: Component, ...rest}) => (
+//   <Route
+//     {...rest}
+//     render={(props) =>
+//       props.location.state ? (
+//         <Component {...props} />
+//       ) : (
+//         <Redirect to={{pathname: '/'}} />
+//       )
+//     }
+//   />
+// );
 const Routes = () => {
   return (
     <Router>
       <Switch>
         <Route exact path="/" component={Join} />
-        <ProtectedChat path="/:room" component={ChatContainer} />
+        <Route path="/:room" component={ChatContainer} />
       </Switch>
     </Router>
   );
