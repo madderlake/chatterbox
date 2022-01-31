@@ -6,6 +6,7 @@ const AddMessage = ({...props}) => {
   const [message, setMessage] = useState({
     author: props.author,
     text: '',
+    room: props.author.room,
   });
 
   const handleSubmit = (ev) => {
@@ -14,6 +15,7 @@ const AddMessage = ({...props}) => {
       socket.emit('chatMessage', {
         author: message.author,
         text: message.text,
+        room: message.room,
       });
     }
     setMessage({});
@@ -35,6 +37,7 @@ const AddMessage = ({...props}) => {
             ...message,
             author: props.author,
             text: ev.target.value,
+            room: props.author.room,
           })
         }
       />

@@ -67,10 +67,10 @@ io.on('connection', (socket) => {
     });
   });
 
-  socket.on('chatMessage', ({author, text}) => {
-    captureMessage({author, text});
-    io.to(author.room).emit('roomMessages', {
-      messages: getRoomMessages(author.room),
+  socket.on('chatMessage', ({author, text, room}) => {
+    captureMessage({author, text, room});
+    io.to(room).emit('roomMessages', {
+      messages: getRoomMessages(room),
     });
   });
   // Runs when client disconnects

@@ -21,7 +21,10 @@ function formatMessage({author, text}) {
 
 // Get room messages
 function getRoomMessages(room) {
-  console.log(messages.filter((msg) => msg.room === room));
+  console.log(
+    'room msgs',
+    messages.filter((msg) => msg.room === room)
+  );
   return messages.filter((msg) => msg.room === room);
 }
 
