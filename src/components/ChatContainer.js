@@ -9,7 +9,7 @@ const ChatContainer = ({...props}) => {
   const {username, room, id} = props.location.state ? props.location.state : {};
   const emptyRoom = !props.location.state && props.match.params.room;
   const socket = useContext(SocketContext);
-
+  //console.log(socket);
   /* State */
   const [userList, setUserList] = useState([]);
   const [messageList, setMessageList] = useState([]);
@@ -27,39 +27,39 @@ const ChatContainer = ({...props}) => {
         id: id,
       });
       socket.disconnect();
-      props.history.replace('/');
+      // props.history.replace('/');
     }
   };
 
-  const handleUserSwitch = (ev) => {
-    console.log('user switching');
-    const leaveRoom = window.confirm('Are you sure you want to switch rooms?');
-    if (leaveRoom) {
-      //socket.disconnect();
-      socket.emit('userLeaving', {
-        id: currentUser.id,
-      });
-      socket.emit('joinRoom', {
-        username: currentUser.username,
-        room: ev.target.value,
-        id: currentUser.id,
-      });
-      socket.on('roomUsers', ({users}) => {
-        setUserList(users);
-      });
-      console.log({...currentUser});
-      //props.history.push(`${currentUser.room}/${currentUser.username}/`);
-      props.history.push({
-        pathname: `/${ev.target.value}`,
-        from: 'chat',
-        state: {
-          username: currentUser.username,
-          room: ev.target.value,
-          id: currentUser.id,
-        },
-      });
-    }
-  };
+  // const handleUserSwitch = (ev) => {
+  //   console.log('user switching');
+  //   const leaveRoom = window.confirm('Are you sure you want to switch rooms?');
+  //   if (leaveRoom) {
+  //     //socket.disconnect();
+  //     socket.emit('userLeaving', {
+  //       id: currentUser.id,
+  //     });
+  //     socket.emit('joinRoom', {
+  //       username: currentUser.username,
+  //       room: ev.target.value,
+  //       id: currentUser.id,
+  //     });
+  //     socket.on('roomUsers', ({users}) => {
+  //       setUserList(users);
+  //     });
+  //     console.log({...currentUser});
+  //     //props.history.push(`${currentUser.room}/${currentUser.username}/`);
+  //     props.history.push({
+  //       pathname: `/${ev.target.value}`,
+  //       from: 'chat',
+  //       state: {
+  //         username: currentUser.username,
+  //         room: ev.target.value,
+  //         id: currentUser.id,
+  //       },
+  //     });
+  //   }
+  // };
   React.useEffect(() => {
     console.log(`client connected - ${socket.id}`);
     socket.emit('readyForUsers', {
@@ -83,7 +83,7 @@ const ChatContainer = ({...props}) => {
       setCurrentUser({});
     });
     // CLEAN UP
-    return () => socket.disconnect();
+    // return () => socket.disconnect();
   }, [room, socket, setCurrentUser, setUserList, setMessageList]);
 
   return (
@@ -96,7 +96,7 @@ const ChatContainer = ({...props}) => {
               <span className="small"> @Chatterbox</span>
             </h4>
           </div>
-          <div className="col-2 d-flex justify-content-end">
+          {/* <div className="col-2 d-flex justify-content-end">
             <select
               required
               className="btn btn-secondary"
@@ -114,7 +114,7 @@ const ChatContainer = ({...props}) => {
               <option value="Ruby">Ruby</option>
               <option value="Java">Java</option>
             </select>
-          </div>
+          </div> */}
           <div className="col-2 d-flex justify-content-end">
             <button className="btn btn-secondary" onClick={handleUserLeave}>
               Leave Room

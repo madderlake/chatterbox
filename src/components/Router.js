@@ -2,7 +2,7 @@ import React from 'react';
 import {
   Route,
   Switch,
-  Redirect,
+  // Redirect,
   BrowserRouter as Router,
 } from 'react-router-dom';
 import Join from './Join';

@@ -96,10 +96,11 @@ io.on('connection', (socket) => {
   socket.on('userLeaving', ({id}) => {
     const user = getCurrentUser(id);
     userLeave(id);
+    // getRoomUsers(id);
     //chatBot.room = user.room;
     captureMessage({
       author: chatBot,
-      text: `😥 ${user.username} has left the chat `,
+      text: `😥 ${user.username} has left the room `,
       room: user.room,
     });
     io.to(user.room).emit('roomMessages', {

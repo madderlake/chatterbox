@@ -1,10 +1,11 @@
-import React, {useState, useContext} from 'react';
+import React, {useState, useContext, useEffect} from 'react';
 import {v4 as uuidv4} from 'uuid';
 import {SocketContext} from '../context/socket';
+import {rooms} from './room-list';
 
 const Join = ({...props}) => {
   const socket = useContext(SocketContext);
-  socket.connect();
+  // socket.connect();
 
   const [state, setState] = useState({
     username: '',
@@ -14,6 +15,7 @@ const Join = ({...props}) => {
 
   const handleSubmit = (ev) => {
     ev.preventDefault();
+    socket.connect();
     state.username &&
       state.room &&
       socket.emit('joinRoom', {
@@ -21,10 +23,10 @@ const Join = ({...props}) => {
         room: state.room,
         id: state.id,
       });
-
+    //console.log(props.history.location.state);
     //props.history.push(`${state.room}/${state.username}/${state.id}`);
     props.history.push({
-      pathname: `/${state.room}`,
+      pathname: `/${state.room}/${state.username}/${state.id}`,
       from: 'join',
       state: {
         username: state.username,
@@ -33,7 +35,9 @@ const Join = ({...props}) => {
       },
     });
   };
-
+  useEffect(() => {
+    document.title = 'Chatterbox';
+  }, []);
   return (
     <div className="join-chat container">
       <h1 className="text-center">Welcome to ChatterBox!</h1>
@@ -64,12 +68,14 @@ const Join = ({...props}) => {
               id="room"
               onChange={(ev) => setState({...state, room: ev.target.value})}>
               <option value="">Select a Room</option>
-              <option value="JavaScript">JavaScript</option>
-              <option value="Python">Python</option>
-              <option value="PHP">PHP</option>
-              <option value="C#">C#</option>
-              <option value="Ruby">Ruby</option>
-              <option value="Java">Java</option>
+              {rooms.map((room, i) => {
+                const {name, value} = room;
+                return (
+                  <option value={value} key={i}>
+                    {name}
+                  </option>
+                );
+              })}
             </select>
           </div>
           <div className="col-12 my-3">
