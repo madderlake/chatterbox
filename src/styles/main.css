@@ -44,42 +44,44 @@ form {
   display: flex;
   flex-basis: 100%;
   padding: 1rem;
-}
-form input[type='text'] {
+
+  input[type='text'] {
     padding: 1rem;
     margin-right: 1rem;
     width: 80%;
     border: 1px solid #dddddd;
   }
-form input[type='submit'] {
+  input[type='submit'] {
     width: 20%;
     background-color: rgb(8, 181, 238);
   }
+}
 .user-list {
   list-style-type: none;
   padding-left: 0.5rem;
-}
-.user-list .user.current {
+
+  .user {
+    &.current {
       font-weight: 600;
       color: black;
     }
+  }
+}
 
 .message-list {
   height: auto;
   overflow-y: scroll;
-}
-
-.message-list .message {
+  .message {
     background-color: #f5f5f5;
     margin: 0.5rem 0;
     padding: 0.25rem 0.35rem;
     border-radius: 0.25rem;
-  }
 
-.message-list .message.bot-message {
+    &.bot-message {
       background-color: rgba(8, 181, 238, 0.15);
     }
-
-.message-list hr {
+  }
+  hr {
     margin: 0.5rem 0;
   }
+}

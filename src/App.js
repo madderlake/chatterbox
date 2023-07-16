@@ -3,7 +3,7 @@ import Routes from './components/Router';
 
 import {SocketContext, socket} from './context/socket';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './App.scss';
+import './index.css';
 
 const App = () => {
   return (
