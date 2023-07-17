@@ -55,11 +55,12 @@ io.on('connection', (socket) => {
       text: `🤗 Welcome to the ${room} room, ${username}! `,
       room: room,
     });
-    io.to(room).emit('currentUser', {
-      currentUser: getCurrentUser(id),
-    });
+    // io.to(room).emit('currentUser', {
+    //   currentUser: getCurrentUser(id),
+    // });
     io.to(room).emit('roomUsers', {
       room: room,
+      currentUser: getCurrentUser(id),
       users: getRoomUsers(room),
     });
 
@@ -71,18 +72,11 @@ io.on('connection', (socket) => {
   });
 
   // Send users and room info
-  socket.on('readyForUsers', ({room}) => {
+  socket.on('connect', ({room}) => {
     socket.join(room);
     io.to(room).emit('roomUsers', {
       room: room,
       users: getRoomUsers(room),
-    });
-  });
-
-  socket.on('readyForMessages', ({room}) => {
-    io.to(room).emit('roomMessages', {
-      room: room,
-      messages: getRoomMessages(room),
     });
   });
 
@@ -95,30 +89,28 @@ io.on('connection', (socket) => {
   // Runs when client disconnects
   socket.on('userLeaving', ({id}) => {
     const user = getCurrentUser(id);
+    const room = user.room;
+    console.log('current room', room);
     userLeave(id);
+    chatBot.room = room;
     // getRoomUsers(id);
-    //chatBot.room = user.room;
     captureMessage({
       author: chatBot,
       text: `😥 ${user.username} has left the room `,
       room: user.room,
     });
-    io.to(user.room).emit('roomMessages', {
+    io.to(room).emit('roomMessages', {
       room: user.room,
-      messages: getRoomMessages(user.room),
-    });
-    io.to(user.room).emit('roomUsers', {
-      room: user.room,
-      users: getRoomUsers(user.room),
+      messages: getRoomMessages(room),
     });
     socket.on('disconnect', () => {
       socket.leave(user.room);
       if (user) {
-        // Send users and room info
-        // io.to(user.room).emit('roomUsers', {
-        //   room: user.room,
-        //   users: getRoomUsers(user.room),
-        // });
+        //Send users and room info
+        io.to(user.room).emit('roomUsers', {
+          room: user.room,
+          users: getRoomUsers(user.room),
+        });
       }
     });
   });

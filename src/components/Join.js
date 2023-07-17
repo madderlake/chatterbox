@@ -23,7 +23,7 @@ const Join = ({...props}) => {
         room: state.room,
         id: state.id,
       });
-    //console.log(props.history.location.state);
+
     //props.history.push(`${state.room}/${state.username}/${state.id}`);
     props.history.push({
       pathname: `/${state.room}/${state.username}/${state.id}`,
@@ -34,6 +34,7 @@ const Join = ({...props}) => {
         id: state.id,
       },
     });
+    console.log(props.history.location.state);
   };
   useEffect(() => {
     document.title = 'Chatterbox';
@@ -66,7 +67,12 @@ const Join = ({...props}) => {
               }}
               name="room"
               id="room"
-              onChange={(ev) => setState({...state, room: ev.target.value})}>
+              onChange={(ev) =>
+                setState({
+                  ...state,
+                  room: ev.target.value,
+                })
+              }>
               <option value="">Select a Room</option>
               {rooms.map((room, i) => {
                 const {name, value} = room;

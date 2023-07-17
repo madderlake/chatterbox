@@ -3,6 +3,7 @@ import UserList from './UserList';
 import MessageList from './MessageList';
 import AddMessage from './AddMessage';
 import {SocketContext} from '../context/socket';
+import {titleCase} from '../utils/helpers';
 
 const ChatContainer = ({...props}) => {
   //const urlParams = props.location.state && props.location.state;
@@ -18,16 +19,17 @@ const ChatContainer = ({...props}) => {
     room,
     id,
   });
+  const roomName = titleCase(currentUser.room);
   const handleUserLeave = () => {
     const leaveRoom = window.confirm(
-      'Are you sure you want to leave the chatroom?'
+      `Are you sure you want to leave the ${roomName} chatroom?`
     );
     if (leaveRoom) {
       socket.emit('userLeaving', {
         id: id,
       });
       socket.disconnect();
-      // props.history.replace('/');
+      props.history.replace('/');
     }
   };
 
@@ -61,21 +63,14 @@ const ChatContainer = ({...props}) => {
   //   }
   // };
   React.useEffect(() => {
-    console.log(`client connected - ${socket.id}`);
-    socket.emit('readyForUsers', {
-      room: room,
-    });
-    socket.on('currentUser', ({currentUser}) => {
-      console.log({...currentUser});
-      setCurrentUser(currentUser);
-    });
+    console.log(`client connected - ${socket.id} to ${room}`);
     socket.on('roomUsers', ({users}) => {
-      console.log(users);
+      //console.log({...currentUser});
+      setCurrentUser(currentUser);
+      //console.log(users);
       setUserList(users);
     });
-    socket.emit('readyForMessages', {
-      room: room,
-    });
+
     socket.on('roomMessages', ({messages}) => {
       setMessageList(messages);
     });
@@ -92,7 +87,7 @@ const ChatContainer = ({...props}) => {
         <div className="header">
           <div className="col-8">
             <h4 className="m-0 p-0 text-nowrap">
-              The {room || emptyRoom} Room
+              The {`${roomName}` || emptyRoom} Room
               <span className="small"> @Chatterbox</span>
             </h4>
           </div>
