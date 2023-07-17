@@ -2,7 +2,7 @@ import React, {useState, useContext} from 'react';
 import UserList from './UserList';
 import MessageList from './MessageList';
 import AddMessage from './AddMessage';
-import {SocketContext} from '../context/socket';
+import {SocketContext} from '../contexts/socket';
 import {titleCase} from '../utils/helpers';
 
 const ChatContainer = ({...props}) => {
@@ -75,6 +75,7 @@ const ChatContainer = ({...props}) => {
       setMessageList(messages);
     });
     socket.on('disconnect', () => {
+      console.log('disconnecting...');
       setCurrentUser({});
     });
     // CLEAN UP

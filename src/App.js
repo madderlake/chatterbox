@@ -1,7 +1,7 @@
 import React from 'react';
 import Routes from './components/Router';
 
-import {SocketContext, socket} from './context/socket';
+import {SocketContext, socket} from './contexts/socket';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.css';
 

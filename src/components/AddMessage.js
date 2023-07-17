@@ -1,5 +1,5 @@
 import React, {useContext, useRef, useEffect, useState} from 'react';
-import {SocketContext} from '../context/socket';
+import {SocketContext} from '../contexts/socket';
 
 const AddMessage = ({...props}) => {
   const socket = useContext(SocketContext);
