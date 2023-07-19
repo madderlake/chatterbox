@@ -25,7 +25,7 @@ const {
 } = require('./src/utils/users');
 
 const {
-  formatMessage,
+  //formatMessage,
   captureMessage,
   getRoomMessages,
 } = require('./src/utils/messages');
@@ -64,7 +64,7 @@ io.on('connection', (socket) => {
       users: getRoomUsers(room),
     });
 
-    io.to(room).emit('roomMessages', {
+    io.to(room).emit('sendMessages', {
       room: room,
       messages: getRoomMessages(room),
     });
@@ -82,36 +82,25 @@ io.on('connection', (socket) => {
 
   socket.on('chatMessage', ({author, text, room}) => {
     captureMessage({author, text, room});
-    io.to(room).emit('roomMessages', {
+    io.to(room).emit('sendMessages', {
       messages: getRoomMessages(room),
     });
   });
   // Runs when client disconnects
-  socket.on('userLeaving', ({id}) => {
-    const user = getCurrentUser(id);
-    const room = user.room;
-    console.log('current room', room);
-    userLeave(id);
+  socket.on('userLeaving', ({id, username, room}) => {
     chatBot.room = room;
-    // getRoomUsers(id);
     captureMessage({
       author: chatBot,
-      text: `😥 ${user.username} has left the room `,
-      room: user.room,
+      text: `😥 ${username} has left the room `,
+      room: room,
     });
-    io.to(room).emit('roomMessages', {
-      room: user.room,
+    io.to(room).emit('sendMessages', {
+      room: room,
       messages: getRoomMessages(room),
     });
     socket.on('disconnect', () => {
-      socket.leave(user.room);
-      if (user) {
-        //Send users and room info
-        io.to(user.room).emit('roomUsers', {
-          room: user.room,
-          users: getRoomUsers(user.room),
-        });
-      }
+      socket.leave(room);
+      userLeave(id);
     });
   });
 });

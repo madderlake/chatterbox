@@ -1,24 +1,25 @@
-import React, {useContext, useRef, useEffect, useState} from 'react';
-import {SocketContext} from '../contexts/socket';
+import React, {useContext, useRef, useEffect} from 'react';
+import {SocketContext} from '../contexts/SocketContext';
+import {useDispatch} from 'react-redux';
+import {addMessage} from '../redux/slices/messageSlice';
 
-const AddMessage = ({...props}) => {
+const AddMessage = ({author}) => {
   const socket = useContext(SocketContext);
-  const [message, setMessage] = useState({
-    author: props.author,
-    text: '',
-    room: props.author.room,
-  });
+  const dispatch = useDispatch();
 
+  let newMessage = {
+    author: author.username,
+    text: '',
+    room: author.room,
+  };
   const handleSubmit = (ev) => {
     ev.preventDefault();
-    if (message.author && message.text) {
-      socket.emit('chatMessage', {
-        author: message.author,
-        text: message.text,
-        room: message.room,
-      });
-    }
-    setMessage({});
+    dispatch(addMessage(newMessage));
+    socket.emit('chatMessage', {
+      author: newMessage.author,
+      text: newMessage.text,
+      room: newMessage.room,
+    });
   };
   const inputRef = useRef(null);
 
@@ -31,15 +32,14 @@ const AddMessage = ({...props}) => {
         type="text"
         ref={inputRef}
         placeholder="Type your Message"
-        value={message.text || ''}
-        onChange={(ev) =>
-          setMessage({
-            ...message,
-            author: props.author,
-            text: ev.target.value,
-            room: props.author.room,
-          })
-        }
+        value={''}
+        onChange={(ev) => (newMessage = {...newMessage, text: ev.target.value})}
+        // setMessage({
+        //   ...message,
+        //   author: props.author,
+        //   text: ev.target.value,
+        //   room: props.author.room,
+        // })
       />
       <input type="submit" className="btn btn-primary" value="Send" />
     </form>

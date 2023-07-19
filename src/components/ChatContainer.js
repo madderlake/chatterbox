@@ -1,32 +1,36 @@
-import React, {useState, useContext} from 'react';
+import React, {useContext, useEffect} from 'react';
+import {useDispatch, useSelector} from 'react-redux';
 import UserList from './UserList';
 import MessageList from './MessageList';
 import AddMessage from './AddMessage';
-import {SocketContext} from '../contexts/socket';
+import {SocketContext} from '../contexts/SocketContext';
 import {titleCase} from '../utils/helpers';
+import {join, leave, addUsers} from '../redux/slices/userSlice';
+import {getMessages} from '../redux/slices/messageSlice';
 
 const ChatContainer = ({...props}) => {
   //const urlParams = props.location.state && props.location.state;
   const {username, room, id} = props.location.state ? props.location.state : {};
   const emptyRoom = !props.location.state && props.match.params.room;
   const socket = useContext(SocketContext);
-  //console.log(socket);
-  /* State */
-  const [userList, setUserList] = useState([]);
-  const [messageList, setMessageList] = useState([]);
-  const [currentUser, setCurrentUser] = useState({
-    username,
-    room,
-    id,
-  });
-  const roomName = titleCase(currentUser.room);
+  const dispatch = useDispatch();
+
+  /* TODO - change these const names */
+  const cUser = useSelector((state) => state.user.currentUser);
+  const uList = useSelector((state) => state.user.userList);
+  const mList = useSelector((state) => state.messages.messageList);
+
+  const roomName = titleCase(cUser.room);
+
   const handleUserLeave = () => {
     const leaveRoom = window.confirm(
       `Are you sure you want to leave the ${roomName} chatroom?`
     );
     if (leaveRoom) {
       socket.emit('userLeaving', {
-        id: id,
+        id,
+        username,
+        room,
       });
       socket.disconnect();
       props.history.replace('/');
@@ -62,31 +66,34 @@ const ChatContainer = ({...props}) => {
   //     });
   //   }
   // };
-  React.useEffect(() => {
-    console.log(`client connected - ${socket.id} to ${room}`);
+
+  /* Need this? */
+  // useEffect(() => {
+  //   socket.emit('getMessages');
+  // }, []);
+
+  useEffect(() => {
+    dispatch(join({username, room, id}));
     socket.on('roomUsers', ({users}) => {
-      //console.log({...currentUser});
-      setCurrentUser(currentUser);
-      //console.log(users);
-      setUserList(users);
+      dispatch(addUsers(users));
     });
 
-    socket.on('roomMessages', ({messages}) => {
-      setMessageList(messages);
+    socket.on('sendMessages', ({messages}) => {
+      dispatch(getMessages(messages));
     });
     socket.on('disconnect', () => {
-      console.log('disconnecting...');
-      setCurrentUser({});
+      //console.log('disconnecting...');
+      dispatch(leave());
     });
     // CLEAN UP
     // return () => socket.disconnect();
-  }, [room, socket, setCurrentUser, setUserList, setMessageList]);
+  }, [username, room, id, socket, dispatch]);
 
   return (
     <div className="container">
       <div className="row">
         <div className="header">
-          <div className="col-8">
+          <div className="col-10">
             <h4 className="m-0 p-0 text-nowrap">
               The {`${roomName}` || emptyRoom} Room
               <span className="small"> @Chatterbox</span>
@@ -118,14 +125,14 @@ const ChatContainer = ({...props}) => {
           </div>
         </div>
         <div className="sidebar col-4">
-          <UserList userList={userList} currentUser={currentUser} />
+          <UserList userList={uList} currentUser={cUser} />
         </div>
         <div className="messages col-8 overflow-auto">
-          <MessageList messageList={messageList} />
+          <MessageList messageList={mList} />
         </div>
       </div>
       <div className="add-message row">
-        <AddMessage author={currentUser} />
+        <AddMessage author={cUser} />
       </div>
     </div>
   );

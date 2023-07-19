@@ -1,6 +1,6 @@
 import React, {useState, useContext, useEffect} from 'react';
 import {v4 as uuidv4} from 'uuid';
-import {SocketContext} from '../contexts/socket';
+import {SocketContext} from '../contexts/SocketContext';
 import {rooms} from './room-list';
 
 const Join = ({...props}) => {
