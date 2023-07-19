@@ -82,12 +82,11 @@ const ChatContainer = ({...props}) => {
       dispatch(getMessages(messages));
     });
     socket.on('disconnect', () => {
-      //console.log('disconnecting...');
       dispatch(leave());
     });
     // CLEAN UP
     // return () => socket.disconnect();
-  }, [username, room, id, socket, dispatch]);
+  }, [username, room, id, mList, socket, dispatch]);
 
   return (
     <div className="container">
