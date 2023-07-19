@@ -68,29 +68,29 @@ io.on('connection', (socket) => {
       room: room,
       messages: getRoomMessages(room),
     });
-    console.log('current user', getCurrentUser(id));
+    //console.log('current user', getCurrentUser(id));
   });
+
   socket.on('chatMessage', ({author, text, room}) => {
     captureMessage({author, text, room});
     io.to(room).emit('sendMessages', {
       messages: getRoomMessages(room),
     });
   });
-  // Send users and room info
-  socket.on('connect', ({room}) => {
-    socket.join(room);
-    io.to(room).emit('roomUsers', {
-      room: room,
-      users: getRoomUsers(room),
-    });
-  });
 
-  // socket.on('chatMessage', ({author, text, room}) => {
-  //   captureMessage({author, text, room});
+  // Send users and room info
+  // socket.on('connect', ({room}) => {
+  //   socket.join(room);
+  //   io.to(room).emit('roomUsers', {
+  //     room: room,
+  //     users: getRoomUsers(room),
+  //   });
+
   //   io.to(room).emit('sendMessages', {
   //     messages: getRoomMessages(room),
   //   });
   // });
+
   // Runs when client disconnects
   socket.on('userLeaving', ({id, username, room}) => {
     chatBot.room = room;
