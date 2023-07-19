@@ -7,11 +7,12 @@ const AddMessage = ({...props}) => {
 
   const handleSubmit = (ev) => {
     ev.preventDefault();
-    socket.emit('chatMessage', {
-      author: props.author,
-      text: message.text,
-      room: props.author.room,
-    });
+    message.text &&
+      socket.emit('chatMessage', {
+        author: props.author,
+        text: message.text,
+        room: props.author.room,
+      });
     setMessage({});
   };
   const inputRef = useRef(null);
