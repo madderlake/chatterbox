@@ -4,5 +4,5 @@ import io from 'socket.io-client';
 
 const socketUrl = 'http://localhost:8083';
 
-export const socket = io.connect(socketUrl);
-export const SocketContext = createContext();
+export const socket = io(socketUrl, {autoConnect: false});
+export const SocketContext = createContext(socket);

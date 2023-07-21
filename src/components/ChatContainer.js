@@ -1,4 +1,4 @@
-import React, {useContext, useEffect} from 'react';
+import React, {useContext, useState, useEffect} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import UserList from './UserList';
 import MessageList from './MessageList';
@@ -11,6 +11,7 @@ import {getMessages} from '../redux/slices/messageSlice';
 const ChatContainer = ({...props}) => {
   //const urlParams = props.location.state && props.location.state;
   const {username, room, id} = props.location.state ? props.location.state : {};
+  const [currentUser, setCurrentUser] = useState({});
   const emptyRoom = !props.location.state && props.match.params.room;
   const socket = useContext(SocketContext);
   const dispatch = useDispatch();
@@ -73,19 +74,22 @@ const ChatContainer = ({...props}) => {
   // }, []);
 
   useEffect(() => {
-    dispatch(join({username, room, id}));
+    setCurrentUser({username, room, id});
+    currentUser && dispatch(join(currentUser));
+    // socket.emit('newUser', {username, room, id});
     socket.on('roomUsers', ({users}) => {
       dispatch(addUsers(users));
     });
 
-    socket.on('sendMessages', ({messages}) => {
+    socket.on('roomMessages', ({messages}) => {
       dispatch(getMessages(messages));
     });
+
     socket.on('disconnect', () => {
       dispatch(leave());
     });
     // CLEAN UP
-    // return () => socket.disconnect();
+    return () => socket.off();
   }, [username, room, id, mList, socket, dispatch]);
 
   return (
