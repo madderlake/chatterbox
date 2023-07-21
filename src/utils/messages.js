@@ -1,11 +1,9 @@
-const moment = require('moment');
-
 const messages = [];
 
 // Add message to chat
 function captureMessage({author, text, room}) {
   const message = {author, text, room};
-  message.time = moment().format('h:mm a');
+  message.time = new Date().getHours() + new Date().getMinutes();
   messages.push(message);
   return message;
 }
