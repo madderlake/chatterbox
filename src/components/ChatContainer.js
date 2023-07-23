@@ -11,7 +11,7 @@ import {getMessages} from '../redux/slices/messageSlice';
 const ChatContainer = ({...props}) => {
   //const urlParams = props.location.state && props.location.state;
   const {username, room, id} = props.location.state ? props.location.state : {};
-  const [currentUser, setCurrentUser] = useState({});
+
   const emptyRoom = !props.location.state && props.match.params.room;
   const socket = useContext(SocketContext);
   const dispatch = useDispatch();
@@ -74,15 +74,14 @@ const ChatContainer = ({...props}) => {
   // }, []);
 
   useEffect(() => {
-    setCurrentUser({username, room, id});
-    currentUser && dispatch(join(currentUser));
+    dispatch(join({username, id, room}));
     // socket.emit('newUser', {username, room, id});
     socket.on('roomUsers', ({users}) => {
       dispatch(addUsers(users));
     });
 
     socket.on('roomMessages', ({messages}) => {
-      //console.log(messages);
+      console.log(messages);
       dispatch(getMessages(messages));
     });
 

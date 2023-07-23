@@ -14,7 +14,7 @@ const io = new Server(httpServer, {
     origin: `http://localhost:3000`,
     methods: ['GET', 'POST'],
     //credentials: true,
-    // transports: ['websocket', 'polling'],
+    transports: ['websocket', 'polling'],
   },
 });
 
@@ -68,6 +68,7 @@ io.on('connect', (socket) => {
   socket.on('chatMessage', ({author, text, room}) => {
     captureMessage({author, text, room});
     io.to(room).emit('roomMessages', {
+      room,
       messages: getRoomMessages(room),
     });
   });
