@@ -73,7 +73,7 @@ const ChatContainer = ({...props}) => {
   // }, []);
 
   useEffect(() => {
-    dispatch(join({username, id, room}));
+    dispatch(join({username, room, id}));
     // socket.emit('newUser', {username, room, id});
     socket.on('roomUsers', ({users}) => {
       dispatch(addUsers(users));
