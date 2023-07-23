@@ -5,7 +5,6 @@ import {rooms} from './room-list';
 
 const Join = ({...props}) => {
   const socket = useContext(SocketContext);
-  // socket.connect();
 
   const [state, setState] = useState({
     username: '',
@@ -24,7 +23,6 @@ const Join = ({...props}) => {
       from: 'join',
       state,
     });
-    //console.log({...props.history.location.state});
   };
   useEffect(() => {
     document.title = 'Chatterbox';

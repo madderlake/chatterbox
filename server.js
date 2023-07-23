@@ -71,6 +71,7 @@ io.on('connect', (socket) => {
       room,
       messages: getRoomMessages(room),
     });
+    console.log(getRoomMessages(room));
   });
 
   // Send users and room info

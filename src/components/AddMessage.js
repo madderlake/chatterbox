@@ -1,7 +1,7 @@
 import React, {useContext, useState, useRef, useEffect} from 'react';
 import {SocketContext} from '../contexts/SocketContext';
 
-const AddMessage = ({...props}) => {
+const AddMessage = ({author}) => {
   const socket = useContext(SocketContext);
   const [message, setMessage] = useState({});
 
@@ -9,9 +9,9 @@ const AddMessage = ({...props}) => {
     ev.preventDefault();
     message.text &&
       socket.emit('chatMessage', {
-        author: props.author,
+        author: author,
         text: message.text,
-        room: props.author.room,
+        room: author.room,
       });
     setMessage({});
   };
@@ -29,10 +29,9 @@ const AddMessage = ({...props}) => {
         value={message.text || ''}
         onChange={(ev) =>
           setMessage({
-            // ...message,
-            author: props.author,
+            author: author,
             text: ev.target.value,
-            room: props.author.room,
+            room: author.room,
           })
         }
       />

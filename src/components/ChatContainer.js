@@ -11,7 +11,6 @@ import {getMessages} from '../redux/slices/messageSlice';
 const ChatContainer = ({...props}) => {
   //const urlParams = props.location.state && props.location.state;
   const {username, room, id} = props.location.state ? props.location.state : {};
-
   const emptyRoom = !props.location.state && props.match.params.room;
   const socket = useContext(SocketContext);
   const dispatch = useDispatch();
