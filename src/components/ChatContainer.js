@@ -74,13 +74,12 @@ const ChatContainer = ({...props}) => {
 
   useEffect(() => {
     dispatch(join({username, room, id}));
-    // socket.emit('newUser', {username, room, id});
     socket.on('roomUsers', ({users}) => {
       dispatch(addUsers(users));
     });
 
     socket.on('roomMessages', ({messages}) => {
-      console.log(messages);
+      // console.log(messages);
       dispatch(getMessages(messages));
     });
 
