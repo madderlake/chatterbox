@@ -12,7 +12,7 @@ const messageSlice = createSlice({
     //   state.messageList = [...state.messageList, ...action.payload];
     // },
     getMessages: (state, action) => {
-      state.messageList = action.payload;
+      state.messageList = [...action.payload];
     },
   },
 });

@@ -82,6 +82,7 @@ const ChatContainer = ({...props}) => {
     });
 
     socket.on('roomMessages', ({messages}) => {
+      //console.log(messages);
       dispatch(getMessages(messages));
     });
 
