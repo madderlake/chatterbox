@@ -5,36 +5,24 @@ import {rooms} from './room-list';
 
 const Join = ({...props}) => {
   const socket = useContext(SocketContext);
-  // socket.connect();
 
   const [state, setState] = useState({
     username: '',
     room: '',
     id: uuidv4(),
+    socket: socket.id,
   });
 
   const handleSubmit = (ev) => {
     ev.preventDefault();
     socket.connect();
-    state.username &&
-      state.room &&
-      socket.emit('joinRoom', {
-        username: state.username,
-        room: state.room,
-        id: state.id,
-      });
-
+    state.username !== '' && socket.emit('joinRoom', {...state});
     //props.history.push(`${state.room}/${state.username}/${state.id}`);
     props.history.push({
       pathname: `/${state.room}/${state.username}/${state.id}`,
       from: 'join',
-      state: {
-        username: state.username,
-        room: state.room,
-        id: state.id,
-      },
+      state,
     });
-    console.log(props.history.location.state);
   };
   useEffect(() => {
     document.title = 'Chatterbox';

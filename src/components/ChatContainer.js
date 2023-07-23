@@ -78,16 +78,17 @@ const ChatContainer = ({...props}) => {
       dispatch(addUsers(users));
     });
 
-    socket.on('sendMessages', ({messages}) => {
+    socket.on('roomMessages', ({messages}) => {
+      // console.log(messages);
       dispatch(getMessages(messages));
     });
+
     socket.on('disconnect', () => {
-      //console.log('disconnecting...');
       dispatch(leave());
     });
     // CLEAN UP
-    // return () => socket.disconnect();
-  }, [username, room, id, socket, dispatch]);
+    return () => socket.off();
+  }, [username, room, id, mList, socket, dispatch]);
 
   return (
     <div className="container">

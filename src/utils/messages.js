@@ -1,11 +1,15 @@
-const moment = require('moment');
-
 const messages = [];
 
 // Add message to chat
 function captureMessage({author, text, room}) {
   const message = {author, text, room};
-  message.time = moment().format('h:mm a');
+  const hrs = new Date().getHours();
+  let hours = hrs % 12;
+  hours = hours ? hours : 12;
+  const ampm = hrs > 12 ? 'pm' : 'am';
+  const mins = new Date().getMinutes();
+  const minutes = mins > 10 ? mins : '0' + mins;
+  message.time = hours + ':' + minutes + ampm;
   messages.push(message);
   return message;
 }
@@ -21,10 +25,6 @@ function formatMessage({author, text}) {
 
 // Get room messages
 function getRoomMessages(room) {
-  // console.log(
-  //   'room msgs',
-  //   messages.filter((msg) => msg.room === room)
-  // );
   return messages.filter((msg) => msg.room === room);
 }
 
