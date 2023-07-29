@@ -8,7 +8,7 @@ function captureMessage({author, text, room}) {
   hours = hours ? hours : 12;
   const ampm = hrs > 12 ? 'pm' : 'am';
   const mins = new Date().getMinutes();
-  const minutes = mins > 10 ? mins : '0' + mins;
+  const minutes = mins >= 10 ? mins : '0' + mins;
   message.time = hours + ':' + minutes + ampm;
   messages.push(message);
   return message;

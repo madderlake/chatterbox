@@ -41,18 +41,19 @@ const chatBot = {username: 'Chatterbug', id: '0', room: ''};
 io.on('connect', (socket) => {
   console.log(`${socket.id} connected `);
 
-  socket.on('joinRoom', ({username, room, id}) => {
+  socket.on('joinRoom', ({username, room, id}, firstJoin) => {
     socket.join(room);
     if (getCurrentUser(id) === undefined) {
       addUser({id, username, room});
     }
     // Welcome current user
-    captureMessage({
-      author: chatBot,
-      text: `🤗 Welcome to the ${room} room, ${username}! `,
-      room: room,
-    });
-
+    if (firstJoin === true || firstJoin === null) {
+      captureMessage({
+        author: chatBot,
+        text: `🤗 Welcome to the ${room} room, ${username}! `,
+        room: room,
+      });
+    }
     io.to(room).emit('roomUsers', {
       room: room,
       users: getRoomUsers(room),
@@ -74,20 +75,7 @@ io.on('connect', (socket) => {
     console.log(getRoomMessages(room));
   });
 
-  // Send users and room info
-  // socket.on('connect', ({room}) => {
-  //   socket.join(room);
-  //   io.to(room).emit('roomUsers', {
-  //     room: room,
-  //     users: getRoomUsers(room),
-  //   });
-
-  //   io.to(room).emit('roomMessages', {
-  //     messages: getRoomMessages(room),
-  //   });
-  // });
-
-  // Runs when client disconnects
+  // Runs when client leaves the chat
   socket.on('userLeaving', ({id, username, room}) => {
     chatBot.room = room;
     captureMessage({
@@ -99,9 +87,8 @@ io.on('connect', (socket) => {
       room: room,
       messages: getRoomMessages(room),
     });
-    socket.on('disconnect', () => {
-      socket.leave(room);
-      userLeave(id);
-    });
+
+    socket.leave(room);
+    userLeave(id);
   });
 });

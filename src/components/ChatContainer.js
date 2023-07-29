@@ -9,11 +9,11 @@ import {join, leave, addUsers} from '../redux/slices/userSlice';
 import {getMessages} from '../redux/slices/messageSlice';
 
 const ChatContainer = ({...props}) => {
-  //const urlParams = props.location.state && props.location.state;
   const {username, room, id} = props.location.state ? props.location.state : {};
   const emptyRoom = !props.location.state && props.match.params.room;
   const socket = useContext(SocketContext);
   const dispatch = useDispatch();
+  const currentUser = {username, room, id};
 
   /* TODO - change these const names */
   const cUser = useSelector((state) => state.user.currentUser);
@@ -32,6 +32,7 @@ const ChatContainer = ({...props}) => {
         username,
         room,
       });
+      dispatch(leave(id));
       socket.disconnect();
       props.history.replace('/');
     }
@@ -67,28 +68,29 @@ const ChatContainer = ({...props}) => {
   //   }
   // };
 
-  /* Need this? */
-  // useEffect(() => {
-  //   socket.emit('getMessages');
-  // }, []);
-
+  const firstJoin = cUser.username !== currentUser.username;
+  console.log('new?', firstJoin, {...currentUser});
   useEffect(() => {
-    dispatch(join({username, room, id}));
+    socket.on('connect', async () => {
+      if (firstJoin) {
+        await socket
+          .emit('joinRoom', {...currentUser}, firstJoin)
+          .then(dispatch(join({...currentUser})));
+      } else {
+        await socket.emit('joinRoom', {...currentUser}, firstJoin);
+      }
+    });
     socket.on('roomUsers', ({users}) => {
       dispatch(addUsers(users));
     });
 
     socket.on('roomMessages', ({messages}) => {
-      // console.log(messages);
       dispatch(getMessages(messages));
     });
 
-    socket.on('disconnect', () => {
-      dispatch(leave());
-    });
     // CLEAN UP
-    return () => socket.off();
-  }, [username, room, id, mList, socket, dispatch]);
+    return () => socket.removeAllListeners();
+  }, [currentUser, mList, socket, dispatch]);
 
   return (
     <div className="container">
