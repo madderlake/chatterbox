@@ -47,7 +47,7 @@ io.on('connect', (socket) => {
       addUser({id, username, room});
     }
     // Welcome current user
-    if (firstJoin === true || firstJoin === null) {
+    if (firstJoin === null) {
       captureMessage({
         author: chatBot,
         text: `🤗 Welcome to the ${room} room, ${username}! `,

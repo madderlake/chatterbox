@@ -73,11 +73,9 @@ const ChatContainer = ({...props}) => {
   useEffect(() => {
     socket.on('connect', async () => {
       if (firstJoin) {
-        await socket
-          .emit('joinRoom', {...currentUser}, firstJoin)
-          .then(dispatch(join({...currentUser})));
+        dispatch(join({...currentUser}));
       } else {
-        await socket.emit('joinRoom', {...currentUser}, firstJoin);
+        socket.emit('joinRoom', {...currentUser}, firstJoin);
       }
     });
     socket.on('roomUsers', ({users}) => {
