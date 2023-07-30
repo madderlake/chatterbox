@@ -13,14 +13,16 @@ const io = new Server(httpServer, {
   cors: {
     origin: `http://localhost:3000`,
     methods: ['GET', 'POST'],
-    //credentials: true,
+    credentials: true,
     transports: ['websocket', 'polling'],
   },
 });
 
 const {
   addUser,
-  updateUser,
+  //updateUser,
+  getAllUsers,
+  switchUserRoom,
   getCurrentUser,
   userLeave,
   getRoomUsers,
@@ -38,6 +40,14 @@ httpServer.listen(PORT, function () {
 
 const chatBot = {username: 'Chatterbug', id: '0', room: ''};
 
+const sendChatBotMsg = (room, text) => {
+  return captureMessage({
+    author: chatBot,
+    text: text,
+    room,
+  });
+};
+
 io.on('connect', (socket) => {
   console.log(`${socket.id} connected `);
 
@@ -48,47 +58,28 @@ io.on('connect', (socket) => {
     }
     // Welcome current user
     if (firstJoin === null) {
-      captureMessage({
-        author: chatBot,
-        text: `🤗 Welcome to the ${room} room, ${username}! `,
-        room: room,
-      });
+      sendChatBotMsg(room, `🤗 Welcome to the ${room} room, ${username}! `);
     }
-    io.to(room).emit('roomUsers', {
-      room: room,
-      users: getRoomUsers(room),
-    });
-
-    io.to(room).emit('roomMessages', {
-      room: room,
-      messages: getRoomMessages(room),
-    });
-    console.log('users', getRoomUsers(room));
+    io.to(room).emit('roomUsers', getRoomUsers(room));
+    io.to(room).emit('roomMessages', getRoomMessages(room));
   });
 
   socket.on('chatMessage', ({author, text, room}) => {
     captureMessage({author, text, room});
-    io.to(room).emit('roomMessages', {
-      room,
-      messages: getRoomMessages(room),
-    });
-    console.log(getRoomMessages(room));
+    io.to(room).emit('roomMessages', getRoomMessages(room));
   });
+  console.log(getAllUsers());
 
   // Runs when client leaves the chat
   socket.on('userLeaving', ({id, username, room}) => {
-    chatBot.room = room;
-    captureMessage({
-      author: chatBot,
-      text: `😥 ${username} has left the room `,
-      room: room,
-    });
-    io.to(room).emit('roomMessages', {
-      room: room,
-      messages: getRoomMessages(room),
-    });
-
+    sendChatBotMsg(room, `😥 ${username} has left the room `);
     socket.leave(room);
     userLeave(id);
+  });
+
+  socket.on('userSwitching', ({id, username, room}, newRoom) => {
+    sendChatBotMsg(room, `😥 ${username} has switched rooms `);
+    switchUserRoom(id, newRoom);
+    socket.leave(room);
   });
 });

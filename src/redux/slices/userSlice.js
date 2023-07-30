@@ -22,7 +22,7 @@ const userSlice = createSlice({
       );
     },
     switchRoom: (state, action) => {
-      state.currentUser.room = {...state.currentUser.room, ...action.payload};
+      state.currentUser = {...state.currentUser, room: action.payload};
     },
   },
 });

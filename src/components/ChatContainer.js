@@ -1,75 +1,65 @@
-import React, {useContext, useEffect} from 'react';
+import React, {useContext, useState, useEffect} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import UserList from './UserList';
 import MessageList from './MessageList';
 import AddMessage from './AddMessage';
 import {SocketContext} from '../contexts/SocketContext';
 import {titleCase} from '../utils/helpers';
-import {join, leave, addUsers} from '../redux/slices/userSlice';
+import {join, leave, switchRoom, addUsers} from '../redux/slices/userSlice';
 import {getMessages} from '../redux/slices/messageSlice';
+import {useParams} from 'react-router-dom';
 
 const ChatContainer = ({...props}) => {
-  const {username, room, id} = props.location.state ? props.location.state : {};
   const emptyRoom = !props.location.state && props.match.params.room;
   const socket = useContext(SocketContext);
   const dispatch = useDispatch();
-  const currentUser = {username, room, id};
-
+  const params = useParams();
+  const [currentUser, setCurrentUser] = useState({
+    ...params,
+  });
   /* TODO - change these const names */
   const cUser = useSelector((state) => state.user.currentUser);
   const uList = useSelector((state) => state.user.userList);
   const mList = useSelector((state) => state.messages.messageList);
 
-  const roomName = titleCase(cUser.room);
+  const roomName = titleCase(currentUser.room);
+  const firstJoin = cUser.username !== currentUser.username;
 
   const handleUserLeave = () => {
     const leaveRoom = window.confirm(
       `Are you sure you want to leave the ${roomName} chatroom?`
     );
     if (leaveRoom) {
-      socket.emit('userLeaving', {
-        id,
-        username,
-        room,
-      });
-      dispatch(leave(id));
+      socket.emit('userLeaving', {...currentUser}, true);
+      dispatch(leave(currentUser.id));
       socket.disconnect();
       props.history.replace('/');
     }
   };
 
-  // const handleUserSwitch = (ev) => {
-  //   console.log('user switching');
-  //   const leaveRoom = window.confirm('Are you sure you want to switch rooms?');
-  //   if (leaveRoom) {
-  //     //socket.disconnect();
-  //     socket.emit('userLeaving', {
-  //       id: currentUser.id,
-  //     });
-  //     socket.emit('joinRoom', {
-  //       username: currentUser.username,
-  //       room: ev.target.value,
-  //       id: currentUser.id,
-  //     });
-  //     socket.on('roomUsers', ({users}) => {
-  //       setUserList(users);
-  //     });
-  //     console.log({...currentUser});
-  //     //props.history.push(`${currentUser.room}/${currentUser.username}/`);
-  //     props.history.push({
-  //       pathname: `/${ev.target.value}`,
-  //       from: 'chat',
-  //       state: {
-  //         username: currentUser.username,
-  //         room: ev.target.value,
-  //         id: currentUser.id,
-  //       },
-  //     });
-  //   }
-  // };
+  const handleUserSwitch = (ev) => {
+    if (window.confirm('Are you sure you want to switch rooms?')) {
+      const newRoom = ev.target.value;
+      socket.emit('userSwitching', {...currentUser}, newRoom);
+      setCurrentUser({...currentUser, room: newRoom});
+      dispatch(switchRoom(newRoom));
 
-  const firstJoin = cUser.username !== currentUser.username;
-  console.log('new?', firstJoin, {...currentUser});
+      socket.emit(
+        'joinRoom',
+        {
+          username: currentUser.username,
+          room: newRoom,
+          id: currentUser.id,
+        },
+        null
+      );
+
+      props.history.push(
+        `/${newRoom}/${currentUser.username}/${currentUser.id}`
+      );
+    }
+  };
+
   useEffect(() => {
     socket.on('connect', async () => {
       if (firstJoin) {
@@ -78,29 +68,29 @@ const ChatContainer = ({...props}) => {
         socket.emit('joinRoom', {...currentUser}, firstJoin);
       }
     });
-    socket.on('roomUsers', ({users}) => {
+    socket.on('roomUsers', (users) => {
       dispatch(addUsers(users));
     });
 
-    socket.on('roomMessages', ({messages}) => {
+    socket.on('roomMessages', (messages) => {
       dispatch(getMessages(messages));
     });
 
     // CLEAN UP
     return () => socket.removeAllListeners();
-  }, [currentUser, mList, socket, dispatch]);
+  }, [firstJoin, socket, currentUser, dispatch]);
 
   return (
     <div className="container">
       <div className="row">
         <div className="header">
-          <div className="col-10">
+          <div className="col-8">
             <h4 className="m-0 p-0 text-nowrap">
               The {`${roomName}` || emptyRoom} Room
               <span className="small"> @Chatterbox</span>
             </h4>
           </div>
-          {/* <div className="col-2 d-flex justify-content-end">
+          <div className="col-2 d-flex justify-content-end">
             <select
               required
               className="btn btn-secondary"
@@ -111,14 +101,14 @@ const ChatContainer = ({...props}) => {
               id="room"
               onChange={handleUserSwitch}>
               <option value="">Switch Rooms</option>
-              <option value="JavaScript">JavaScript</option>
-              <option value="Python">Python</option>
-              <option value="PHP">PHP</option>
-              <option value="C#">C#</option>
-              <option value="Ruby">Ruby</option>
-              <option value="Java">Java</option>
+              <option value="javaScript">JavaScript</option>
+              <option value="python">Python</option>
+              <option value="php">PHP</option>
+              <option value="c#">C#</option>
+              <option value="ruby">Ruby</option>
+              <option value="java">Java</option>
             </select>
-          </div> */}
+          </div>
           <div className="col-2 d-flex justify-content-end">
             <button className="btn btn-secondary" onClick={handleUserLeave}>
               Leave Room
