@@ -10,14 +10,12 @@ const Join = ({...props}) => {
     username: '',
     room: '',
     id: uuidv4(),
-    socket: socket.id,
   });
 
   const handleSubmit = (ev) => {
     ev.preventDefault();
     socket.connect();
-    state.username !== '' && socket.emit('joinRoom', {...state});
-    //props.history.push(`${state.room}/${state.username}/${state.id}`);
+    state.username !== '' && socket.emit('joinRoom', {...state}, null);
     props.history.push({
       pathname: `/${state.room}/${state.username}/${state.id}`,
       from: 'join',

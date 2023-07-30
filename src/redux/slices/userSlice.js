@@ -17,7 +17,9 @@ const userSlice = createSlice({
     },
     leave: (state, action) => {
       state.currentUser = {};
-      state.userList.filter((user) => user.id !== action.payload);
+      state.userList = state.userList.filter(
+        (user) => user.id !== action.payload
+      );
     },
     switchRoom: (state, action) => {
       state.currentUser.room = {...state.currentUser.room, ...action.payload};
