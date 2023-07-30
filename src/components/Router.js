@@ -25,7 +25,7 @@ const Routes = () => {
     <Router>
       <Switch>
         <Route exact path="/" component={Join} />
-        <Route path="/:room" component={ChatContainer} />
+        <Route path="/:room/:username/:id" component={ChatContainer} />
       </Switch>
     </Router>
   );

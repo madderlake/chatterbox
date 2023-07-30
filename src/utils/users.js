@@ -7,15 +7,20 @@ function addUser({id, username, room}) {
   return user;
 }
 
-// function getAllUsers(users) {
-//   return users;
-// }
+function switchUserRoom(id, room) {
+  const user = users.find((user) => user.id === id);
+  user.room = room;
+  return user;
+}
 function updateUser({id, prop, value}) {
   const user = users.find((user) => user.id === id);
   console.log('updating', prop, 'to', value, 'on', user.username);
   user[prop] = value;
   console.log('updated user', user);
   return user;
+}
+function getAllUsers() {
+  return users;
 }
 // Get current user
 function getCurrentUser(id) {
@@ -40,7 +45,9 @@ function getRoomUsers(room) {
 
 module.exports = {
   addUser,
-  updateUser,
+  getAllUsers,
+  //updateUser,
+  switchUserRoom,
   getCurrentUser,
   userLeave,
   getRoomUsers,
