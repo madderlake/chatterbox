@@ -72,14 +72,12 @@ io.on('connect', (socket) => {
 
   // Runs when client leaves the chat
   socket.on('userLeaving', ({id, username, room}) => {
-    //chatBot.room = room;
     sendChatBotMsg(room, `😥 ${username} has left the room `);
     socket.leave(room);
     userLeave(id);
   });
 
   socket.on('userSwitching', ({id, username, room}, newRoom) => {
-    //chatBot.room = room;
     sendChatBotMsg(room, `😥 ${username} has switched rooms `);
     switchUserRoom(id, newRoom);
     socket.leave(room);

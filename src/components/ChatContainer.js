@@ -57,7 +57,6 @@ const ChatContainer = ({...props}) => {
       props.history.push(
         `/${newRoom}/${currentUser.username}/${currentUser.id}`
       );
-      console.log(props.history);
     }
   };
 
@@ -79,7 +78,7 @@ const ChatContainer = ({...props}) => {
 
     // CLEAN UP
     return () => socket.removeAllListeners();
-  }, [firstJoin, mList, socket, currentUser, dispatch]);
+  }, [firstJoin, socket, currentUser, dispatch]);
 
   return (
     <div className="container">
