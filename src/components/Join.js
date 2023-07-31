@@ -3,7 +3,7 @@ import {v4 as uuidv4} from 'uuid';
 import {SocketContext} from '../contexts/SocketContext';
 import {rooms} from './room-list';
 
-const Join = ({...props}) => {
+export const Join = ({...props}) => {
   const socket = useContext(SocketContext);
 
   const [state, setState] = useState({
@@ -60,14 +60,11 @@ const Join = ({...props}) => {
                 })
               }>
               <option value="">Select a Room</option>
-              {rooms.map((room, i) => {
-                const {name, value} = room;
-                return (
-                  <option value={value} key={i}>
-                    {name}
-                  </option>
-                );
-              })}
+              {rooms.map(({key, name}, i) => (
+                <option value={key} key={i}>
+                  {name}
+                </option>
+              ))}
             </select>
           </div>
           <div className="col-12 my-3">
@@ -78,5 +75,3 @@ const Join = ({...props}) => {
     </div>
   );
 };
-
-export default Join;
