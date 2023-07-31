@@ -20,7 +20,6 @@ const io = new Server(httpServer, {
 
 const {
   addUser,
-  //updateUser,
   getAllUsers,
   switchUserRoom,
   getCurrentUser,
@@ -28,11 +27,7 @@ const {
   getRoomUsers,
 } = require('./src/utils/users');
 
-const {
-  //formatMessage,
-  captureMessage,
-  getRoomMessages,
-} = require('./src/utils/messages');
+const {captureMessage, getRoomMessages} = require('./src/utils/messages');
 
 httpServer.listen(PORT, function () {
   console.log(`listening on port ${PORT}`);
@@ -43,7 +38,7 @@ const chatBot = {username: 'Chatterbug', id: '0', room: ''};
 const sendChatBotMsg = (room, text) => {
   return captureMessage({
     author: chatBot,
-    text: text,
+    text,
     room,
   });
 };
@@ -53,13 +48,11 @@ io.on('connect', (socket) => {
 
   socket.on('joinRoom', ({username, room, id}, firstJoin) => {
     socket.join(room);
-    if (getCurrentUser(id) === undefined) {
-      addUser({id, username, room});
-    }
+    getCurrentUser(id) === undefined && addUser({id, username, room});
     // Welcome current user
-    if (firstJoin === null) {
+    firstJoin === null &&
       sendChatBotMsg(room, `🤗 Welcome to the ${room} room, ${username}! `);
-    }
+    // Send users and messages back to room
     io.to(room).emit('roomUsers', getRoomUsers(room));
     io.to(room).emit('roomMessages', getRoomMessages(room));
   });
@@ -68,12 +61,13 @@ io.on('connect', (socket) => {
     captureMessage({author, text, room});
     io.to(room).emit('roomMessages', getRoomMessages(room));
   });
-  console.log(getAllUsers());
+  //console.log(getAllUsers());
 
   // Runs when client leaves the chat
   socket.on('userLeaving', ({id, username, room}) => {
     sendChatBotMsg(room, `😥 ${username} has left the room `);
     socket.leave(room);
+    //remove from users on server
     userLeave(id);
   });
 
