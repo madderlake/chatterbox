@@ -8,6 +8,7 @@ import {titleCase} from '../utils/helpers';
 import {join, leave, switchRoom, addUsers} from '../redux/slices/userSlice';
 import {getMessages} from '../redux/slices/messageSlice';
 import {useParams} from 'react-router-dom';
+import {rooms} from './room-list';
 
 export const ChatContainer = ({...props}) => {
   const socket = useContext(SocketContext);
@@ -79,16 +80,15 @@ export const ChatContainer = ({...props}) => {
               style={{
                 appearance: 'none',
               }}
-              name="room"
-              id="room"
+              name="switch-room"
+              id="switch-room"
               onChange={handleUserSwitch}>
               <option value="">Switch Rooms</option>
-              <option value="javaScript">JavaScript</option>
-              <option value="python">Python</option>
-              <option value="php">PHP</option>
-              <option value="c#">C#</option>
-              <option value="ruby">Ruby</option>
-              <option value="java">Java</option>
+              {rooms.map(({key, name}, i) => (
+                <option value={key} key={i}>
+                  {name}
+                </option>
+              ))}
             </select>
           </div>
           <div className="col-2 d-flex justify-content-end">
