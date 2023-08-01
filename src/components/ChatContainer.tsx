@@ -76,14 +76,12 @@ export const ChatContainer = ({...props}) => {
   return (
     <div className="container">
       <div className="row">
-        <div className="header">
-          <div className="col-8">
-            <h4 className="m-0 p-0 text-nowrap">
-              The {`${roomName}`} Room
-              <span className="small"> @Chatterbox</span>
-            </h4>
-          </div>
-          <div className="col-2 d-flex justify-content-end">
+        <div className="header col-12">
+          <h4 className="col-8 m-0 p-0 text-nowrap">
+            The {`${roomName}`} Room
+            <span className="small"> @Chatterbox</span>
+          </h4>
+          <div className="col-4 m-0 p-0 d-flex justify-content-end">
             <select
               required
               className="btn btn-secondary"
@@ -100,9 +98,10 @@ export const ChatContainer = ({...props}) => {
                 </option>
               ))}
             </select>
-          </div>
-          <div className="col-2 d-flex justify-content-end">
-            <button className="btn btn-secondary" onClick={handleUserLeave}>
+            <button
+              className="btn btn-secondary"
+              onClick={handleUserLeave}
+              style={{marginLeft: '1em'}}>
               Log off &raquo;
             </button>
           </div>
