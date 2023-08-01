@@ -12,7 +12,7 @@ export const Join = ({...props}) => {
     id: uuidv4(),
   });
 
-  const handleSubmit = (ev) => {
+  const handleSubmit = (ev: React.SyntheticEvent) => {
     ev.preventDefault();
     socket.connect();
     state.username !== '' && socket.emit('joinRoom', {...state}, null);

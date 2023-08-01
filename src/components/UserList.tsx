@@ -1,7 +1,13 @@
 import React from 'react';
 import cn from 'classnames';
+import {User} from '../redux/slices/userSlice';
 
-const UserList = ({userList, currentUser}) => {
+interface UserListProps {
+  currentUser: User;
+  userList: User[];
+}
+
+const UserList = ({userList, currentUser}: UserListProps): JSX.Element => {
   return (
     <>
       <h4>Who's Online?</h4>

@@ -1,6 +1,22 @@
 import {createSlice} from '@reduxjs/toolkit';
 
-const initialState = {
+export type Author = {
+  room: string;
+  username: string;
+  id: string;
+};
+export type Message = {
+  author: Author;
+  text: string;
+  room: string;
+  time: string;
+};
+
+interface MessageState {
+  messageList: Message[];
+}
+
+const initialState: MessageState = {
   messageList: [],
 };
 

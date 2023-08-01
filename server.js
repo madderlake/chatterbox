@@ -46,11 +46,11 @@ const sendChatBotMsg = (room, text) => {
 io.on('connect', (socket) => {
   console.log(`${socket.id} connected `);
 
-  socket.on('joinRoom', ({username, room, id}, firstJoin) => {
+  socket.on('joinRoom', ({username, room, id}, newUser) => {
     socket.join(room);
     getCurrentUser(id) === undefined && addUser({id, username, room});
     // Welcome current user
-    firstJoin === null &&
+    newUser === null &&
       sendChatBotMsg(room, `🤗 Welcome to the ${room} room, ${username}! `);
     // Send users and messages back to room
     io.to(room).emit('roomUsers', getRoomUsers(room));

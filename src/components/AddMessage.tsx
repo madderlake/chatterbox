@@ -1,21 +1,26 @@
 import React, {useContext, useState, useRef, useEffect} from 'react';
 import {SocketContext} from '../contexts/SocketContext';
+import {Author, Message} from '../redux/slices/messageSlice';
 
-const AddMessage = ({author}) => {
+interface AddMessageProps {
+  author: Author;
+}
+const AddMessage = ({author}: AddMessageProps): JSX.Element => {
   const socket = useContext(SocketContext);
-  const [message, setMessage] = useState({});
+  const [message, setMessage] = useState<Omit<Message, 'time'> | null>(null);
 
-  const handleSubmit = (ev) => {
+  const handleSubmit = (ev: React.SyntheticEvent) => {
     ev.preventDefault();
-    message.text &&
+    message !== null &&
+      message.text &&
       socket.emit('chatMessage', {
         author: author,
         text: message.text,
         room: author.room,
       });
-    setMessage({});
+    setMessage(null);
   };
-  const inputRef = useRef(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     inputRef.current && inputRef.current.focus();
@@ -26,7 +31,7 @@ const AddMessage = ({author}) => {
         type="text"
         ref={inputRef}
         placeholder="Type your Message"
-        value={message.text || ''}
+        value={message !== null ? message.text : ''}
         onChange={(ev) =>
           setMessage({
             author: author,
