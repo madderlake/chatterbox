@@ -3,9 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@reduxjs/toolkit": "^1.8.1",
     "autoprefixer": "^10.4.14",
-    "bootstrap": "^4.6.1",
+    "bootstrap": "^5.3.1",
     "classnames": "^2.3.1",
     "cors": "^2.8.5",
     "express": "^4.17.2",
