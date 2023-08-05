@@ -1,4 +1,6 @@
 import {createSlice} from '@reduxjs/toolkit';
+import type {PayloadAction} from '@reduxjs/toolkit';
+//import type {RootState} from '../store';
 
 export type Author = {
   room: string;
@@ -24,7 +26,7 @@ const messageSlice = createSlice({
   name: 'messageSlice',
   initialState,
   reducers: {
-    getMessages: (state, action) => {
+    getMessages: (state, action: PayloadAction<Message[]>) => {
       state.messageList = [...action.payload];
     },
   },
