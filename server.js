@@ -1,11 +1,11 @@
-import http from 'http';
-import express from 'express';
-import {Socket, Server} from 'socket.io';
-import cors from 'cors';
+const express = require('express');
+const http = require('http');
+const {Server} = require('socket.io');
 
 const app = express();
 const httpServer = http.createServer(app);
 const PORT = 8083;
+const cors = require('cors');
 app.use(cors());
 
 const io = new Server(httpServer, {
@@ -14,17 +14,13 @@ const io = new Server(httpServer, {
     origin: `http://localhost:3000`,
     methods: ['GET', 'POST'],
     credentials: true,
-    //transports: ['websocket', 'polling'],
+    transports: ['websocket', 'polling'],
   },
 });
 
-httpServer.listen(PORT, function () {
-  console.log(`listening on port ${PORT}`);
-});
 const {
   addUser,
   getAllUsers,
-  sendChatBotMsg,
   switchUserRoom,
   getCurrentUser,
   userLeave,
@@ -33,13 +29,28 @@ const {
 
 const {captureMessage, getRoomMessages} = require('./src/utils/messages');
 
-io.on('connect', (socket: Socket) => {
+httpServer.listen(PORT, function () {
+  console.log(`listening on port ${PORT}`);
+});
+
+const chatBot = {username: 'Chatterbug', id: '0', room: ''};
+
+const sendChatBotMsg = (room, text) => {
+  return captureMessage({
+    author: chatBot,
+    text,
+    room,
+  });
+};
+
+io.on('connect', (socket) => {
   console.log(`${socket.id} connected `);
-  socket.on('joinRoom', ({username, room, id}, newUser) => {
+
+  socket.on('joinRoom', ({username, room, id}, firstJoin) => {
     socket.join(room);
     getCurrentUser(id) === undefined && addUser({id, username, room});
     // Welcome current user
-    newUser === null &&
+    firstJoin === null &&
       sendChatBotMsg(room, `🤗 Welcome to the ${room} room, ${username}! `);
     // Send users and messages back to room
     io.to(room).emit('roomUsers', getRoomUsers(room));
