@@ -11,7 +11,7 @@ export type Message = {
   author: Author;
   text: string;
   room: string;
-  time: string;
+  time?: string;
 };
 
 interface MessageState {
