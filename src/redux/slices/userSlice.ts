@@ -28,7 +28,7 @@ const userSlice = createSlice({
       state.currentUser = {...state.currentUser, ...action.payload};
     },
     addUsers: (state, action) => {
-      state.userList = action.payload;
+      state.userList = [...action.payload];
     },
     leave: (state, action) => {
       state.currentUser = {

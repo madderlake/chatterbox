@@ -15,6 +15,7 @@ import {
   switchUserRoom,
   removeUser,
   getRoomUsers,
+  getAllUsers,
 } from './src/server/users';
 
 const app = express();
@@ -61,14 +62,14 @@ httpServer.listen(PORT, function () {
 
 io.on('connection', (socket: any) => {
   console.log(`${socket.id} connected `);
-  socket.on('joinRoom', ({...user}, firstJoin: null | boolean) => {
+  socket.on('joinRoom', ({...user}, newUser: null | boolean) => {
     const {id, username, room} = user;
     socket.join(room);
     addUser({id, username, room});
     console.log(getRoomUsers(room));
-    console.log(firstJoin);
+    console.log(newUser);
     // Welcome current user
-    firstJoin === null &&
+    if (newUser === null)
       sendChatBotMsg(room, `🤗 Welcome to the ${room} room, ${username}! `);
 
     // Send users and messages back to room
@@ -83,10 +84,12 @@ io.on('connection', (socket: any) => {
   //console.log(getAllUsers());
 
   // Runs when server leaves the chat application
-  socket.on('userLeaving', (id: string, username: string, room: string) => {
-    sendChatBotMsg(room, `😥 ${username} has left the room `);
+  socket.on('userLeaving', ({id, username, room}: User) => {
+    sendChatBotMsg(room as string, `😥 ${username} has left the room `);
     socket.leave(room);
     removeUser(id);
+    console.log('all users', getAllUsers());
+    //io.to(room as string).emit('roomUsers', getRoomUsers(room as string));
   });
 
   socket.on(
