@@ -5,25 +5,30 @@ import {Server} from 'socket.io';
 import type {User} from './src/redux/slices/userSlice';
 import type {Message} from './src/redux/slices/messageSlice';
 //import StartListeners from './src/server/listeners';
-import {getRoomMessages} from './src/server/messages';
-import {sendChatBotMsg} from './src/server/messages';
-import {captureMessage} from './src/server/messages';
-import {addUser} from './src/server/users';
-import {switchUserRoom} from './src/server/users';
-// import {getAllUsers} from './users';
-import {getCurrentUser} from './src/server/users';
-import {removeUser} from './src/server/users';
-import {getRoomUsers} from './src/server/users';
-// import type {Socket} from 'socket.io';
+import {
+  getRoomMessages,
+  sendChatBotMsg,
+  captureMessage,
+} from './src/server/messages';
+import {
+  addUser,
+  switchUserRoom,
+  removeUser,
+  getRoomUsers,
+} from './src/server/users';
 
 const app = express();
 const httpServer = http.createServer(app);
 const PORT = 8083;
 
 type Data = User | Message;
+type BasicEmit = (data: Data | Data[]) => void;
+
 export interface ServerToClientEvents {
   // noArg: () => void;
-  basicEmit: (ev: string, data: Data | Data[]) => void;
+  //basicEmit: (ev: string, data: Data | Data[]) => void;
+  roomUsers: BasicEmit;
+  roomMessages: BasicEmit;
   //withAck: (d: string, callback: (e: number) => void) => void;
 }
 
@@ -67,13 +72,13 @@ io.on('connection', (socket: any) => {
       sendChatBotMsg(room, `🤗 Welcome to the ${room} room, ${username}! `);
 
     // Send users and messages back to room
-    io.to(room).emit('basicEmit', 'roomUsers', getRoomUsers(room));
-    io.to(room).emit('basicEmit', 'roomMessages', getRoomMessages(room));
+    io.to(room).emit('roomUsers', getRoomUsers(room));
+    io.to(room).emit('roomMessages', getRoomMessages(room));
   });
 
   socket.on('chatMessage', ({author, text, room}: Message) => {
     captureMessage({author, text, room});
-    io.to(room).emit('basicEmit', 'roomMessages', getRoomMessages(room));
+    io.to(room).emit('roomMessages', getRoomMessages(room));
   });
   //console.log(getAllUsers());
 
