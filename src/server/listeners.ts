@@ -1,47 +1,58 @@
-import {captureMessage} from './messages';
-import {getRoomMessages} from './messages';
-import {sendChatBotMsg} from './messages';
-import {addUser} from './users';
-import {switchUserRoom} from './users';
-// import {getAllUsers} from './users';
-import {getCurrentUser} from './users';
-import {removeUser} from './users';
-import {getRoomUsers} from './users';
+import type {User} from '../redux/slices/userSlice';
+import type {Message} from '../redux/slices/messageSlice';
 
-import type {Socket} from 'socket.io';
-import {io} from '../../server';
+import {captureMessage, getRoomMessages, sendChatBotMsg} from './messages';
+import {
+  addUser,
+  switchUserRoom,
+  getAllUsers,
+  getUser,
+  removeUser,
+  getRoomUsers,
+} from './users';
 
-const StartListeners = (server: any, socket: Socket): void => {
-  socket.on('joinRoom', ({username, room, id}, firstJoin) => {
+const StartListeners = (server: any, socket: any): void => {
+  console.log(`${socket.id} connected from listeners `);
+  socket.on('joinRoom', ({...user}, newUser: null | boolean) => {
+    const {id, username, room} = user;
     socket.join(room);
-    addUser({id, username, room});
-    console.log(getRoomUsers(room));
+    console.log(newUser);
+    console.log(getRoomUsers(user.room));
+
     // Welcome current user
-    firstJoin === null &&
+    if (newUser === null || newUser === true) {
       sendChatBotMsg(room, `🤗 Welcome to the ${room} room, ${username}! `);
-
+      getUser(id) === undefined && addUser({id, username, room});
+    }
     // Send users and messages back to room
-    server.to(room).emit('basicEmit', 'roomUsers', getRoomUsers(room));
-    server.to(room).emit('basicEmit', 'roomMessages', getRoomMessages(room));
+    server.to(room).emit('roomUsers', getRoomUsers(room));
+    server.to(room).emit('roomMessages', getRoomMessages(room));
   });
 
-  socket.on('chatMessage', ({author, text, room}) => {
+  socket.on('chatMessage', ({author, text, room}: Message) => {
     captureMessage({author, text, room});
-    server.to(room).emit('basicEmit', 'roomMessages', getRoomMessages(room));
+    server.to(room).emit('roomMessages', getRoomMessages(room));
   });
-  //console.log(getAllUsers());
+  console.log(getAllUsers());
 
   // Runs when server leaves the chat application
-  socket.on('userLeaving', ({id, username, room}) => {
-    sendChatBotMsg(room, `😥 ${username} has left the room `);
-    socket.leave(room);
+  socket.on('userLeaving', ({id, username, room}: User) => {
+    sendChatBotMsg(room as string, `😥 ${username} has left the room `);
+    socket.leave(room as string);
     removeUser(id);
+    console.log('all users', getAllUsers());
   });
 
-  socket.on('userSwitching', ({id, username, room}, newRoom: string) => {
-    sendChatBotMsg(room, `😥 ${username} has switched rooms `);
-    switchUserRoom(id, newRoom);
-    socket.leave(room);
+  socket.on(
+    'userSwitching',
+    (id: string, username: string, room: string, newRoom: string) => {
+      sendChatBotMsg(room, `😥 ${username} has switched rooms `);
+      switchUserRoom(id, newRoom);
+      socket.leave(room);
+    }
+  );
+  socket.on('disconnect', () => {
+    console.log(`${socket.id} has disconnected`);
   });
 };
 

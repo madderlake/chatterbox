@@ -63,7 +63,7 @@ export const ChatContainer = ({...props}) => {
     socket.on('connect', async () => {
       newUser !== false
         ? dispatch(join({...currentUser}))
-        : socket.emit('joinRoom', {...currentUser}, false);
+        : socket.emit('joinRoom', {...currentUser}, newUser);
     });
     socket.on('roomUsers', (users: User[]) => dispatch(addUsers(users)));
     socket.on('roomMessages', (messages: Message[]) =>

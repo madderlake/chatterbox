@@ -4,5 +4,10 @@ import io from 'socket.io-client';
 
 const socketUrl = 'http://localhost:8083';
 
-export const socket = io(socketUrl, {autoConnect: false});
-export const ClientContext = createContext(socket);
+export const socket = io(socketUrl, {
+  autoConnect: true,
+  reconnection: true,
+  reconnectionDelay: 500,
+  reconnectionAttempts: 10,
+});
+export const ClientContext = createContext(null);

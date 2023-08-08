@@ -14,18 +14,11 @@ export const switchUserRoom = (id: string, newRoom: string) => {
     .map((user) => user.room === newRoom);
 };
 
-// const updateUser({id, prop, value}) {
-//   const user = users.find((user) => user.id === id);
-//   console.log('updating', prop, 'to', value, 'on', user.username);
-//   user[prop] = value;
-//   console.log('updated user', user);
-//   return user;
-// }
 export const getAllUsers = () => {
   return users;
 };
 // Get current user
-export const getCurrentUser = (id: string) => {
+export const getUser = (id: string) => {
   return users.find((user) => user.id === id);
 };
 
@@ -39,14 +32,3 @@ export const removeUser = (id: string): User[] => {
 export const getRoomUsers = (room: string) => {
   return users.filter((user) => user.room === room);
 };
-
-// module.exports = {
-//   addUser,
-//   getAllUsers,
-//   //updateUser,
-//   sendChatBotMsg,
-//   switchUserRoom,
-//   getCurrentUser,
-//   userLeave,
-//   getRoomUsers,
-// };

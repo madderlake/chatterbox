@@ -36,9 +36,3 @@ export const sendChatBotMsg = (room: string, text: string) => {
 export const getRoomMessages = (room: string) => {
   return messages.filter((msg) => msg.room === room);
 };
-
-// module.exports = {
-//   captureMessage,
-//   formatMessage,
-//   getRoomMessages,
-// };

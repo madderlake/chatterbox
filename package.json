@@ -28,7 +28,7 @@
     "build:css": "postcss src/styles/main.css -o src/index.css",
     "watch:css": "postcss src/styles/main.css -o src/index.css -w",
     "start": "npm-run-all -p watch:css start-js",
-    "watch-node": "nodemon server.ts ",
+    "watch-node": "nodemon --watch src/server/listeners.ts server.ts  ",
     "server": "ts-node server.ts",
     "start-js": "react-scripts start",
     "build-js": "react-scripts build",
