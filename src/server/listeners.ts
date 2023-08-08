@@ -20,7 +20,7 @@ const StartListeners = (server: any, socket: any): void => {
     console.log(getRoomUsers(user.room));
 
     // Welcome current user
-    if (newUser === null || newUser === true) {
+    if (newUser !== false) {
       sendChatBotMsg(room, `🤗 Welcome to the ${room} room, ${username}! `);
       getUser(id) === undefined && addUser({id, username, room});
     }

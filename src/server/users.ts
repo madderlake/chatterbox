@@ -5,7 +5,6 @@ const users: User[] = [];
 // Join user to chat
 export const addUser = (user: User) => {
   users.push(user);
-  //return user;
 };
 
 export const switchUserRoom = (id: string, newRoom: string) => {

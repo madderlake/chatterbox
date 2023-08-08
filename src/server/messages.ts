@@ -15,7 +15,6 @@ const setTime = (): string => {
 
 // Add message to chat
 export const captureMessage = ({...message}: Message): Message => {
-  // const message: ChatMessage = {author, text, room, time};
   message.time = setTime();
   messages.push(message);
   return message;
