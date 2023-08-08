@@ -1,5 +1,5 @@
 import React, {useContext, useState, useEffect} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
+import {useAppDispatch, useAppSelector} from '../redux/hooks';
 import UserList from './UserList';
 import MessageList from './MessageList';
 import AddMessage from './AddMessage';
@@ -9,21 +9,29 @@ import {join, leave, switchRoom, addUsers} from '../redux/slices/userSlice';
 import {getMessages} from '../redux/slices/messageSlice';
 import {useParams} from 'react-router-dom';
 import {rooms} from './room-list';
+import type {Author, Message} from '../redux/slices/messageSlice';
+import type {User} from '../redux/slices/userSlice';
 
+interface RouteParams {
+  room: string;
+  username: string;
+  id: string;
+}
 export const ChatContainer = ({...props}) => {
   const socket = useContext(SocketContext);
-  const dispatch = useDispatch();
-  const params = useParams();
+  const dispatch = useAppDispatch();
+  const params = useParams<RouteParams>();
   const [currentUser, setCurrentUser] = useState({
     ...params,
   });
+
   /* TODO - change these const names */
-  const cUser = useSelector((state) => state.user.currentUser);
-  const uList = useSelector((state) => state.user.userList);
-  const mList = useSelector((state) => state.messages.messageList);
+  const cUser = useAppSelector((state) => state.user.currentUser);
+  const uList = useAppSelector((state) => state.user.userList);
+  const mList = useAppSelector((state) => state.messages.messageList);
 
   const roomName = titleCase(currentUser.room);
-  const firstJoin = cUser.username !== currentUser.username;
+  const newUser = cUser.username !== currentUser.username;
 
   const handleUserLeave = () => {
     const leaveRoom = window.confirm(
@@ -35,8 +43,8 @@ export const ChatContainer = ({...props}) => {
     props.history.replace('/');
   };
 
-  const handleUserSwitch = (ev) => {
-    const newRoom = ev.target.value;
+  const handleUserSwitch = (ev: React.SyntheticEvent) => {
+    const newRoom = (ev.target as HTMLInputElement).value;
     if (
       window.confirm(`Are you sure you want to switch to the ${newRoom} room?`)
     ) {
@@ -53,27 +61,27 @@ export const ChatContainer = ({...props}) => {
 
   useEffect(() => {
     socket.on('connect', async () => {
-      firstJoin
+      newUser !== false
         ? dispatch(join({...currentUser}))
-        : socket.emit('joinRoom', {...currentUser}, firstJoin);
+        : socket.emit('joinRoom', {...currentUser}, newUser);
     });
-    socket.on('roomUsers', (users) => dispatch(addUsers(users)));
-    socket.on('roomMessages', (messages) => dispatch(getMessages(messages)));
+    socket.on('roomUsers', (users: User[]) => dispatch(addUsers(users)));
+    socket.on('roomMessages', (messages: Message[]) =>
+      dispatch(getMessages(messages))
+    );
     // CLEAN UP
     return () => socket.removeAllListeners();
-  }, [firstJoin, socket, currentUser, dispatch]);
+  }, [newUser, socket, currentUser, dispatch]);
 
   return (
     <div className="container">
       <div className="row">
-        <div className="header">
-          <div className="col-8">
-            <h4 className="m-0 p-0 text-nowrap">
-              The {`${roomName}`} Room
-              <span className="small"> @Chatterbox</span>
-            </h4>
-          </div>
-          <div className="col-2 d-flex justify-content-end">
+        <div className="header col-12">
+          <h4 className="col-8 m-0 p-0 text-nowrap">
+            The {`${roomName}`} Room
+            <span className="small"> @Chatterbox</span>
+          </h4>
+          <div className="col-4 m-0 p-0 d-flex justify-content-end">
             <select
               required
               className="btn btn-secondary"
@@ -90,10 +98,11 @@ export const ChatContainer = ({...props}) => {
                 </option>
               ))}
             </select>
-          </div>
-          <div className="col-2 d-flex justify-content-end">
-            <button className="btn btn-secondary" onClick={handleUserLeave}>
-              Leave Room
+            <button
+              className="btn btn-secondary"
+              onClick={handleUserLeave}
+              style={{marginLeft: '1em'}}>
+              Log off &raquo;
             </button>
           </div>
         </div>
@@ -105,7 +114,7 @@ export const ChatContainer = ({...props}) => {
         </div>
       </div>
       <div className="add-message row">
-        <AddMessage author={cUser} />
+        <AddMessage author={cUser as Author} />
       </div>
     </div>
   );
