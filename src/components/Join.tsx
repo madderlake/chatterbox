@@ -1,10 +1,10 @@
 import React, {useState, useContext, useEffect} from 'react';
 import {v4 as uuidv4} from 'uuid';
-import {SocketContext} from '../contexts/SocketContext';
+import {ClientContext} from '../contexts/ClientContext';
 import {rooms} from './room-list';
 
 export const Join = ({...props}) => {
-  const socket = useContext(SocketContext);
+  const client = useContext(ClientContext);
 
   const [state, setState] = useState({
     username: '',
@@ -14,8 +14,8 @@ export const Join = ({...props}) => {
 
   const handleSubmit = (ev: React.SyntheticEvent) => {
     ev.preventDefault();
-    socket.connect();
-    state.username !== '' && socket.emit('joinRoom', {...state}, null);
+    client.connect();
+    state.username !== '' && client.emit('joinRoom', {...state}, null);
     props.history.push({
       pathname: `/${state.room}/${state.username}/${state.id}`,
       from: 'join',
