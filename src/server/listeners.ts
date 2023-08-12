@@ -6,6 +6,7 @@ import {
   addUser,
   switchUserRoom,
   getAllUsers,
+  updateUserSid,
   getUser,
   removeUser,
   getRoomUsers,
@@ -13,8 +14,10 @@ import {
 
 const StartListeners = (server: any, socket: any): void => {
   console.log(`${socket.id} connected from listeners `);
+  // TODO; make const for allUsers
   socket.on('joinRoom', ({...user}, newUser: null | boolean) => {
     const {id, username, room} = user;
+    user.sid = socket.id;
     socket.join(room);
     console.log(newUser);
     console.log(getRoomUsers(user.room));
@@ -22,7 +25,10 @@ const StartListeners = (server: any, socket: any): void => {
     // Welcome current user
     if (newUser !== false) {
       sendChatBotMsg(room, `🤗 Welcome to the ${room} room, ${username}! `);
-      getUser(id) === undefined && addUser({id, username, room});
+      getUser(id) === undefined &&
+        addUser({id, username, room, sid: socket.id});
+    } else {
+      updateUserSid(id, socket.id);
     }
     // Send users and messages back to room
     server.to(room).emit('roomUsers', getRoomUsers(room));
@@ -53,6 +59,14 @@ const StartListeners = (server: any, socket: any): void => {
   );
   socket.on('disconnect', () => {
     console.log(`${socket.id} has disconnected`);
+    const user = getAllUsers().find((user) => user.sid === socket.id);
+    if (user !== undefined) {
+      const {id, username, room} = user;
+      removeUser(id);
+      server.to(room).emit('roomUsers', getAllUsers());
+      sendChatBotMsg(room, `😥 ${username} has logged off `);
+      server.to(room).emit('roomMessages', getRoomMessages(room));
+    }
   });
 };
 

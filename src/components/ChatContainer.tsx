@@ -3,7 +3,7 @@ import {useAppDispatch, useAppSelector} from '../redux/hooks';
 import UserList from './UserList';
 import MessageList from './MessageList';
 import AddMessage from './AddMessage';
-import {SocketContext} from '../contexts/SocketContext';
+import {ClientContext} from '../contexts/ClientContext';
 import {titleCase} from '../utils/helpers';
 import {join, leave, switchRoom, addUsers} from '../redux/slices/userSlice';
 import {getMessages} from '../redux/slices/messageSlice';
@@ -18,11 +18,12 @@ interface RouteParams {
   id: string;
 }
 export const ChatContainer = ({...props}) => {
-  const socket = useContext(SocketContext);
+  const client = useContext(ClientContext);
   const dispatch = useAppDispatch();
   const params = useParams<RouteParams>();
-  const [currentUser, setCurrentUser] = useState({
+  const [currentUser, setCurrentUser] = useState<User>({
     ...params,
+    sid: '',
   });
 
   /* TODO - change these const names */
@@ -37,9 +38,9 @@ export const ChatContainer = ({...props}) => {
     const leaveRoom = window.confirm(
       `Are you sure you want to leave the ${roomName} chatroom?`
     );
-    leaveRoom && socket.emit('userLeaving', {...currentUser}, true);
+    leaveRoom && client.emit('userLeaving', {...currentUser}, true);
     dispatch(leave(currentUser.id));
-    socket.disconnect();
+    client.disconnect();
     props.history.replace('/');
   };
 
@@ -48,11 +49,11 @@ export const ChatContainer = ({...props}) => {
     if (
       window.confirm(`Are you sure you want to switch to the ${newRoom} room?`)
     ) {
-      socket.emit('userSwitching', {...currentUser}, newRoom);
+      client.emit('userSwitching', {...currentUser}, newRoom);
       setCurrentUser({...currentUser, room: newRoom});
       dispatch(switchRoom(newRoom));
 
-      socket.emit('joinRoom', {...currentUser}, null);
+      client.emit('joinRoom', {...currentUser}, null);
       props.history.push(
         `/${newRoom}/${currentUser.username}/${currentUser.id}`
       );
@@ -60,18 +61,17 @@ export const ChatContainer = ({...props}) => {
   };
 
   useEffect(() => {
-    socket.on('connect', async () => {
-      newUser !== false
-        ? dispatch(join({...currentUser}))
-        : socket.emit('joinRoom', {...currentUser}, newUser);
-    });
-    socket.on('roomUsers', (users: User[]) => dispatch(addUsers(users)));
-    socket.on('roomMessages', (messages: Message[]) =>
+    newUser !== false
+      ? dispatch(join({...currentUser}))
+      : client.emit('joinRoom', {...currentUser}, newUser);
+
+    client.on('roomUsers', (users: User[]) => dispatch(addUsers(users)));
+    client.on('roomMessages', (messages: Message[]) =>
       dispatch(getMessages(messages))
     );
     // CLEAN UP
-    return () => socket.removeAllListeners();
-  }, [newUser, socket, currentUser, dispatch]);
+    return () => client.removeAllListeners();
+  }, [newUser, client, currentUser, dispatch]);
 
   return (
     <div className="container">

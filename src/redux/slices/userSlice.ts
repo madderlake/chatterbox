@@ -1,9 +1,10 @@
 import {createSlice} from '@reduxjs/toolkit';
 
 export type User = {
-  username: String;
-  room: String;
+  username: string;
+  room: string;
   id: string;
+  sid: string | '';
 };
 
 interface UserState {
@@ -16,6 +17,7 @@ const initialState: UserState = {
     username: '',
     room: '',
     id: '',
+    sid: '',
   },
   userList: [],
 };
@@ -35,6 +37,7 @@ const userSlice = createSlice({
         username: '',
         room: '',
         id: '',
+        sid: '',
       };
       state.userList = state.userList.filter(
         (user) => user.id !== action.payload

@@ -7,6 +7,12 @@ export const addUser = (user: User) => {
   users.push(user);
 };
 
+export const updateUserSid = (id: string, sid: string) => {
+  const user = users.find((user) => user.id === id);
+  if (user !== undefined) user.sid = sid;
+  return user;
+};
+
 export const switchUserRoom = (id: string, newRoom: string) => {
   return users
     .filter((user) => user.id === id)

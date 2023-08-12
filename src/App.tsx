@@ -1,7 +1,7 @@
 import React from 'react';
 import Routes from './components/Router';
 
-import {SocketContext, socket} from './contexts/SocketContext';
+import {ClientContext, client} from './contexts/ClientContext';
 import {Provider} from 'react-redux';
 import {PersistGate} from 'redux-persist/lib/integration/react';
 import {persistStore} from 'redux-persist';
@@ -13,13 +13,13 @@ const persistor = persistStore(store);
 const App = () => {
   return (
     <div className="App">
-      <SocketContext.Provider value={socket}>
+      <ClientContext.Provider value={client}>
         <Provider store={store}>
           <PersistGate loading={null} persistor={persistor}>
             <Routes />
           </PersistGate>
         </Provider>
-      </SocketContext.Provider>
+      </ClientContext.Provider>
     </div>
   );
 };

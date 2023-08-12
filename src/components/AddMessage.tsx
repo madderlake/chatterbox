@@ -1,19 +1,19 @@
 import React, {useContext, useState, useRef, useEffect} from 'react';
-import {SocketContext} from '../contexts/SocketContext';
+import {ClientContext} from '../contexts/ClientContext';
 import {Author, Message} from '../redux/slices/messageSlice';
 
 interface AddMessageProps {
   author: Author;
 }
 const AddMessage = ({author}: AddMessageProps): JSX.Element => {
-  const socket = useContext(SocketContext);
+  const client = useContext(ClientContext);
   const [message, setMessage] = useState<Omit<Message, 'time'> | null>(null);
 
   const handleSubmit = (ev: React.SyntheticEvent) => {
     ev.preventDefault();
     message !== null &&
       message.text &&
-      socket.emit('chatMessage', {
+      client.emit('chatMessage', {
         author: author,
         text: message.text,
         room: author.room,
