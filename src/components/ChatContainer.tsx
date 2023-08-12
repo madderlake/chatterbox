@@ -21,8 +21,9 @@ export const ChatContainer = ({...props}) => {
   const client = useContext(ClientContext);
   const dispatch = useAppDispatch();
   const params = useParams<RouteParams>();
-  const [currentUser, setCurrentUser] = useState({
+  const [currentUser, setCurrentUser] = useState<User>({
     ...params,
+    sid: '',
   });
 
   /* TODO - change these const names */
