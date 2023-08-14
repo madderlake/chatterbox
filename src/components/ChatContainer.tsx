@@ -1,4 +1,4 @@
-import React, {useContext, useState, useEffect} from 'react';
+import React, {useContext, useState, useRef, useEffect} from 'react';
 import {useAppDispatch, useAppSelector} from '../redux/hooks';
 import UserList from './UserList';
 import MessageList from './MessageList';
@@ -69,6 +69,9 @@ export const ChatContainer = ({...props}) => {
     client.on('roomMessages', (messages: Message[]) =>
       dispatch(getMessages(messages))
     );
+    client.on('showTyping', (data: object) => {
+      //console.log(data);
+    });
     // CLEAN UP
     return () => client.removeAllListeners();
   }, [newUser, client, currentUser, dispatch]);
@@ -116,6 +119,11 @@ export const ChatContainer = ({...props}) => {
       <div className="add-message row">
         <AddMessage author={cUser as Author} />
       </div>
+      {/* <div className="typing">
+        <p>
+          ...<span id="#typing" ref={notesRef}></span>
+        </p>
+      </div> */}
     </div>
   );
 };

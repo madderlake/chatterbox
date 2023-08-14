@@ -1,7 +1,12 @@
 const users = [];
-
+const typingUsers = [];
 // Join user to chat
 function addUser({id, username, room}) {
+  const user = {id, username, room};
+  users.push(user);
+  return user;
+}
+function addTypingUser(name: string) {
   const user = {id, username, room};
   users.push(user);
   return user;

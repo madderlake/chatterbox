@@ -4,16 +4,20 @@ import type {Message} from '../redux/slices/messageSlice';
 import {captureMessage, getRoomMessages, sendChatBotMsg} from './messages';
 import {
   addUser,
+  addTypingUser,
+  removeTypingUser,
   switchUserRoom,
   getAllUsers,
   updateUserSid,
   getUser,
   removeUser,
   getRoomUsers,
+  getTypingUsers,
 } from './users';
 
 const StartListeners = (server: any, socket: any): void => {
   console.log(`${socket.id} connected from listeners `);
+
   // TODO; make const for allUsers
   socket.on('joinRoom', ({...user}, newUser: null | boolean) => {
     const {id, username, room} = user;
@@ -41,6 +45,18 @@ const StartListeners = (server: any, socket: any): void => {
   });
   console.log(getAllUsers());
 
+  socket.on('typing', (data: string) => {
+    //
+    addTypingUser(data);
+    console.log(getTypingUsers());
+    server.emit('showTyping', getTypingUsers());
+  });
+
+  socket.on('clearTyping', (data: string) => {
+    removeTypingUser(data);
+    console.log('rm user', removeTypingUser(data));
+    server.emit('stopTyping', getTypingUsers());
+  });
   // Runs when server leaves the chat application
   socket.on('userLeaving', ({id, username, room}: User) => {
     sendChatBotMsg(room as string, `😥 ${username} has left the room `);
