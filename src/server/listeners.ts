@@ -1,5 +1,5 @@
 import type {User} from '../redux/slices/userSlice';
-import type {Message} from '../redux/slices/messageSlice';
+import type {Message, Author} from '../redux/slices/messageSlice';
 import * as users from './users';
 import * as msgs from './messages';
 
@@ -10,8 +10,8 @@ const StartListeners = (server: any, socket: any): void => {
     const {id, username, room} = user;
     user.sid = socket.id;
     socket.join(room);
-    console.log(newUser);
-    console.log(users.getRoomUsers(user.room));
+    //console.log(newUser);
+    //console.log(users.getRoomUsers(user.room));
 
     // Welcome current user
     if (newUser !== false) {
@@ -33,27 +33,27 @@ const StartListeners = (server: any, socket: any): void => {
     msgs.captureMessage({author, text, room});
     server.to(room).emit('roomMessages', msgs.getRoomMessages(room));
   });
-  console.log(users.getAllUsers());
+  //console.log(users.getAllUsers());
 
-  socket.on('typing', (data: string) => {
-    users.addTypingUser(data);
-    console.log(users.getTypingUsers());
+  socket.on('typing', (data: Author) => {
+    users.addTypingUser(data.username);
+    //console.log(users.getTypingUsers());
     const typingArr = Array.from(users.getTypingUsers());
-    server.emit('showTyping', typingArr);
+    server.to(data.room).emit('showTyping', typingArr);
   });
 
-  socket.on('clearTyping', (data: string) => {
-    users.removeTypingUser(data);
+  socket.on('notTyping', (data: Author) => {
+    users.removeTypingUser(data.username);
     const typingArr = Array.from(users.getTypingUsers());
-    console.log('still typing', users.getTypingUsers());
-    server.emit('stillTyping', typingArr);
+    //console.log('still typing', users.getTypingUsers());
+    server.to(data.room).emit('stillTyping', typingArr);
   });
   // Runs when server leaves the chat application
   socket.on('userLeaving', ({id, username, room}: User) => {
     msgs.sendChatBotMsg(room as string, `😥 ${username} has left the room `);
     socket.leave(room as string);
     users.removeUser(id);
-    console.log('all users', users.getAllUsers());
+    //console.log('all users', users.getAllUsers());
   });
 
   socket.on(

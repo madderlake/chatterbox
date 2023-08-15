@@ -57,8 +57,8 @@ const AddMessage = ({author}: AddMessageProps): JSX.Element => {
     //if (notesRef.current === null || inputRef.current === null) return;
     inputRef.current && inputRef.current.focus();
     const emitString =
-      typing === true ? 'typing' : typing === false ? 'clearTyping' : null;
-    emitString !== null && client.emit(emitString, author.username);
+      typing === true ? 'typing' : typing === false ? 'notTyping' : null;
+    emitString !== null && client.emit(emitString, {author});
 
     client.on('showTyping', (data: any) => {
       const typingText = formatTypingText(data);
