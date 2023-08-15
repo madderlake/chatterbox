@@ -1,16 +1,15 @@
 import type {User} from '../redux/slices/userSlice';
 
 const users: User[] = [];
-const typingUsers: string[] = [];
+const typingUsers = new Set();
 // Join user to chat
 export const addUser = (user: User) => {
   users.push(user);
 };
 
-export const addTypingUser = (name: string) => typingUsers.push(name);
+export const addTypingUser = (name: string) => typingUsers.add(name);
 export const removeTypingUser = (name: string) => {
-  typingUsers.map((_) => typingUsers.splice(typingUsers.indexOf(name), 1));
-  return getTypingUsers();
+  typingUsers.delete(name);
 };
 export const getTypingUsers = () => {
   return typingUsers;

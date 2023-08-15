@@ -20,6 +20,7 @@ const AddMessage = ({author}: AddMessageProps): JSX.Element => {
 
   const handleSubmit = (ev: React.SyntheticEvent) => {
     ev.preventDefault();
+    setTyping(false);
     message !== null &&
       message.text &&
       client.emit('chatMessage', {
@@ -30,64 +31,53 @@ const AddMessage = ({author}: AddMessageProps): JSX.Element => {
     setMessage(null);
   };
   const inputRef = useRef<HTMLInputElement>(null);
-  //console.log('typing', typing);
   const handleTyping = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key !== 'Enter' && e.key !== 'Tab') {
-      //console.log('key', e.key);
       setTyping(true);
     } else {
       setTyping(false);
     }
   };
 
-  // const handleStopTyping = (e: FocusEvent<HTMLInputElement>) => {
-  //   setTyping(false);
-  // };
-  let typingText = '';
   const formatTypingText = (arr: string[]) => {
     const lastItem = arr[arr.length - 1];
-    arr.map((user) => {
+    let typingString = '';
+    const delimiter = arr.length > 2 ? ', ' : ' and ';
+    arr.map((name) => {
       if (arr.length === 1) {
-        typingText = `${user} is typing...`;
+        typingString = `${name} is typing...`;
+        return;
       } else {
-        const delimiter = arr.length > 2 ? ', ' : ' and ';
         // console.log(lastItem);
         const begUsersArray = arr.filter((item) => item !== lastItem);
         const arrayString = begUsersArray.join(delimiter);
-        typingText = `${arrayString} and ${lastItem} are typing...`;
+        typingString = `${arrayString} and ${lastItem} are typing...`;
       }
     });
-    return typingText;
+    return typingString;
   };
   useEffect(() => {
     //if (notesRef.current === null || inputRef.current === null) return;
     inputRef.current && inputRef.current.focus();
-    if (typing === true) {
-      client.emit('typing', author.username);
-    } else if (typing === false) {
-      client.emit('clearTyping', author.username);
-    } else {
-      return;
-    }
+    let typingText = '';
+    const emitString =
+      typing === true ? 'typing' : typing === false ? 'clearTyping' : null;
+    emitString !== null && client.emit(emitString, author.username);
 
     client.on('showTyping', (data: any) => {
-      console.log('type data', data);
-      // const typingUsers: string[] = Array.from(new Set(data));
       typingText = formatTypingText(data);
       if (notesRef.current !== null) {
         notesRef.current.textContent = typingText;
       }
     });
-    client.on('stopTyping', (data: any) => {
-      // if (notesRef.current === null) return;
-      console.log('stopping', data);
+    client.on('stillTyping', (data: any) => {
       typingText = data.length > 0 ? formatTypingText(data) : '';
 
       if (notesRef.current !== null) {
         notesRef.current.textContent = typingText;
       }
     });
-  }, [typing, typingText, author.username]);
+  }, [client, typing, author.username]);
   return (
     <>
       <form onSubmit={handleSubmit}>
@@ -104,7 +94,6 @@ const AddMessage = ({author}: AddMessageProps): JSX.Element => {
             })
           }
           onKeyDown={handleTyping}
-          //onBlur={handleStopTyping}
         />
         <input type="submit" className="btn btn-primary" value="Send" />
       </form>

@@ -49,13 +49,15 @@ const StartListeners = (server: any, socket: any): void => {
     //
     addTypingUser(data);
     console.log(getTypingUsers());
-    server.emit('showTyping', getTypingUsers());
+    const typingArr = Array.from(getTypingUsers());
+    server.emit('showTyping', typingArr);
   });
 
   socket.on('clearTyping', (data: string) => {
     removeTypingUser(data);
-    console.log('rm user', removeTypingUser(data));
-    server.emit('stopTyping', getTypingUsers());
+    const typingArr = Array.from(getTypingUsers());
+    console.log('still typing', getTypingUsers());
+    server.emit('stillTyping', typingArr);
   });
   // Runs when server leaves the chat application
   socket.on('userLeaving', ({id, username, room}: User) => {
