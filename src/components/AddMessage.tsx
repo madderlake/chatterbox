@@ -39,40 +39,36 @@ const AddMessage = ({author}: AddMessageProps): JSX.Element => {
     }
   };
 
-  const formatTypingText = (arr: string[]) => {
+  const formatTypingText = (arr: string[]): string => {
+    if (arr.length < 1) return '';
     const lastItem = arr[arr.length - 1];
-    let typingString = '';
+    let typingString: string;
     const delimiter = arr.length > 2 ? ', ' : ' and ';
-    arr.map((name) => {
-      if (arr.length === 1) {
-        typingString = `${name} is typing...`;
-        return;
-      } else {
-        // console.log(lastItem);
-        const begUsersArray = arr.filter((item) => item !== lastItem);
-        const arrayString = begUsersArray.join(delimiter);
-        typingString = `${arrayString} and ${lastItem} are typing...`;
-      }
-    });
+    if (arr.length === 1) {
+      typingString = `${[...arr]} is typing...`;
+    } else {
+      const begUsersArray = arr.filter((item) => item !== lastItem);
+      const arrayString = begUsersArray.join(delimiter);
+      typingString = `${arrayString} and ${lastItem} are typing...`;
+    }
     return typingString;
   };
   useEffect(() => {
     //if (notesRef.current === null || inputRef.current === null) return;
     inputRef.current && inputRef.current.focus();
-    let typingText = '';
     const emitString =
       typing === true ? 'typing' : typing === false ? 'clearTyping' : null;
     emitString !== null && client.emit(emitString, author.username);
 
     client.on('showTyping', (data: any) => {
-      typingText = formatTypingText(data);
+      const typingText = formatTypingText(data);
       if (notesRef.current !== null) {
         notesRef.current.textContent = typingText;
       }
     });
-    client.on('stillTyping', (data: any) => {
-      typingText = data.length > 0 ? formatTypingText(data) : '';
 
+    client.on('stillTyping', (data: string[]) => {
+      const typingText = data.length > 0 ? formatTypingText(data) : '';
       if (notesRef.current !== null) {
         notesRef.current.textContent = typingText;
       }
