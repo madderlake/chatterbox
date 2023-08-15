@@ -1,89 +1,79 @@
 import type {User} from '../redux/slices/userSlice';
 import type {Message} from '../redux/slices/messageSlice';
-
-import {captureMessage, getRoomMessages, sendChatBotMsg} from './messages';
-import {
-  addUser,
-  addTypingUser,
-  removeTypingUser,
-  switchUserRoom,
-  getAllUsers,
-  updateUserSid,
-  getUser,
-  removeUser,
-  getRoomUsers,
-  getTypingUsers,
-} from './users';
+import * as users from './users';
+import * as msgs from './messages';
 
 const StartListeners = (server: any, socket: any): void => {
   console.log(`${socket.id} connected from listeners `);
-
   // TODO; make const for allUsers
   socket.on('joinRoom', ({...user}, newUser: null | boolean) => {
     const {id, username, room} = user;
     user.sid = socket.id;
     socket.join(room);
     console.log(newUser);
-    console.log(getRoomUsers(user.room));
+    console.log(users.getRoomUsers(user.room));
 
     // Welcome current user
     if (newUser !== false) {
-      sendChatBotMsg(room, `🤗 Welcome to the ${room} room, ${username}! `);
-      getUser(id) === undefined &&
-        addUser({id, username, room, sid: socket.id});
+      msgs.sendChatBotMsg(
+        room,
+        `🤗 Welcome to the ${room} room, ${username}! `
+      );
+      users.getUser(id) === undefined &&
+        users.addUser({id, username, room, sid: socket.id});
     } else {
-      updateUserSid(id, socket.id);
+      users.updateUserSid(id, socket.id);
     }
     // Send users and messages back to room
-    server.to(room).emit('roomUsers', getRoomUsers(room));
-    server.to(room).emit('roomMessages', getRoomMessages(room));
+    server.to(room).emit('roomUsers', users.getRoomUsers(room));
+    server.to(room).emit('roomMessages', msgs.getRoomMessages(room));
   });
 
   socket.on('chatMessage', ({author, text, room}: Message) => {
-    captureMessage({author, text, room});
-    server.to(room).emit('roomMessages', getRoomMessages(room));
+    msgs.captureMessage({author, text, room});
+    server.to(room).emit('roomMessages', msgs.getRoomMessages(room));
   });
-  console.log(getAllUsers());
+  console.log(users.getAllUsers());
 
   socket.on('typing', (data: string) => {
-    //
-    addTypingUser(data);
-    console.log(getTypingUsers());
-    const typingArr = Array.from(getTypingUsers());
+    users.addTypingUser(data);
+    console.log(users.getTypingUsers());
+    const typingArr = Array.from(users.getTypingUsers());
     server.emit('showTyping', typingArr);
   });
 
   socket.on('clearTyping', (data: string) => {
-    removeTypingUser(data);
-    const typingArr = Array.from(getTypingUsers());
-    console.log('still typing', getTypingUsers());
+    users.removeTypingUser(data);
+    const typingArr = Array.from(users.getTypingUsers());
+    console.log('still typing', users.getTypingUsers());
     server.emit('stillTyping', typingArr);
   });
   // Runs when server leaves the chat application
   socket.on('userLeaving', ({id, username, room}: User) => {
-    sendChatBotMsg(room as string, `😥 ${username} has left the room `);
+    msgs.sendChatBotMsg(room as string, `😥 ${username} has left the room `);
     socket.leave(room as string);
-    removeUser(id);
-    console.log('all users', getAllUsers());
+    users.removeUser(id);
+    console.log('all users', users.getAllUsers());
   });
 
   socket.on(
     'userSwitching',
     (id: string, username: string, room: string, newRoom: string) => {
-      sendChatBotMsg(room, `😥 ${username} has switched rooms `);
-      switchUserRoom(id, newRoom);
+      msgs.sendChatBotMsg(room, `😥 ${username} has switched rooms `);
+      users.switchUserRoom(id, newRoom);
       socket.leave(room);
     }
   );
   socket.on('disconnect', () => {
     console.log(`${socket.id} has disconnected`);
-    const user = getAllUsers().find((user) => user.sid === socket.id);
+    const user = users.getAllUsers().find((user) => user.sid === socket.id);
     if (user !== undefined) {
       const {id, username, room} = user;
-      removeUser(id);
-      server.to(room).emit('roomUsers', getAllUsers());
-      sendChatBotMsg(room, `😥 ${username} has logged off `);
-      server.to(room).emit('roomMessages', getRoomMessages(room));
+      users.removeUser(id);
+      users.removeTypingUser(username);
+      server.to(room).emit('roomUsers', users.getAllUsers());
+      msgs.sendChatBotMsg(room, `😥 ${username} has logged off `);
+      server.to(room).emit('roomMessages', msgs.getRoomMessages(room));
     }
   });
 };
