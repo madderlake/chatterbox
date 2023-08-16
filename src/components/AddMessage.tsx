@@ -54,26 +54,21 @@ const AddMessage = ({author}: AddMessageProps): JSX.Element => {
     return typingString;
   };
   useEffect(() => {
-    //if (notesRef.current === null || inputRef.current === null) return;
     inputRef.current && inputRef.current.focus();
     const emitString =
       typing === true ? 'typing' : typing === false ? 'notTyping' : null;
-    emitString !== null && client.emit(emitString, {author});
+    emitString !== null && client.emit(emitString, {...author});
 
-    client.on('showTyping', (data: any) => {
-      const typingText = formatTypingText(data);
-      if (notesRef.current !== null) {
-        notesRef.current.textContent = typingText;
-      }
-    });
+    const onString =
+      typing === true ? 'showTyping' : typing === false ? 'stillTyping' : null;
 
-    client.on('stillTyping', (data: string[]) => {
+    client.on(onString, (data: string[]) => {
       const typingText = data.length > 0 ? formatTypingText(data) : '';
       if (notesRef.current !== null) {
         notesRef.current.textContent = typingText;
       }
     });
-  }, [client, typing, author.username]);
+  }, [client, typing, author]);
   return (
     <>
       <form onSubmit={handleSubmit}>

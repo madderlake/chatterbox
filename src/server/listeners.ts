@@ -10,8 +10,6 @@ const StartListeners = (server: any, socket: any): void => {
     const {id, username, room} = user;
     user.sid = socket.id;
     socket.join(room);
-    //console.log(newUser);
-    //console.log(users.getRoomUsers(user.room));
 
     // Welcome current user
     if (newUser !== false) {
@@ -37,7 +35,6 @@ const StartListeners = (server: any, socket: any): void => {
 
   socket.on('typing', (data: Author) => {
     users.addTypingUser(data.username);
-    //console.log(users.getTypingUsers());
     const typingArr = Array.from(users.getTypingUsers());
     server.to(data.room).emit('showTyping', typingArr);
   });
@@ -45,7 +42,6 @@ const StartListeners = (server: any, socket: any): void => {
   socket.on('notTyping', (data: Author) => {
     users.removeTypingUser(data.username);
     const typingArr = Array.from(users.getTypingUsers());
-    //console.log('still typing', users.getTypingUsers());
     server.to(data.room).emit('stillTyping', typingArr);
   });
   // Runs when server leaves the chat application
