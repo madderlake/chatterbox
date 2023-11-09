@@ -29,13 +29,14 @@
     "build:css": "postcss src/styles/main.css -o src/index.css",
     "watch:css": "postcss src/styles/main.css -o src/index.css -w",
     "start": "npm-run-all -p watch:css start-js server",
-    "watch-node": "nodemon --watch src/server/listeners.ts server.ts  ",
+    "watch-node": "nodemon --watch src/server/listeners.ts server",
     "server": "ts-node server.ts",
     "start-js": "react-scripts start",
     "build-js": "BUILD_PATH='./dist' react-scripts build",
     "build": "npm-run-all build:css build-js server",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "serve": "serve -s dist"
   },
   "eslintConfig": {
     "extends": "react-app"
