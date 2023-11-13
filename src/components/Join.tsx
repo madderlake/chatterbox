@@ -1,9 +1,9 @@
-import React, {useState, useContext, useEffect} from 'react';
-import {v4 as uuidv4} from 'uuid';
-import {ClientContext} from '../contexts/ClientContext';
-import {rooms} from './room-list';
+import React, { useState, useContext, useEffect } from 'react';
+import { v4 as uuidv4 } from 'uuid';
+import { ClientContext } from '../contexts/ClientContext';
+import { rooms } from './room-list';
 
-export const Join = ({...props}) => {
+export const Join = ({ ...props }) => {
   const client = useContext(ClientContext);
 
   const [state, setState] = useState({
@@ -16,7 +16,7 @@ export const Join = ({...props}) => {
   const handleSubmit = (ev: React.SyntheticEvent) => {
     ev.preventDefault();
     client.connect();
-    state.username !== '' && client.emit('joinRoom', {...state}, null);
+    state.username !== '' && client.emit('joinRoom', { ...state }, null);
     props.history.push({
       pathname: `/${state.room}/${state.username}/${state.id}`,
       from: 'join',
@@ -38,7 +38,9 @@ export const Join = ({...props}) => {
               name="username"
               className="w-100"
               placeholder="Type your Name to Join Chat"
-              onChange={(ev) => setState({...state, username: ev.target.value})}
+              onChange={(ev) =>
+                setState({ ...state, username: ev.target.value })
+              }
             />
           </div>
           <div className="col-12 my-3">
@@ -61,7 +63,7 @@ export const Join = ({...props}) => {
                 })
               }>
               <option value="">Select a Room</option>
-              {rooms.map(({key, name}, i) => (
+              {rooms.map(({ key, name }, i) => (
                 <option value={key} key={i}>
                   {name}
                 </option>

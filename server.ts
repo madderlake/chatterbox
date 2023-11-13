@@ -1,10 +1,12 @@
 import * as express from 'express';
+// server/index.js
+const path = require('path');
 import * as http from 'http';
 import * as cors from 'cors';
-import {Server} from 'socket.io';
+import { Server } from 'socket.io';
 
-import type {User} from './src/redux/slices/userSlice';
-import type {Message} from './src/redux/slices/messageSlice';
+import type { User } from './src/redux/slices/userSlice';
+import type { Message } from './src/redux/slices/messageSlice';
 import StartListeners from './src/server/listeners';
 
 const app = express();
@@ -31,6 +33,10 @@ interface InterServerEvents {
 
 app.use(cors());
 
+app.use(express.static(path.resolve(__dirname, '/dist')));
+app.get('/dist', (req, res) => {
+  res.sendFile(path.resolve(__dirname, '/dist', 'index.html'));
+});
 export const io = new Server<
   ClientToServerEvents,
   ServerToClientEvents,
