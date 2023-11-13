@@ -34,7 +34,7 @@ interface InterServerEvents {
 app.use(cors());
 
 app.use(express.static(path.resolve(__dirname, '/dist')));
-app.get('/dist', (req, res) => {
+app.get('/', (req, res) => {
   res.sendFile(path.resolve(__dirname, '/dist', 'index.html'));
 });
 export const io = new Server<
