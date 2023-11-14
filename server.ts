@@ -43,7 +43,7 @@ app.use(express.static(path.resolve(__dirname, './dist')));
 
 // All other GET requests not handled before will return our React app
 app.get('/', (req, res) => {
-  res.sendFile(path.resolve(__dirname, './dist', 'index.html'));
+  res.sendFile(path.resolve(__dirname, 'dist', 'index.html'));
 });
 
 export const io = new Server<
