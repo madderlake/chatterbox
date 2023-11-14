@@ -1,8 +1,8 @@
 import * as express from 'express';
-// server/index.js
-const path = require('path');
 import * as http from 'http';
 import * as cors from 'cors';
+import * as path from 'path';
+
 import { Server } from 'socket.io';
 
 import type { User } from './src/redux/slices/userSlice';
@@ -32,6 +32,19 @@ interface InterServerEvents {
 }
 
 app.use(cors());
+
+// Have Node serve the files for our built React app
+app.use(express.static(path.resolve(__dirname, './dist')));
+
+// Handle GET requests to /api route
+app.get('/', (req, res) => {
+  res.json({ message: 'Hello from server!' });
+});
+
+// All other GET requests not handled before will return our React app
+app.get('*', (req, res) => {
+  res.sendFile(path.resolve(__dirname, './dist', 'index.html'));
+});
 
 export const io = new Server<
   ClientToServerEvents,
