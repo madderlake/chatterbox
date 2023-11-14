@@ -37,9 +37,9 @@ app.use(cors());
 app.use(express.static(path.resolve(__dirname, './dist')));
 
 // Handle GET requests to /api route
-// app.get('/', (req, res) => {
-//   res.json({ message: 'Hello from server!' });
-// });
+app.get('/', (req, res) => {
+  res.json({ message: 'Hello from server!' });
+});
 
 // All other GET requests not handled before will return our React app
 app.get('/', (req, res) => {
