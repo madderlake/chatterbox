@@ -1,17 +1,26 @@
 import * as express from 'express';
 import * as http from 'http';
+import * as https from 'https';
 import * as cors from 'cors';
 import * as path from 'path';
+import * as fs from 'fs';
 
 import { Server } from 'socket.io';
+// const privateKey = fs.readFileSync('certs/private-key.pem').toString();
+// const certificate = fs.readFileSync('certs/csr.pem').toString();
 
+// const credentials = { key: privateKey, cert: certificate };
+
+//Types
 import type { User } from './src/redux/slices/userSlice';
 import type { Message } from './src/redux/slices/messageSlice';
 import StartListeners from './src/server/listeners';
 
 const app = express();
 const httpServer = http.createServer(app);
-const PORT = 8083;
+// const httpsServer = https.createServer(credentials, app);
+export const PORT = 8083;
+// const HTTPSPORT = 8083;
 
 type Data = User | Message;
 type BasicEmit = (data: Data | Data[]) => void;
@@ -31,8 +40,17 @@ interface InterServerEvents {
   ping: () => void;
 }
 
-app.use(cors());
+app.use(
+  cors({
+    origin: `*`,
+    methods: ['GET', 'POST'],
+  })
+);
 
+const corsOptions = {
+  origin: `*`,
+  methods: ['GET', 'POST'],
+};
 // Have Node serve the files for our built React app
 app.use(express.static(path.resolve(__dirname, './dist')));
 
@@ -42,9 +60,17 @@ app.get('/', (req, res) => {
 });
 
 // All other GET requests not handled before will return our React app
-app.get('/', (req, res) => {
-  res.sendFile(path.resolve(__dirname, '/dist', 'index.html'));
-});
+// app.get('/', (req, res) => {
+//   res.sendFile(path.resolve(__dirname, '/dist', 'index.html'));
+// });
+
+// app.use(function (req, res, next) {
+//   const getUrl = function () {
+//     return req.protocol + '://' + req.get('host') + req.originalUrl;
+//   };
+//   console.log(getUrl());
+//   return next();
+// });
 
 export const io = new Server<
   ClientToServerEvents,
@@ -52,16 +78,17 @@ export const io = new Server<
   InterServerEvents
 >(httpServer, {
   /* options */
-  cors: {
-    origin: `*`,
-    methods: ['GET', 'POST'],
-  },
+  cors: corsOptions,
   transports: ['websocket', 'polling'],
 });
 
 httpServer.listen(PORT, function () {
   console.log(`listening on port ${PORT}`);
 });
+
+// httpsServer.listen(HTTPSPORT, function () {
+//   console.log(`listening on port ${HTTPSPORT}`);
+// });
 
 io.on('connect', (socket: any) => {
   StartListeners(io, socket);
