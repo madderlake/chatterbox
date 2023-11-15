@@ -1,8 +1,9 @@
-import {createContext} from 'react';
+import { createContext } from 'react';
 import io from 'socket.io-client';
 //import { SOCKET_URL } from 'config';
+import { PORT } from '../../server';
 
-const socketUrl = 'http://localhost:8083';
+const socketUrl = `http://localhost: ${PORT}`;
 
 export const socket = io(socketUrl, {
   autoConnect: true,
