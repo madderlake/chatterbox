@@ -11,7 +11,6 @@ import { useParams } from 'react-router-dom';
 import { rooms } from './room-list';
 import type { Author, Message } from '../redux/slices/messageSlice';
 import type { User } from '../redux/slices/userSlice';
-import { useViewport } from '../hooks/useViewport';
 
 interface RouteParams {
   room: string;
@@ -27,7 +26,6 @@ export const ChatContainer = ({ ...props }) => {
     sid: '',
   });
 
-  const viewportWidth = useViewport();
   /* TODO - change these const names */
   const cUser = useAppSelector((state) => state.user.currentUser);
   const uList = useAppSelector((state) => state.user.userList);
@@ -114,7 +112,7 @@ export const ChatContainer = ({ ...props }) => {
         <div className="sidebar col-lg-3 col-xs-1">
           <UserList userList={uList} currentUser={cUser} />
         </div>
-        <div className="messages overflow-auto">
+        <div className="messages w-100 overflow-auto">
           <MessageList messageList={mList} />
         </div>
       </div>
