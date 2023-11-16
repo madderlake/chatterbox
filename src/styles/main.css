@@ -44,7 +44,7 @@ body {
 form {
   display: flex;
   flex-basis: 100%;
-  padding: 1rem;
+  padding-top: 1rem;
 
   input[type='text'] {
     padding: 1rem;
