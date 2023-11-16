@@ -16,7 +16,6 @@ const app = express();
 const httpServer = http.createServer(app);
 export const PORT = 8083;
 
-
 type Data = User | Message;
 type BasicEmit = (data: Data | Data[]) => void;
 
