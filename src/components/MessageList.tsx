@@ -1,12 +1,12 @@
-import React, {useEffect, useRef} from 'react';
+import React, { useEffect, useRef } from 'react';
 import MessageComponent from './Message';
 
-import type {Message} from '../redux/slices/messageSlice';
+import type { Message } from '../redux/slices/messageSlice';
 
 interface MessageListProps {
   messageList: Message[];
 }
-const MessageList = ({messageList}: MessageListProps): JSX.Element => {
+const MessageList = ({ messageList }: MessageListProps): JSX.Element => {
   const msgsEndRef = useRef<HTMLDivElement>(null);
   const scrollToBottom = () => {
     return (
