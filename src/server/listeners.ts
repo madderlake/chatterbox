@@ -2,6 +2,7 @@ import type { User } from '../redux/slices/userSlice';
 import type { Message, Author } from '../redux/slices/messageSlice';
 import * as users from './users';
 import * as msgs from './messages';
+import { titleCase } from '../utils/helpers';
 
 const StartListeners = (server: any, socket: any): void => {
   console.log(`${socket.id} connected from listeners `);
@@ -15,7 +16,7 @@ const StartListeners = (server: any, socket: any): void => {
     if (newUser !== false) {
       msgs.sendChatBotMsg(
         room,
-        `🤗 Welcome to the ${room} room, ${username}! `
+        `🤗 Welcome to the ${titleCase(room)} room, ${username}! `
       );
       users.getUser(id) === undefined &&
         users.addUser({ id, username, room, sid: socket.id });

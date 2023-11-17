@@ -55,7 +55,7 @@ app.get('/', (req, res) => {
 
 // All other GET requests not handled before will return our React app
 app.get('/*', (req, res) => {
-  console.log(req);
+  console.log(req.path);
   res.sendFile(path.resolve(__dirname, './dist', 'index.html'));
 });
 
