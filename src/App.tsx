@@ -11,7 +11,6 @@ import './index.css';
 
 const persistor = persistStore(store);
 const App = () => {
-console.log(process.env);
   return (
     <div className="App">
       <ClientContext.Provider value={client}>

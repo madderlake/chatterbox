@@ -13,9 +13,7 @@ export default function MessageComponent({
   return (
     <>
       <div
-        className={cn('message', {
-          'bot-message': username === 'Chatterbug',
-        })}>
+        className={cn('message', { 'bot-message': username === 'Chatterbug' })}>
         <span className="small font-italic">
           {username} at {time}
         </span>
