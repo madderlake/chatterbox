@@ -5,13 +5,13 @@ import React, {
   useEffect,
   KeyboardEvent,
 } from 'react';
-import {ClientContext} from '../contexts/ClientContext';
-import {Author, Message} from '../redux/slices/messageSlice';
+import { ClientContext } from '../contexts/ClientContext';
+import { Author, Message } from '../redux/slices/messageSlice';
 
 interface AddMessageProps {
   author: Author;
 }
-const AddMessage = ({author}: AddMessageProps): JSX.Element => {
+const AddMessage = ({ author }: AddMessageProps): JSX.Element => {
   const client = useContext(ClientContext);
   const [message, setMessage] = useState<Omit<Message, 'time'> | null>(null);
   const [typing, setTyping] = useState<boolean | null>(null);
@@ -57,7 +57,7 @@ const AddMessage = ({author}: AddMessageProps): JSX.Element => {
     inputRef.current && inputRef.current.focus();
     const emitString =
       typing === true ? 'typing' : typing === false ? 'notTyping' : null;
-    emitString !== null && client.emit(emitString, {...author});
+    emitString !== null && client.emit(emitString, { ...author });
 
     const onString =
       typing === true ? 'showTyping' : typing === false ? 'stillTyping' : null;
@@ -88,7 +88,7 @@ const AddMessage = ({author}: AddMessageProps): JSX.Element => {
         />
         <input type="submit" className="btn btn-primary" value="Send" />
       </form>
-      <div className="typing">
+      <div className="typing mt-2 small">
         <p id="#typing" ref={notesRef}></p>
       </div>
     </>
