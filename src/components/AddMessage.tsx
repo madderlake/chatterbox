@@ -68,20 +68,7 @@ const AddMessage = ({ author }: AddMessageProps): JSX.Element => {
         notesRef.current.textContent = typingText;
       }
     });
-<<<<<<< Updated upstream
   }, [client, typing, author]);
-=======
-    client.on('stillTyping', (data: any) => {
-      // if (notesRef.current === null) return;
-      console.log('stopping', data);
-      typingText = data.length > 0 ? formatTypingText(data) : '';
-
-      if (notesRef.current !== null) {
-        notesRef.current.textContent = typingText;
-      }
-    });
-  }, [typing, typingText, author.username]);
->>>>>>> Stashed changes
   return (
     <>
       <form onSubmit={handleSubmit}>
