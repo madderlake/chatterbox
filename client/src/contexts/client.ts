@@ -1,7 +1,7 @@
 import { createContext } from 'react';
 import io from 'socket.io-client';
 //import { SOCKET_URL } from 'config';
-import { PORT } from '../../server';
+import { PORT } from '../../../server/server';
 
 const socketUrl = `http://localhost: ${PORT}`;
 

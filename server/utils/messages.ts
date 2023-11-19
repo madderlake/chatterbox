@@ -1,4 +1,4 @@
-import type {Message} from '../redux/slices/messageSlice';
+import type { Message } from '../../client/src/redux/slices/messageSlice';
 
 const messages: Message[] = [];
 
@@ -14,7 +14,7 @@ const setTime = (): string => {
 };
 
 // Add message to chat
-export const captureMessage = ({...message}: Message): Message => {
+export const captureMessage = ({ ...message }: Message): Message => {
   message.time = setTime();
   messages.push(message);
   return message;
@@ -22,7 +22,7 @@ export const captureMessage = ({...message}: Message): Message => {
 
 // Send message from ChatBot
 export const sendChatBotMsg = (room: string, text: string) => {
-  const chatBot = {username: 'Chatterbug', id: '0', room: ''};
+  const chatBot = { username: 'Chatterbug', id: '0', room: '' };
   return captureMessage({
     author: chatBot,
     text,

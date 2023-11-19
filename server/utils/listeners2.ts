@@ -1,8 +1,11 @@
-import type { User } from '../redux/slices/userSlice';
-import type { Message, Author } from '../redux/slices/messageSlice';
+import type { User } from '../../client/src/redux/slices/userSlice';
+import type {
+  Message,
+  Author,
+} from '../../client/src/redux/slices/messageSlice';
 import * as users from './users';
 import * as msgs from './messages';
-import { titleCase } from '../utils/helpers';
+import { titleCase } from '../../client/src/utils/helpers';
 
 type newUser = null | boolean;
 
