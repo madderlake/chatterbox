@@ -6,7 +6,7 @@ import AddMessage from './AddMessage';
 import { ClientContext } from '../contexts/ClientContext';
 import { titleCase } from '../utils/helpers';
 import { join, leave, switchRoom, addUsers } from '../redux/slices/userSlice';
-import { getMessages } from '../redux/slices/messageSlice';
+import { addMessages } from '../redux/slices/messageSlice';
 import { useParams } from 'react-router-dom';
 import { rooms } from './room-list';
 import type { Author, Message } from '../redux/slices/messageSlice';
@@ -67,7 +67,7 @@ export const ChatContainer = ({ ...props }) => {
 
     client.on('roomUsers', (users: User[]) => dispatch(addUsers(users)));
     client.on('roomMessages', (messages: Message[]) =>
-      dispatch(getMessages(messages))
+      dispatch(addMessages(messages))
     );
     // CLEAN UP
     return () => client.removeAllListeners();

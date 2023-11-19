@@ -1,16 +1,14 @@
 import * as express from 'express';
 import * as http from 'http';
-import * as https from 'https';
 import * as cors from 'cors';
 import * as path from 'path';
-import * as fs from 'fs';
 
 import { Server } from 'socket.io';
 
 //Types
 import type { User } from './src/redux/slices/userSlice';
 import type { Message } from './src/redux/slices/messageSlice';
-import StartListeners from './src/server/listeners';
+import StartListeners from './src/server/listeners2';
 
 const app = express();
 const httpServer = http.createServer(app);
@@ -74,5 +72,6 @@ httpServer.listen(PORT, function () {
 });
 
 io.on('connect', (socket: any) => {
+  console.log(io);
   StartListeners(io, socket);
 });
