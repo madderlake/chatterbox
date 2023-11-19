@@ -2,6 +2,7 @@ import type { User } from '../redux/slices/userSlice';
 import type { Message, Author } from '../redux/slices/messageSlice';
 import * as users from './users';
 import * as msgs from './messages';
+import { titleCase } from '../utils/helpers';
 
 const StartListeners = (server: any, socket: any): void => {
   console.log(`${socket.id} connected from listeners `);
@@ -15,7 +16,7 @@ const StartListeners = (server: any, socket: any): void => {
     if (newUser !== false) {
       msgs.sendChatBotMsg(
         room,
-        `🤗 Welcome to the ${room} room, ${username}! `
+        `🤗 Welcome to the ${titleCase(room)} room, ${username}! `
       );
       users.getUser(id) === undefined &&
         users.addUser({ id, username, room, sid: socket.id });
@@ -39,17 +40,18 @@ const StartListeners = (server: any, socket: any): void => {
     server.to(data.room).emit('showTyping', typingArr);
   });
 
-  socket.on('notTyping', (data: Author) => {
+  socket.on('endTyping', (data: Author) => {
     users.removeTypingUser(data.username);
     const typingArr = Array.from(users.getTypingUsers());
     server.to(data.room).emit('stillTyping', typingArr);
   });
+
   // Runs when server leaves the chat application
   socket.on('userLeaving', ({ id, username, room }: User) => {
     msgs.sendChatBotMsg(room, `😥 ${username} has left the room `);
+    users.removeTypingUser(username);
     socket.leave(room);
     users.removeUser(id);
-    //console.log('all users', users.getAllUsers());
   });
 
   socket.on(
@@ -68,7 +70,7 @@ const StartListeners = (server: any, socket: any): void => {
       users.removeUser(id);
       users.removeTypingUser(username);
       server.to(room).emit('roomUsers', users.getAllUsers());
-      msgs.sendChatBotMsg(room, `😥 ${username} has logged off `);
+      msgs.sendChatBotMsg(room, `😥 ${username} has logged off or refreshed `);
       server.to(room).emit('roomMessages', msgs.getRoomMessages(room));
     }
   });

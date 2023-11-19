@@ -1,8 +1,8 @@
-import {configureStore, combineReducers} from '@reduxjs/toolkit';
+import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import userReducer from './slices/userSlice';
 import messageReducer from './slices/messageSlice';
 import session from 'redux-persist/lib/storage/session';
-import {persistReducer} from 'redux-persist';
+import { persistReducer } from 'redux-persist';
 import thunk from 'redux-thunk';
 import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2';
 const persistConfig = {

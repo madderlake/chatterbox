@@ -56,7 +56,7 @@ const AddMessage = ({ author }: AddMessageProps): JSX.Element => {
   useEffect(() => {
     inputRef.current && inputRef.current.focus();
     const emitString =
-      typing === true ? 'typing' : typing === false ? 'notTyping' : null;
+      typing === true ? 'typing' : typing === false ? 'endTyping' : null;
     emitString !== null && client.emit(emitString, { ...author });
 
     const onString =
