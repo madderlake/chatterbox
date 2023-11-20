@@ -36,7 +36,7 @@ app.use(cors());
 
 const corsOptions = {
   origin: '*',
-  methods: ['GET'],
+  methods: ['GET', 'OPTIONS'],
 };
 // Have Node serve the files for our built React app
 app.use(express.static(path.resolve(__dirname, './dist')));
@@ -51,7 +51,6 @@ app.get('/*', (req, res) => {
   res.sendFile(path.resolve(__dirname, './dist', 'index.html'));
   res.writeHead(200, {
     'Content-Type': 'text',
-    'Content-Length': length,
     // NOTE: you should not use a wildcard CORS config in production.
     // configure this properly for your needs.
     'Access-Control-Allow-Origin': corsOptions.origin,
