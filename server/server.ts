@@ -8,7 +8,7 @@ import { Server } from 'socket.io';
 //Types
 import type { User } from '../client/src/redux/slices/userSlice';
 import type { Message } from '../client/src/redux/slices/messageSlice';
-import StartListeners from './utils/listeners2';
+import StartListeners from './utils/listeners';
 
 const app = express();
 const httpServer = http.createServer(app);
