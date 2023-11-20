@@ -1,9 +1,6 @@
-import { createContext } from 'react';
 import io from 'socket.io-client';
-//import { SOCKET_URL } from 'config';
-import { PORT } from '../../../server/server';
 
-const socketUrl = `http://localhost: ${PORT}`;
+const socketUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8083';
 
 export const socket = io(socketUrl, {
   autoConnect: true,
@@ -11,4 +8,3 @@ export const socket = io(socketUrl, {
   reconnectionDelay: 500,
   reconnectionAttempts: 10,
 });
-export const ClientContext = createContext(null);
