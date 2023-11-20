@@ -12,7 +12,7 @@ import StartListeners from './utils/listeners';
 
 const app = express();
 const httpServer = http.createServer(app);
-export const PORT = 8083;
+const PORT = process.env.REACT_APP_SERVER_PORT;
 
 type Data = User | Message;
 type BasicEmit = (data: Data | Data[]) => void;
