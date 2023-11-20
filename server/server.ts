@@ -32,16 +32,11 @@ interface InterServerEvents {
   ping: () => void;
 }
 
-app.use(
-  cors({
-    origin: `*`,
-    methods: ['GET', 'POST'],
-  })
-);
+app.use(cors());
 
 const corsOptions = {
-  origin: `*`,
-  methods: ['GET', 'POST'],
+  origin: '*',
+  methods: ['GET'],
 };
 // Have Node serve the files for our built React app
 app.use(express.static(path.resolve(__dirname, './dist')));
@@ -53,8 +48,16 @@ app.get('/', (req, res) => {
 
 // All other GET requests not handled before will return our React app
 app.get('/*', (req, res) => {
-  console.log(req.path);
   res.sendFile(path.resolve(__dirname, './dist', 'index.html'));
+  res.writeHead(200, {
+    'Content-Type': 'text',
+    'Content-Length': length,
+    // NOTE: you should not use a wildcard CORS config in production.
+    // configure this properly for your needs.
+    'Access-Control-Allow-Origin': corsOptions.origin,
+    'Access-Control-Allow-Methods': corsOptions.methods,
+    'Access-Control-Max-Age': 2592000,
+  });
 });
 
 export const io = new Server<
