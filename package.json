@@ -27,7 +27,7 @@
     "uuid": "^8.3.2"
   },
   "scripts": {
-    "build:css": "postcss src/styles/main.css -o src/index.css",
+    "build:css": "postcss src/client/styles/main.css -o src/index.css",
     "watch:css": "postcss src/styles/main.css -o src/index.css -w",
     "watch-node": "nodemon --watch src/server/listeners2.ts server",
     "start": "react-scripts start",
