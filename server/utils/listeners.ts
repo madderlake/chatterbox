@@ -31,7 +31,8 @@ const StartListeners = (server: any, socket: any): void => {
     server.to(room).emit('roomMessages', msgs.getRoomMessages(room));
   });
 
-  socket.on('chatMessage', ({ author, text, room }: Message) => {
+  socket.on('chatMessage', async (msg: Message) => {
+    const { author, text, room } = msg;
     msgs.captureMessage({ author, text, room });
     server.to(room).emit('roomMessages', msgs.getRoomMessages(room));
   });
@@ -43,7 +44,7 @@ const StartListeners = (server: any, socket: any): void => {
     server.to(data.room).emit('showTyping', typingArr);
   });
 
-  socket.on('endTyping', (data: Author) => {
+  socket.on('typingEnd', (data: Author) => {
     users.removeTypingUser(data.username);
     const typingArr = Array.from(users.getTypingUsers());
     server.to(data.room).emit('stillTyping', typingArr);

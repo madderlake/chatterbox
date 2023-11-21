@@ -13,8 +13,8 @@ const welcomeUser = (user: User, newUser: newUser, socket: any) => {
   const { username, room, id } = user;
   if (newUser !== false) {
     msgs.sendChatBotMsg(
-      user.room,
-      `🤗 Welcome to the ${titleCase(user.room)} room, ${user.username}! `
+      room,
+      `🤗 Welcome to the ${titleCase(room)} room, ${username}! `
     );
     users.getUser(id) === undefined &&
       users.addUser({ id, username, room, sid: socket.id });
@@ -51,7 +51,7 @@ const StartListeners = (server: any, socket: any): void => {
     server.to(data.room).emit('showTyping', typingArr);
   });
 
-  socket.on('endTyping', (data: Author) => {
+  socket.on('typingEnd', (data: Author) => {
     users.removeTypingUser(data.username);
     const typingArr = Array.from(users.getTypingUsers());
     server.to(data.room).emit('stillTyping', typingArr);

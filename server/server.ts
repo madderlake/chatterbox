@@ -65,6 +65,7 @@ export const io = new Server<
   InterServerEvents
 >(httpServer, {
   /* options */
+  connectionStateRecovery: {},
   cors: corsOptions,
   transports: ['websocket', 'polling'],
 });
