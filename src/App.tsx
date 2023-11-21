@@ -1,12 +1,12 @@
 import React from 'react';
-import Routes from './components/Router';
+import Routes from './client/components/Router';
 
-import { ClientContext } from './contexts/ClientContext';
-import { socket } from './contexts/client';
+import { ClientContext } from './client/contexts/ClientContext';
+import { socket } from './client/contexts/client';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/lib/integration/react';
 import { persistStore } from 'redux-persist';
-import store from './redux/store';
+import store from './client/redux/store';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.css';
 

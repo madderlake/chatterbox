@@ -15,5 +15,11 @@
     "noEmit": true,
     "jsx": "react"
   },
-  "include": ["**/*.ts", "**/*.tsx"]
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "./App.tsx",
+    "./index.tsx",
+    "react-app-env.d.ts"
+  ]
 }

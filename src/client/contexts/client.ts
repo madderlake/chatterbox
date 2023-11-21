@@ -3,8 +3,6 @@ import io from 'socket.io-client';
 const socketUrl =
   process.env.REACT_APP_BACKEND_URL + ':' + process.env.REACT_APP_SERVER_PORT;
 
-console.log(socketUrl);
-
 export const socket =
   socketUrl !== undefined &&
   io(socketUrl, {
