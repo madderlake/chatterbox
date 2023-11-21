@@ -1,11 +1,8 @@
-import type { User } from '../../client/src/redux/slices/userSlice';
-import type {
-  Message,
-  Author,
-} from '../../client/src/redux/slices/messageSlice';
+import type { User } from '../../client/redux/slices/userSlice';
+import type { Message, Author } from '../../client/redux/slices/messageSlice';
 import * as users from './users';
 import * as msgs from './messages';
-import { titleCase } from '../../client/src/utils/helpers';
+import { titleCase } from '../../client/utils/helpers';
 
 const StartListeners = (server: any, socket: any): void => {
   console.log(`${socket.id} connected from listeners `);

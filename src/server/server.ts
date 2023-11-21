@@ -1,18 +1,18 @@
-import express from 'express';
-import http from 'http';
-import cors from 'cors';
-import path from 'path';
+import * as express from 'express';
+import * as http from 'http';
+import * as cors from 'cors';
+import * as path from 'path';
 
 import { Server } from 'socket.io';
 
 //Types
-import type { User } from '../client/src/redux/slices/userSlice';
-import type { Message } from '../client/src/redux/slices/messageSlice';
+import type { User } from '../client/redux/slices/userSlice';
+import type { Message } from '../client/redux/slices/messageSlice';
 import StartListeners from './utils/listeners';
 
 const app = express();
 const httpServer = http.createServer(app);
-const PORT = process.env.REACT_APP_SERVER_PORT;
+const PORT = process.env.REACT_APP_SERVER_PORT || 8083;
 
 type Data = User | Message;
 type BasicEmit = (data: Data | Data[]) => void;

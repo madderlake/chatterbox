@@ -1,4 +1,4 @@
-import type { Message } from '../../client/src/redux/slices/messageSlice';
+import type { Message } from '../../client/redux/slices/messageSlice';
 
 const messages: Message[] = [];
 
