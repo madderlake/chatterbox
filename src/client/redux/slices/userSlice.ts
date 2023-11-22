@@ -1,4 +1,4 @@
-import {createSlice} from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 
 export type User = {
   username: string;
@@ -27,9 +27,9 @@ const userSlice = createSlice({
   initialState,
   reducers: {
     join: (state, action) => {
-      state.currentUser = {...state.currentUser, ...action.payload};
+      state.currentUser = { ...state.currentUser, ...action.payload };
     },
-    addUsers: (state, action) => {
+    getUserList: (state, action) => {
       state.userList = [...action.payload];
     },
     leave: (state, action) => {
@@ -44,10 +44,10 @@ const userSlice = createSlice({
       );
     },
     switchRoom: (state, action) => {
-      state.currentUser = {...state.currentUser, room: action.payload};
+      state.currentUser = { ...state.currentUser, room: action.payload };
     },
   },
 });
 
-export const {join, addUsers, leave, switchRoom} = userSlice.actions;
+export const { join, getUserList, leave, switchRoom } = userSlice.actions;
 export default userSlice.reducer;

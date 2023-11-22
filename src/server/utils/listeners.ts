@@ -9,6 +9,7 @@ const StartListeners = (server: any, socket: any): void => {
   // TODO; make const for allUsers
   socket.on('joinRoom', ({ ...user }, newUser: null | boolean) => {
     const { id, username, room } = user;
+    console.log(username, 'joining', room);
     user.sid = socket.id;
     socket.join(room);
 
@@ -23,6 +24,7 @@ const StartListeners = (server: any, socket: any): void => {
     } else {
       users.updateUserSid(id, socket.id);
     }
+    //console.log(users.getRoomUsers(room));
     // Send users and messages back to room
     server.to(room).emit('roomUsers', users.getRoomUsers(room));
     server.to(room).emit('roomMessages', msgs.getRoomMessages(room));
@@ -48,7 +50,7 @@ const StartListeners = (server: any, socket: any): void => {
   });
 
   // Runs when server leaves the chat application
-  socket.on('userLeaving', ({ id, username, room }: User) => {
+  socket.on('leave room', ({ id, username, room }: User) => {
     msgs.sendChatBotMsg(room, `😥 ${username} has left the room `);
     users.removeTypingUser(username);
     socket.leave(room);
@@ -56,24 +58,26 @@ const StartListeners = (server: any, socket: any): void => {
   });
 
   socket.on(
-    'userSwitching',
+    'switch room',
     (id: string, username: string, room: string, newRoom: string) => {
       msgs.sendChatBotMsg(room, `😥 ${username} has switched rooms `);
       users.switchUserRoom(id, newRoom);
       socket.leave(room);
+      socket.join(newRoom);
     }
   );
   socket.on('disconnect', () => {
     console.log(`${socket.id} has disconnected`);
     const user = users.getAllUsers().find((user) => user.sid === socket.id);
-    if (user !== undefined) {
-      const { id, username, room } = user;
-      users.removeUser(id);
-      users.removeTypingUser(username);
-      server.to(room).emit('roomUsers', users.getAllUsers());
-      msgs.sendChatBotMsg(room, `😥 ${username} has logged off or refreshed `);
-      server.to(room).emit('roomMessages', msgs.getRoomMessages(room));
-    }
+    console.log(user && users.getRoomUsers(user.room));
+    // if (user !== undefined) {
+    //   const { id, username, room } = user;
+    //   users.removeUser(id);
+    //   users.removeTypingUser(username);
+    //   server.to(room).emit('roomUsers', users.getAllUsers());
+    //   msgs.sendChatBotMsg(room, `😥 ${username} has logged off or refreshed `);
+    //   server.to(room).emit('roomMessages', msgs.getRoomMessages(room));
+    // }
   });
 };
 

@@ -5,24 +5,29 @@ import MessageList from './MessageList';
 import AddMessage from './AddMessage';
 import { ClientContext } from '../contexts/ClientContext';
 import { titleCase } from '../utils/helpers';
-import { join, leave, switchRoom, addUsers } from '../redux/slices/userSlice';
+import {
+  join,
+  leave,
+  switchRoom,
+  getUserList,
+} from '../redux/slices/userSlice';
 import { addMessages } from '../redux/slices/messageSlice';
 import { useParams } from 'react-router-dom';
 import { rooms } from './room-list';
 import type { Author, Message } from '../redux/slices/messageSlice';
 import type { User } from '../redux/slices/userSlice';
 
-interface RouteParams {
-  room: string;
-  username: string;
-  id: string;
-}
+// interface RouteParams {
+//   room: string;
+//   username: string;
+//   id: string;
+// }
 export const ChatContainer = ({ ...props }) => {
   const client = useContext(ClientContext);
   const dispatch = useAppDispatch();
-  const params = useParams<RouteParams>();
+  // const params = useParams<RouteParams>();
   const [currentUser, setCurrentUser] = useState<User>({
-    ...params,
+    ...props.history.location.state,
     sid: '',
   });
 
@@ -34,41 +39,45 @@ export const ChatContainer = ({ ...props }) => {
   const roomName = titleCase(currentUser.room);
   const newUser = cUser.username !== currentUser.username;
 
-  const handleUserLeave = () => {
+  const handleUserLeaveApp = () => {
     const leaveRoom = window.confirm(
       `Are you sure you want to leave the ${roomName} chatroom?`
     );
-    leaveRoom && client.emit('userLeaving', { ...currentUser }, true);
-    dispatch(leave(currentUser.id));
+    leaveRoom && client.emit('leave room', { ...currentUser }, false);
+    dispatch(leave(currentUser.username));
     client.disconnect();
-    props.history.replace('/');
+    // props.history.replace('/');
   };
 
-  const handleUserSwitch = (ev: React.SyntheticEvent) => {
+  const handleUserSwitchRoom = (ev: React.SyntheticEvent) => {
     const newRoom = (ev.target as HTMLInputElement).value;
     if (
       window.confirm(`Are you sure you want to switch to the ${newRoom} room?`)
     ) {
-      client.emit('userSwitching', { ...currentUser }, newRoom);
+      client.emit('switch room', { ...currentUser }, newRoom);
       setCurrentUser({ ...currentUser, room: newRoom });
       dispatch(switchRoom(newRoom));
-
-      client.emit('joinRoom', { ...currentUser }, null);
+      client.emit('joinRoom', { ...currentUser, room: newRoom }, true);
       props.history.push(
         `/${newRoom}/${currentUser.username}/${currentUser.id}`
       );
     }
   };
-
+  // useEffect(() => {
+  //   console.log(props.history.location.state);
+  // }, []);
   useEffect(() => {
-    newUser !== false
-      ? dispatch(join({ ...currentUser }))
-      : client.emit('joinRoom', { ...currentUser }, newUser);
+    // newUser !== false
+    //   ? dispatch(join({ ...currentUser }))
+    //   : client.emit('joinRoom', { ...currentUser }, newUser);
 
-    client.on('roomUsers', (users: User[]) => dispatch(addUsers(users)));
-    client.on('roomMessages', (messages: Message[]) =>
-      dispatch(addMessages(messages))
-    );
+    client.on('roomUsers', (users: User[]) => {
+      console.log('getting users');
+      dispatch(getUserList(users));
+    });
+    client.on('roomMessages', (messages: Message[]) => {
+      dispatch(addMessages(messages));
+    });
     // CLEAN UP
     return () => client.removeAllListeners();
   }, [newUser, client, currentUser, dispatch]);
@@ -92,7 +101,7 @@ export const ChatContainer = ({ ...props }) => {
             }}
             name="switch-room"
             id="switch-room"
-            onChange={handleUserSwitch}>
+            onChange={handleUserSwitchRoom}>
             <option value="">Switch Rooms</option>
             {rooms.map(({ key, name }, i) => (
               <option value={key} key={i}>
@@ -102,7 +111,7 @@ export const ChatContainer = ({ ...props }) => {
           </select>
           <button
             className="btn btn-secondary btn-sm"
-            onClick={handleUserLeave}
+            onClick={handleUserLeaveApp}
             style={{ marginBottom: 8 }}>
             Log Out &raquo;
           </button>

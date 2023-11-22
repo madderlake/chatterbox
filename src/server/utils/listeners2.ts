@@ -55,7 +55,7 @@ const StartListeners = (server: any, socket: any): void => {
   });
 
   // Runs when server leaves the chat application
-  socket.on('userLeaving', ({ id, username, room }: User) => {
+  socket.on('leave room', ({ id, username, room }: User) => {
     msgs.sendChatBotMsg(room, `😥 ${username} has left the room `);
     users.removeTypingUser(username);
     socket.leave(room);
