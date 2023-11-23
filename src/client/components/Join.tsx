@@ -15,7 +15,6 @@ export const Join = ({ ...props }) => {
 
   const handleSubmit = (ev: React.SyntheticEvent) => {
     ev.preventDefault();
-    if (!client.connected) return;
     client.connect();
     state.username !== '' && client.emit('joinRoom', { ...state }, true);
     props.history.push({
