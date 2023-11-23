@@ -1,52 +1,49 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from '../redux/hooks';
+// import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import UserList from './UserList';
 import MessageList from './MessageList';
 import AddMessage from './AddMessage';
 import { ClientContext } from '../contexts/ClientContext';
 import { titleCase } from '../utils/helpers';
-import {
-  join,
-  leave,
-  switchRoom,
-  getUserList,
-} from '../redux/slices/userSlice';
-import { addMessages } from '../redux/slices/messageSlice';
-import { useParams } from 'react-router-dom';
+// import {
+//   //join,
+//   leave,
+//   //switchRoom,
+//   getUserList,
+//   getRoomUserList,
+// } from '../redux/slices/userSlice';
+// import { addMessages } from '../redux/slices/messageSlice';
+
 import { rooms } from './room-list';
+/* TODO - move these out of redux **/
 import type { Author, Message } from '../redux/slices/messageSlice';
 import type { User } from '../redux/slices/userSlice';
 
-// interface RouteParams {
-//   room: string;
-//   username: string;
-//   id: string;
-// }
 export const ChatContainer = ({ ...props }) => {
   const client = useContext(ClientContext);
-  const dispatch = useAppDispatch();
-  // const params = useParams<RouteParams>();
+
   const [currentUser, setCurrentUser] = useState<User>({
     ...props.history.location.state,
     sid: '',
   });
 
-  /* TODO - change these const names */
-  const cUser = useAppSelector((state) => state.user.currentUser);
-  const uList = useAppSelector((state) => state.user.userList);
-  const mList = useAppSelector((state) => state.messages.messageList);
+  //client.id && setCurrentUser({ ...currentUser, sid: client.id });
+  // const cUser = currentUser;
+  // const uList = useAppSelector((state) => state.user.userList);
+  // const mList = useAppSelector((state) => state.messages.messageList);
+
+  const [userList, setUserList] = useState<User[]>([]);
+  const [messageList, setMessageList] = useState<Message[]>([]);
 
   const roomName = titleCase(currentUser.room);
-  const newUser = cUser.username !== currentUser.username;
 
   const handleUserLeaveApp = () => {
     const leaveRoom = window.confirm(
       `Are you sure you want to leave the ${roomName} chatroom?`
     );
     leaveRoom && client.emit('leave room', { ...currentUser }, false);
-    dispatch(leave(currentUser.username));
     client.disconnect();
-    // props.history.replace('/');
+    props.history.replace('/');
   };
 
   const handleUserSwitchRoom = (ev: React.SyntheticEvent) => {
@@ -56,31 +53,39 @@ export const ChatContainer = ({ ...props }) => {
     ) {
       client.emit('switch room', { ...currentUser }, newRoom);
       setCurrentUser({ ...currentUser, room: newRoom });
-      dispatch(switchRoom(newRoom));
       client.emit('joinRoom', { ...currentUser, room: newRoom }, true);
       props.history.push(
         `/${newRoom}/${currentUser.username}/${currentUser.id}`
       );
     }
   };
-  // useEffect(() => {
-  //   console.log(props.history.location.state);
-  // }, []);
-  useEffect(() => {
-    // newUser !== false
-    //   ? dispatch(join({ ...currentUser }))
-    //   : client.emit('joinRoom', { ...currentUser }, newUser);
 
-    client.on('roomUsers', (users: User[]) => {
-      console.log('getting users');
-      dispatch(getUserList(users));
+  useEffect(() => {
+    document.title = `Chatterbox - ${
+      currentUser.username !== undefined && currentUser.username
+    }`;
+    /* If this is a user that is simply reconnecting, refreshing etc */
+    client.on('connect', () => {
+      if (client.id !== currentUser.sid)
+        client.emit('joinRoom', { ...currentUser }, false);
+      setCurrentUser({ ...currentUser, sid: client.id });
     });
-    client.on('roomMessages', (messages: Message[]) => {
-      dispatch(addMessages(messages));
-    });
+  }, [client, currentUser]);
+
+  useEffect(() => {
+    client.on('roomUsers', (users: User[]) => setUserList(users));
+    client.on('roomMessages', (messages: Message[]) =>
+      setMessageList(messages)
+    );
+
+    // client.on('server disconnected', () => {
+    //   console.log('server disconnected');
+    //   const serverDisconnect = window.confirm('server disconnected');
+    //   if (serverDisconnect) props.history.replace('/');
+    // });
     // CLEAN UP
     return () => client.removeAllListeners();
-  }, [newUser, client, currentUser, dispatch]);
+  }, [userList, messageList, client]);
 
   return (
     <div className="container w-lg-80">
@@ -119,15 +124,15 @@ export const ChatContainer = ({ ...props }) => {
       </div>
       <div className="d-flex">
         <div className="sidebar col-lg-3 col-xs-1">
-          <UserList userList={uList} currentUser={cUser} />
+          <UserList userList={userList} currentUser={currentUser} />
         </div>
         <div className="messages w-100 overflow-auto">
-          <MessageList messageList={mList} />
+          <MessageList messageList={messageList} />
         </div>
       </div>
       <div className="d-flex">
         <div className="add-message w-100">
-          <AddMessage author={cUser as Author} />
+          <AddMessage author={currentUser as Author} />
         </div>
       </div>
     </div>

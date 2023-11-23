@@ -31,6 +31,8 @@ export const sendChatBotMsg = (room: string, text: string) => {
   });
 };
 
+// Get all messages
+export const getAllMessages = () => messages;
 // Get room messages
 export const getRoomMessages = (room: string) =>
   messages.filter((msg) => msg.room === room);

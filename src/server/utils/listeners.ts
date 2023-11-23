@@ -9,7 +9,6 @@ const StartListeners = (server: any, socket: any): void => {
   // TODO; make const for allUsers
   socket.on('joinRoom', ({ ...user }, newUser: null | boolean) => {
     const { id, username, room } = user;
-    console.log(username, 'joining', room);
     user.sid = socket.id;
     socket.join(room);
 
@@ -35,7 +34,10 @@ const StartListeners = (server: any, socket: any): void => {
     msgs.captureMessage({ author, text, room });
     server.to(room).emit('roomMessages', msgs.getRoomMessages(room));
   });
-  //console.log(users.getAllUsers());
+  // console.log(
+  //   'all users',
+  //   users.getAllUsers().map((user) => user.username)
+  // );
 
   socket.on('typing', (data: Author) => {
     users.addTypingUser(data.username);
@@ -55,6 +57,8 @@ const StartListeners = (server: any, socket: any): void => {
     users.removeTypingUser(username);
     socket.leave(room);
     users.removeUser(id);
+    server.to(room).emit('roomUsers', users.getRoomUsers(room));
+    server.to(room).emit('roomMessages', msgs.getRoomMessages(room));
   });
 
   socket.on(
@@ -68,8 +72,8 @@ const StartListeners = (server: any, socket: any): void => {
   );
   socket.on('disconnect', () => {
     console.log(`${socket.id} has disconnected`);
-    const user = users.getAllUsers().find((user) => user.sid === socket.id);
-    console.log(user && users.getRoomUsers(user.room));
+    // const user = users.getAllUsers().find((user) => user.sid === socket.id);
+    // console.log(user && users.getRoomUsers(user.room));
     // if (user !== undefined) {
     //   const { id, username, room } = user;
     //   users.removeUser(id);
@@ -79,6 +83,8 @@ const StartListeners = (server: any, socket: any): void => {
     //   server.to(room).emit('roomMessages', msgs.getRoomMessages(room));
     // }
   });
+
+  server.on('disconnecting', () => socket.emit('server disconnected'));
 };
 
 export default StartListeners;
