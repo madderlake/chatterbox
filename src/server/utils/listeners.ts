@@ -1,5 +1,4 @@
-import type { User } from '../../client/redux/slices/userSlice';
-import type { Message, Author } from '../../client/redux/slices/messageSlice';
+import type { User, Message, Author } from '../../../types';
 import * as users from './users';
 import * as msgs from './messages';
 import { titleCase } from '../../client/utils/helpers';

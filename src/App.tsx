@@ -1,25 +1,16 @@
 import React from 'react';
-import Routes from './client/components/Router';
+import Routes from './client/Router';
 
 import { ClientContext } from './client/contexts/ClientContext';
 import { socket } from './client/contexts/client';
-import { Provider } from 'react-redux';
-import { PersistGate } from 'redux-persist/lib/integration/react';
-import { persistStore } from 'redux-persist';
-import store from './client/redux/store';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.css';
 
-const persistor = persistStore(store);
 const App = () => {
   return (
     <div className="App">
       <ClientContext.Provider value={socket}>
-        <Provider store={store}>
-          <PersistGate loading={null} persistor={persistor}>
-            <Routes />
-          </PersistGate>
-        </Provider>
+        <Routes />
       </ClientContext.Provider>
     </div>
   );

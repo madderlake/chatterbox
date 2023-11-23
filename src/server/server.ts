@@ -6,8 +6,7 @@ import * as path from 'path';
 import { Server } from 'socket.io';
 
 //Types
-import type { User } from '../client/redux/slices/userSlice';
-import type { Message } from '../client/redux/slices/messageSlice';
+import type { User, Message } from '../../types';
 import StartListeners from './utils/listeners';
 
 const app = express();

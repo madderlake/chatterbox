@@ -1,4 +1,4 @@
-import type { User } from '../../client/redux/slices/userSlice';
+import type { User } from '../../../types';
 
 const users: User[] = [];
 const typingUsers = new Set();
