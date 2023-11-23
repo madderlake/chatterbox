@@ -1,23 +1,11 @@
 import React, { useContext, useState, useEffect } from 'react';
-// import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import UserList from './UserList';
 import MessageList from './MessageList';
 import AddMessage from './AddMessage';
 import { ClientContext } from '../contexts/ClientContext';
 import { titleCase } from '../utils/helpers';
-// import {
-//   //join,
-//   leave,
-//   //switchRoom,
-//   getUserList,
-//   getRoomUserList,
-// } from '../redux/slices/userSlice';
-// import { addMessages } from '../redux/slices/messageSlice';
-
 import { rooms } from './room-list';
-/* TODO - move these out of redux **/
-import type { Author, Message } from '../redux/slices/messageSlice';
-import type { User } from '../redux/slices/userSlice';
+import type { User, Message } from '../../../types';
 
 export const ChatContainer = ({ ...props }) => {
   const client = useContext(ClientContext);
@@ -26,11 +14,6 @@ export const ChatContainer = ({ ...props }) => {
     ...props.history.location.state,
     sid: '',
   });
-
-  //client.id && setCurrentUser({ ...currentUser, sid: client.id });
-  // const cUser = currentUser;
-  // const uList = useAppSelector((state) => state.user.userList);
-  // const mList = useAppSelector((state) => state.messages.messageList);
 
   const [userList, setUserList] = useState<User[]>([]);
   const [messageList, setMessageList] = useState<Message[]>([]);
@@ -78,11 +61,6 @@ export const ChatContainer = ({ ...props }) => {
       setMessageList(messages)
     );
 
-    // client.on('server disconnected', () => {
-    //   console.log('server disconnected');
-    //   const serverDisconnect = window.confirm('server disconnected');
-    //   if (serverDisconnect) props.history.replace('/');
-    // });
     // CLEAN UP
     return () => client.removeAllListeners();
   }, [userList, messageList, client]);
@@ -132,7 +110,7 @@ export const ChatContainer = ({ ...props }) => {
       </div>
       <div className="d-flex">
         <div className="add-message w-100">
-          <AddMessage author={currentUser as Author} />
+          <AddMessage author={currentUser} />
         </div>
       </div>
     </div>

@@ -83,8 +83,6 @@ const StartListeners = (server: any, socket: any): void => {
     //   server.to(room).emit('roomMessages', msgs.getRoomMessages(room));
     // }
   });
-
-  server.on('disconnecting', () => socket.emit('server disconnected'));
 };
 
 export default StartListeners;

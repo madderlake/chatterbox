@@ -26,12 +26,8 @@ export const Join = ({ ...props }) => {
   };
   useEffect(() => {
     document.title = `Chatterbox - Join`;
-    // client.on('server disconnected', () => {
-    //   // console.log('server disconnected');
-    //   const serverDisconnect = window.confirm('server disconnected');
-    //   if (serverDisconnect) props.history.replace('/');
-    // });
-  }, [client]);
+  }, []);
+
   return (
     <div className="join-chat container">
       <h1 className="text-center">Welcome to ChatterBox!</h1>

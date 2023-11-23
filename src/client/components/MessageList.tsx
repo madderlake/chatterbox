@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import MessageComponent from './Message';
 
-import type { Message } from '../redux/slices/messageSlice';
+import type { Message } from '../../../types';
 
 interface MessageListProps {
   messageList: Message[];

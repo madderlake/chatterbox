@@ -6,7 +6,7 @@ import React, {
   KeyboardEvent,
 } from 'react';
 import { ClientContext } from '../contexts/ClientContext';
-import { Author, Message } from '../redux/slices/messageSlice';
+import { Author, Message } from '../../../types';
 
 interface AddMessageProps {
   author: Author;
