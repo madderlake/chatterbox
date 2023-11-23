@@ -1,5 +1,4 @@
-import type { User } from '../../client/redux/slices/userSlice';
-import type { Message, Author } from '../../client/redux/slices/messageSlice';
+import type { User, Message, Author } from '../../../types';
 import * as users from './users';
 import * as msgs from './messages';
 import { titleCase } from '../../client/utils/helpers';
@@ -55,7 +54,7 @@ const StartListeners = (server: any, socket: any): void => {
   });
 
   // Runs when server leaves the chat application
-  socket.on('userLeaving', ({ id, username, room }: User) => {
+  socket.on('leave room', ({ id, username, room }: User) => {
     msgs.sendChatBotMsg(room, `😥 ${username} has left the room `);
     users.removeTypingUser(username);
     socket.leave(room);

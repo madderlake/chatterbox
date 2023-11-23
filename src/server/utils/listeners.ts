@@ -1,5 +1,4 @@
-import type { User } from '../../client/redux/slices/userSlice';
-import type { Message, Author } from '../../client/redux/slices/messageSlice';
+import type { User, Message, Author } from '../../../types';
 import * as users from './users';
 import * as msgs from './messages';
 import { titleCase } from '../../client/utils/helpers';
@@ -23,6 +22,7 @@ const StartListeners = (server: any, socket: any): void => {
     } else {
       users.updateUserSid(id, socket.id);
     }
+    //console.log(users.getRoomUsers(room));
     // Send users and messages back to room
     server.to(room).emit('roomUsers', users.getRoomUsers(room));
     server.to(room).emit('roomMessages', msgs.getRoomMessages(room));
@@ -33,7 +33,10 @@ const StartListeners = (server: any, socket: any): void => {
     msgs.captureMessage({ author, text, room });
     server.to(room).emit('roomMessages', msgs.getRoomMessages(room));
   });
-  //console.log(users.getAllUsers());
+  // console.log(
+  //   'all users',
+  //   users.getAllUsers().map((user) => user.username)
+  // );
 
   socket.on('typing', (data: Author) => {
     users.addTypingUser(data.username);
@@ -48,32 +51,36 @@ const StartListeners = (server: any, socket: any): void => {
   });
 
   // Runs when server leaves the chat application
-  socket.on('userLeaving', ({ id, username, room }: User) => {
+  socket.on('leave room', ({ id, username, room }: User) => {
     msgs.sendChatBotMsg(room, `😥 ${username} has left the room `);
     users.removeTypingUser(username);
     socket.leave(room);
     users.removeUser(id);
+    server.to(room).emit('roomUsers', users.getRoomUsers(room));
+    server.to(room).emit('roomMessages', msgs.getRoomMessages(room));
   });
 
   socket.on(
-    'userSwitching',
+    'switch room',
     (id: string, username: string, room: string, newRoom: string) => {
       msgs.sendChatBotMsg(room, `😥 ${username} has switched rooms `);
       users.switchUserRoom(id, newRoom);
       socket.leave(room);
+      socket.join(newRoom);
     }
   );
   socket.on('disconnect', () => {
     console.log(`${socket.id} has disconnected`);
-    const user = users.getAllUsers().find((user) => user.sid === socket.id);
-    if (user !== undefined) {
-      const { id, username, room } = user;
-      users.removeUser(id);
-      users.removeTypingUser(username);
-      server.to(room).emit('roomUsers', users.getAllUsers());
-      msgs.sendChatBotMsg(room, `😥 ${username} has logged off or refreshed `);
-      server.to(room).emit('roomMessages', msgs.getRoomMessages(room));
-    }
+    // const user = users.getAllUsers().find((user) => user.sid === socket.id);
+    // console.log(user && users.getRoomUsers(user.room));
+    // if (user !== undefined) {
+    //   const { id, username, room } = user;
+    //   users.removeUser(id);
+    //   users.removeTypingUser(username);
+    //   server.to(room).emit('roomUsers', users.getAllUsers());
+    //   msgs.sendChatBotMsg(room, `😥 ${username} has logged off or refreshed `);
+    //   server.to(room).emit('roomMessages', msgs.getRoomMessages(room));
+    // }
   });
 };
 

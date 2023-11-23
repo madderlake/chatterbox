@@ -15,8 +15,9 @@ export const Join = ({ ...props }) => {
 
   const handleSubmit = (ev: React.SyntheticEvent) => {
     ev.preventDefault();
+    if (!client.connected) return;
     client.connect();
-    state.username !== '' && client.emit('joinRoom', { ...state }, null);
+    state.username !== '' && client.emit('joinRoom', { ...state }, true);
     props.history.push({
       pathname: `/${state.room}/${state.username}/${state.id}`,
       from: 'join',
@@ -24,8 +25,9 @@ export const Join = ({ ...props }) => {
     });
   };
   useEffect(() => {
-    document.title = 'Chatterbox';
+    document.title = `Chatterbox - Join`;
   }, []);
+
   return (
     <div className="join-chat container">
       <h1 className="text-center">Welcome to ChatterBox!</h1>

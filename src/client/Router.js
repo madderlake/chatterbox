@@ -5,8 +5,8 @@ import {
   // Redirect,
   BrowserRouter as Router,
 } from 'react-router-dom';
-import {Join} from './Join';
-import {ChatContainer} from './ChatContainer';
+import { Join } from './components/Join';
+import { ChatContainer } from './components/ChatContainer';
 
 // const ProtectedChat = ({component: Component, ...rest}) => (
 //   <Route

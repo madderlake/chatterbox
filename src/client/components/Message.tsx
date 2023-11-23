@@ -1,6 +1,6 @@
 import React from 'react';
 import cn from 'classnames';
-import type { Message } from '../redux/slices/messageSlice';
+import type { Message } from '../../../types';
 
 interface MessageProps {
   message: Message;

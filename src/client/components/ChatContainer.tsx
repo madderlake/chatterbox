@@ -1,59 +1,42 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import UserList from './UserList';
 import MessageList from './MessageList';
 import AddMessage from './AddMessage';
 import { ClientContext } from '../contexts/ClientContext';
 import { titleCase } from '../utils/helpers';
-import { join, leave, switchRoom, addUsers } from '../redux/slices/userSlice';
-import { addMessages } from '../redux/slices/messageSlice';
-import { useParams } from 'react-router-dom';
 import { rooms } from './room-list';
-import type { Author, Message } from '../redux/slices/messageSlice';
-import type { User } from '../redux/slices/userSlice';
+import type { User, Message } from '../../../types';
 
-interface RouteParams {
-  room: string;
-  username: string;
-  id: string;
-}
 export const ChatContainer = ({ ...props }) => {
   const client = useContext(ClientContext);
-  const dispatch = useAppDispatch();
-  const params = useParams<RouteParams>();
+
   const [currentUser, setCurrentUser] = useState<User>({
-    ...params,
+    ...props.history.location.state,
     sid: '',
   });
 
-  /* TODO - change these const names */
-  const cUser = useAppSelector((state) => state.user.currentUser);
-  const uList = useAppSelector((state) => state.user.userList);
-  const mList = useAppSelector((state) => state.messages.messageList);
+  const [userList, setUserList] = useState<User[]>([]);
+  const [messageList, setMessageList] = useState<Message[]>([]);
 
   const roomName = titleCase(currentUser.room);
-  const newUser = cUser.username !== currentUser.username;
 
-  const handleUserLeave = () => {
+  const handleUserLeaveApp = () => {
     const leaveRoom = window.confirm(
       `Are you sure you want to leave the ${roomName} chatroom?`
     );
-    leaveRoom && client.emit('userLeaving', { ...currentUser }, true);
-    dispatch(leave(currentUser.id));
+    leaveRoom && client.emit('leave room', { ...currentUser }, false);
     client.disconnect();
     props.history.replace('/');
   };
 
-  const handleUserSwitch = (ev: React.SyntheticEvent) => {
+  const handleUserSwitchRoom = (ev: React.SyntheticEvent) => {
     const newRoom = (ev.target as HTMLInputElement).value;
     if (
       window.confirm(`Are you sure you want to switch to the ${newRoom} room?`)
     ) {
-      client.emit('userSwitching', { ...currentUser }, newRoom);
+      client.emit('switch room', { ...currentUser }, newRoom);
       setCurrentUser({ ...currentUser, room: newRoom });
-      dispatch(switchRoom(newRoom));
-
-      client.emit('joinRoom', { ...currentUser }, null);
+      client.emit('joinRoom', { ...currentUser, room: newRoom }, true);
       props.history.push(
         `/${newRoom}/${currentUser.username}/${currentUser.id}`
       );
@@ -61,17 +44,26 @@ export const ChatContainer = ({ ...props }) => {
   };
 
   useEffect(() => {
-    newUser !== false
-      ? dispatch(join({ ...currentUser }))
-      : client.emit('joinRoom', { ...currentUser }, newUser);
+    document.title = `Chatterbox - ${
+      currentUser.username !== undefined && currentUser.username
+    }`;
+    /* If this is a user that is simply reconnecting, refreshing etc */
+    client.on('connect', () => {
+      if (client.id !== currentUser.sid)
+        client.emit('joinRoom', { ...currentUser }, false);
+      setCurrentUser({ ...currentUser, sid: client.id });
+    });
+  }, [client, currentUser]);
 
-    client.on('roomUsers', (users: User[]) => dispatch(addUsers(users)));
+  useEffect(() => {
+    client.on('roomUsers', (users: User[]) => setUserList(users));
     client.on('roomMessages', (messages: Message[]) =>
-      dispatch(addMessages(messages))
+      setMessageList(messages)
     );
+
     // CLEAN UP
     return () => client.removeAllListeners();
-  }, [newUser, client, currentUser, dispatch]);
+  }, [userList, messageList, client]);
 
   return (
     <div className="container w-lg-80">
@@ -92,7 +84,7 @@ export const ChatContainer = ({ ...props }) => {
             }}
             name="switch-room"
             id="switch-room"
-            onChange={handleUserSwitch}>
+            onChange={handleUserSwitchRoom}>
             <option value="">Switch Rooms</option>
             {rooms.map(({ key, name }, i) => (
               <option value={key} key={i}>
@@ -102,7 +94,7 @@ export const ChatContainer = ({ ...props }) => {
           </select>
           <button
             className="btn btn-secondary btn-sm"
-            onClick={handleUserLeave}
+            onClick={handleUserLeaveApp}
             style={{ marginBottom: 8 }}>
             Log Out &raquo;
           </button>
@@ -110,15 +102,15 @@ export const ChatContainer = ({ ...props }) => {
       </div>
       <div className="d-flex">
         <div className="sidebar col-lg-3 col-xs-1">
-          <UserList userList={uList} currentUser={cUser} />
+          <UserList userList={userList} currentUser={currentUser} />
         </div>
         <div className="messages w-100 overflow-auto">
-          <MessageList messageList={mList} />
+          <MessageList messageList={messageList} />
         </div>
       </div>
       <div className="d-flex">
         <div className="add-message w-100">
-          <AddMessage author={cUser as Author} />
+          <AddMessage author={currentUser} />
         </div>
       </div>
     </div>
