@@ -21,6 +21,7 @@ const AddMessage = ({ author }: AddMessageProps): JSX.Element => {
   const handleSubmit = (ev: React.SyntheticEvent) => {
     ev.preventDefault();
     setTyping(false);
+    client.emit('typingEnd', { ...author });
     message !== null &&
       message.text &&
       client.emit('chatMessage', {
@@ -56,7 +57,7 @@ const AddMessage = ({ author }: AddMessageProps): JSX.Element => {
   useEffect(() => {
     inputRef.current && inputRef.current.focus();
     const emitString =
-      typing === true ? 'typing' : typing === false ? 'endTyping' : null;
+      typing === true ? 'typing' : typing === false ? 'typingEnd' : null;
     emitString !== null && client.emit(emitString, { ...author });
 
     const onString =
