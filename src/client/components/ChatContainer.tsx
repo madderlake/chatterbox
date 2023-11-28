@@ -60,17 +60,9 @@ export const ChatContainer = ({ ...props }) => {
     client.on('roomMessages', (messages: Message[]) =>
       setMessageList(messages)
     );
+    // CLEAN UP
+    return () => client.removeAllListeners();
   }, [client.id, currentUser, userList, messageList]);
-  // console.log('client', client.id, 'user', currentUser.sid);
-  // useEffect(() => {
-  //   client.on('roomUsers', (users: User[]) => setUserList(users));
-  //   client.on('roomMessages', (messages: Message[]) =>
-  //     setMessageList(messages)
-  //   );
-
-  //   // CLEAN UP
-  //   return () => client.removeAllListeners();
-  // }, [userList, messageList, client]);
 
   return (
     <div className="container w-lg-80">
