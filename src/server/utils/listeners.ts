@@ -5,9 +5,10 @@ import { titleCase } from '../../client/utils/helpers';
 
 const StartListeners = (server: any, socket: any): void => {
   console.log(`${socket.id} connected from listeners `);
+
   // TODO; make const for allUsers
   socket.on('joinRoom', ({ ...user }, newUser: null | boolean) => {
-    const { id, username, room } = user;
+    const { id, username, room, sid } = user;
     user.sid = socket.id;
     socket.join(room);
 
@@ -17,26 +18,36 @@ const StartListeners = (server: any, socket: any): void => {
         room,
         `🤗 Welcome to the ${titleCase(room)} room, ${username}! `
       );
-      users.getUser(id) === undefined &&
-        users.addUser({ id, username, room, sid: socket.id });
+
+      // users.getUser(id) === undefined &&
+      users.addUser({ id, username, room, sid: socket.id });
     } else {
       users.updateUserSid(id, socket.id);
     }
-    //console.log(users.getRoomUsers(room));
+
     // Send users and messages back to room
     server.to(room).emit('roomUsers', users.getRoomUsers(room));
     server.to(room).emit('roomMessages', msgs.getRoomMessages(room));
+  });
+
+  socket.on('reconnectUser', (user: User) => {
+    // const sidMap = socket.adapter.sids;
+    // console.log(sidMap.has(user.sid));
+    if (users.getUser(user.id) === undefined) {
+      msgs.sendChatBotMsg(user.room, `${user.username} reconnected`);
+      users.addUser(user);
+    }
+
+    server.to(user.room).emit('roomUsers', users.getRoomUsers(user.room));
+    server.to(user.room).emit('roomMessages', msgs.getRoomMessages(user.room));
   });
 
   socket.on('chatMessage', async (msg: Message) => {
     const { author, text, room } = msg;
     msgs.captureMessage({ author, text, room });
     server.to(room).emit('roomMessages', msgs.getRoomMessages(room));
+    server.to(room).emit('roomUsers', users.getRoomUsers(room));
   });
-  // console.log(
-  //   'all users',
-  //   users.getAllUsers().map((user) => user.username)
-  // );
 
   socket.on('typing', (data: Author) => {
     users.addTypingUser(data.username);
@@ -69,6 +80,7 @@ const StartListeners = (server: any, socket: any): void => {
       socket.join(newRoom);
     }
   );
+
   socket.on('disconnect', () => {
     console.log(`${socket.id} has disconnected`);
     // const user = users.getAllUsers().find((user) => user.sid === socket.id);

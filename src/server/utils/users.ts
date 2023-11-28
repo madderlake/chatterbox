@@ -3,7 +3,7 @@ import type { User } from '../../../types';
 const users: User[] = [];
 const typingUsers = new Set();
 // Join user to chat
-export const addUser = (user: User) => users.push(user);
+export const addUser = (user: User) => user.sid !== '' && users.push(user);
 export const addTypingUser = (name: string) => typingUsers.add(name);
 export const removeTypingUser = (name: string) => typingUsers.delete(name);
 
