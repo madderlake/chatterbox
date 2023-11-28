@@ -53,6 +53,7 @@ export const ChatContainer = ({ ...props }) => {
     client.on('connect', () => {
       if (currentUser.sid === '') {
         client.emit('joinRoom', { ...currentUser, sid: client.id }, false);
+        setCurrentUser({ ...currentUser, sid: client.id });
       } else if (currentUser.sid !== client.id) {
         client.emit('reconnectUser', { ...currentUser, sid: client.id });
         setCurrentUser({ ...currentUser, sid: client.id });
@@ -101,7 +102,10 @@ export const ChatContainer = ({ ...props }) => {
       </div>
       <div className="d-flex">
         <div className="sidebar col-lg-3 col-xs-1">
-          <UserList userList={userList} currentUser={currentUser} />
+          <UserList
+            userList={userList.filter((user) => user.room === currentUser.room)}
+            currentUser={currentUser}
+          />
         </div>
         <div className="messages w-100 overflow-auto">
           <MessageList messageList={messageList} />

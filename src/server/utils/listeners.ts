@@ -5,8 +5,11 @@ import { titleCase } from '../../client/utils/helpers';
 
 const StartListeners = (server: any, socket: any): void => {
   console.log(`${socket.id} connected from listeners `);
-  // const sidMap = socket.adapter.sids;
 
+  const refreshRoom = (room: string) => {
+    server.to(room).emit('roomUsers', users.getAllUsers()); // currently filter by room on client side
+    server.to(room).emit('roomMessages', msgs.getRoomMessages(room));
+  };
   // TODO; make const for allUsers
   socket.on('joinRoom', ({ ...user }, newUser: null | boolean) => {
     const { id, username, room } = user;
@@ -27,8 +30,7 @@ const StartListeners = (server: any, socket: any): void => {
     }
 
     // Send users and messages back to room
-    server.to(room).emit('roomUsers', users.getRoomUsers(room));
-    server.to(room).emit('roomMessages', msgs.getRoomMessages(room));
+    refreshRoom(room);
   });
 
   socket.on('reconnectUser', (user: User) => {
@@ -37,14 +39,12 @@ const StartListeners = (server: any, socket: any): void => {
       msgs.sendChatBotMsg(user.room, `${user.username} reconnected`);
       users.addUser(user);
     }
-
-    server.to(user.room).emit('roomUsers', users.getRoomUsers(user.room));
+    refreshRoom(user.room);
   });
   socket.on('chatMessage', async (msg: Message) => {
     const { author, text, room } = msg;
     msgs.captureMessage({ author, text, room });
-    server.to(room).emit('roomMessages', msgs.getRoomMessages(room));
-    server.to(room).emit('roomUsers', users.getRoomUsers(room));
+    refreshRoom(room);
   });
 
   socket.on('typing', (data: Author) => {
@@ -65,8 +65,7 @@ const StartListeners = (server: any, socket: any): void => {
     users.removeTypingUser(username);
     socket.leave(room);
     users.removeUser(id);
-    server.to(room).emit('roomUsers', users.getRoomUsers(room));
-    server.to(room).emit('roomMessages', msgs.getRoomMessages(room));
+    refreshRoom(room);
   });
 
   socket.on('log off', ({ id, username, room }: User) => {
@@ -75,19 +74,18 @@ const StartListeners = (server: any, socket: any): void => {
     socket.leave(room);
     users.removeUser(id);
     socket.disconnect();
-    server.to(room).emit('roomUsers', users.getRoomUsers(room));
-    server.to(room).emit('roomMessages', msgs.getRoomMessages(room));
+    refreshRoom(room);
   });
 
-  socket.on(
-    'switch room',
-    (id: string, username: string, room: string, newRoom: string) => {
-      msgs.sendChatBotMsg(room, `😥 ${username} has switched rooms `);
-      users.switchUserRoom(id, newRoom);
-      socket.leave(room);
-      socket.join(newRoom);
-    }
-  );
+  socket.on('switch room', ({ ...user }, newRoom: string) => {
+    const { id, username, room } = user;
+    msgs.sendChatBotMsg(room, `😥 ${username} has switched rooms `);
+    users.switchUserRoom(id, newRoom);
+    socket.leave(room);
+    socket.join(newRoom);
+    refreshRoom(room);
+    refreshRoom(newRoom);
+  });
 
   socket.on('disconnect', () => {
     console.log(`${socket.id} has disconnected`);

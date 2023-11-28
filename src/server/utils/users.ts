@@ -16,7 +16,7 @@ export const updateUserSid = (id: string, sid: string) => {
 };
 
 export const switchUserRoom = (id: string, newRoom: string) =>
-  users.filter((user) => user.id === id).map((user) => user.room === newRoom);
+  users.filter((user) => user.id === id).map((user) => (user.room = newRoom));
 
 export const getAllUsers = () => users;
 
