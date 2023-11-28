@@ -47,16 +47,15 @@ export const ChatContainer = ({ ...props }) => {
     document.title = `Chatterbox - ${
       currentUser.username !== undefined && currentUser.username
     }`;
-    currentUser.sid === '' &&
-      /* If this is a user that is simply reconnecting, refreshing etc */
-      client.on('connect', () => {
-        currentUser.sid !== client.id &&
-          client.emit('joinRoom', { ...currentUser, sid: client.id }, false);
+    /* If this is a user that is simply reconnecting, refreshing etc */
+    client.on('connect', () => {
+      currentUser.sid !== client.id &&
+        client.emit('joinRoom', { ...currentUser, sid: client.id }, false);
 
-        currentUser.sid === client.id &&
-          client.emit('reconnectUser', { ...currentUser, sid: client.id });
-        setCurrentUser({ ...currentUser, sid: client.id });
-      });
+      currentUser.sid === client.id &&
+        client.emit('reconnectUser', { ...currentUser, sid: client.id });
+      setCurrentUser({ ...currentUser, sid: client.id });
+    });
     client.on('roomUsers', (users: User[]) => setUserList(users));
     client.on('roomMessages', (messages: Message[]) =>
       setMessageList(messages)
