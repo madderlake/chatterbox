@@ -47,22 +47,31 @@ export const ChatContainer = ({ ...props }) => {
     document.title = `Chatterbox - ${
       currentUser.username !== undefined && currentUser.username
     }`;
-    /* If this is a user that is simply reconnecting, refreshing etc */
-    client.on('connect', () => {
-      if (currentUser.sid === '')
-        client.emit('joinRoom', { ...currentUser, sid: client.id }, false);
-      /* If the server has restarted */
-      if (currentUser.sid === client.id)
-        client.emit('reconnectUser', { ...currentUser, sid: client.id });
+    currentUser.sid === '' &&
+      /* If this is a user that is simply reconnecting, refreshing etc */
+      client.on('connect', () => {
+        currentUser.sid !== client.id &&
+          client.emit('joinRoom', { ...currentUser, sid: client.id }, false);
 
-      setCurrentUser({ ...currentUser, sid: client.id });
-    });
+        currentUser.sid === client.id &&
+          client.emit('reconnectUser', { ...currentUser, sid: client.id });
+        setCurrentUser({ ...currentUser, sid: client.id });
+      });
     client.on('roomUsers', (users: User[]) => setUserList(users));
     client.on('roomMessages', (messages: Message[]) =>
       setMessageList(messages)
     );
-    return () => client.removeAllListeners();
   }, [client.id, currentUser, userList, messageList]);
+  // console.log('client', client.id, 'user', currentUser.sid);
+  // useEffect(() => {
+  //   client.on('roomUsers', (users: User[]) => setUserList(users));
+  //   client.on('roomMessages', (messages: Message[]) =>
+  //     setMessageList(messages)
+  //   );
+
+  //   // CLEAN UP
+  //   return () => client.removeAllListeners();
+  // }, [userList, messageList, client]);
 
   return (
     <div className="container w-lg-80">
