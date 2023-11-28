@@ -49,21 +49,20 @@ export const ChatContainer = ({ ...props }) => {
     }`;
     /* If this is a user that is simply reconnecting, refreshing etc */
     client.on('connect', () => {
-      if (client.id !== currentUser.sid)
-        client.emit('joinRoom', { ...currentUser }, false);
+      if (currentUser.sid === '')
+        client.emit('joinRoom', { ...currentUser, sid: client.id }, false);
+      /* If the server has restarted */
+      if (currentUser.sid === client.id)
+        client.emit('reconnectUser', { ...currentUser, sid: client.id });
+
       setCurrentUser({ ...currentUser, sid: client.id });
     });
-  }, [client, currentUser]);
-
-  useEffect(() => {
     client.on('roomUsers', (users: User[]) => setUserList(users));
     client.on('roomMessages', (messages: Message[]) =>
       setMessageList(messages)
     );
-
-    // CLEAN UP
     return () => client.removeAllListeners();
-  }, [userList, messageList, client]);
+  }, [client.id, currentUser, userList, messageList]);
 
   return (
     <div className="container w-lg-80">
