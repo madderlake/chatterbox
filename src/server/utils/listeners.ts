@@ -5,7 +5,6 @@ import { titleCase } from '../../client/utils/helpers';
 
 const StartListeners = (server: any, socket: any): void => {
   console.log(`${socket.id} connected from listeners `);
-  // const sidMap = socket.adapter.sids;
 
   const refreshRoom = (room: string) => {
     server.to(room).emit('roomUsers', users.getRoomUsers(room));
