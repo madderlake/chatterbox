@@ -26,7 +26,8 @@ export const getUser = (id: string) => users.find((user) => user.id === id);
 // User leaves chat altogether
 export const removeUser = (id: string): User[] => {
   const index = users.findIndex((user) => user.id === id);
-  return index !== -1 ? users.splice(index, 1) : users;
+  users.splice(index, 1);
+  return users;
 };
 
 // Get room users

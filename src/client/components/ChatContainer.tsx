@@ -20,11 +20,9 @@ export const ChatContainer = ({ ...props }) => {
 
   const roomName = titleCase(currentUser.room);
 
-  const handleUserLeaveApp = () => {
-    const leaveRoom = window.confirm(
-      `Are you sure you want to leave the ${roomName} chatroom?`
-    );
-    leaveRoom && client.emit('leave room', { ...currentUser }, false);
+  const handleLogOff = () => {
+    const leaveRoom = window.confirm(`Are you sure you want to log off?`);
+    leaveRoom && client.emit('log off', { ...currentUser });
     client.disconnect();
     props.history.replace('/');
   };
@@ -47,22 +45,24 @@ export const ChatContainer = ({ ...props }) => {
     document.title = `Chatterbox - ${
       currentUser.username !== undefined && currentUser.username
     }`;
-    /* If this is a user that is simply reconnecting, refreshing etc */
-    client.on('connect', () => {
-      currentUser.sid !== client.id &&
-        client.emit('joinRoom', { ...currentUser, sid: client.id }, false);
-
-      currentUser.sid === client.id &&
-        client.emit('reconnectUser', { ...currentUser, sid: client.id });
-      setCurrentUser({ ...currentUser, sid: client.id });
-    });
     client.on('roomUsers', (users: User[]) => setUserList(users));
     client.on('roomMessages', (messages: Message[]) =>
       setMessageList(messages)
     );
-    // CLEAN UP
-    return () => client.removeAllListeners();
-  }, [client.id, currentUser, userList, messageList]);
+    /* If this is a user that is simply reconnecting, refreshing etc */
+    client.on('connect', () => {
+      if (currentUser.sid === '') {
+        client.emit('joinRoom', { ...currentUser, sid: client.id }, false);
+      } else if (currentUser.sid !== client.id) {
+        client.emit('reconnectUser', { ...currentUser, sid: client.id });
+        setCurrentUser({ ...currentUser, sid: client.id });
+        client.on('roomUsers', (users: User[]) => setUserList(users));
+        client.on('roomMessages', (messages: Message[]) =>
+          setMessageList(messages)
+        );
+      }
+    });
+  }, [client, currentUser, userList, messageList]);
 
   return (
     <div className="container w-lg-80">
@@ -93,7 +93,7 @@ export const ChatContainer = ({ ...props }) => {
           </select>
           <button
             className="btn btn-secondary btn-sm"
-            onClick={handleUserLeaveApp}
+            onClick={handleLogOff}
             style={{ marginBottom: 8 }}>
             Log Out &raquo;
           </button>
