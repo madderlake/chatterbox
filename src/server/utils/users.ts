@@ -1,34 +1,37 @@
 import type { User } from '../../../types';
 
+// Init
 const users: User[] = [];
 const typingUsers = new Set();
-// Join user to chat
+// Add user
 export const addUser = (user: User) => user.sid !== '' && users.push(user);
-export const addTypingUser = (name: string) => typingUsers.add(name);
-export const removeTypingUser = (name: string) => typingUsers.delete(name);
 
-export const getTypingUsers = () => typingUsers;
+// Update user sid
+export const updateUserSid = (id: string, sid: string) =>
+  users.filter((user) => user.id === id).map((user) => (user.sid = sid));
 
-export const updateUserSid = (id: string, sid: string) => {
-  const user = users.find((user) => user.id === id);
-  if (user !== undefined) user.sid = sid;
-  return user;
-};
-
+// User switch room
 export const switchUserRoom = (id: string, newRoom: string) =>
-  users.filter((user) => user.id === id).map((user) => user.room === newRoom);
+  users.filter((user) => user.id === id).map((user) => (user.room = newRoom));
 
+// get all users
 export const getAllUsers = () => users;
 
 // Get current user
 export const getUser = (id: string) => users.find((user) => user.id === id);
 
-// User leaves chat altogether
-export const removeUser = (id: string): User[] => {
+// Remove user
+export const removeUser = (id: User['id']): User[] => {
   const index = users.findIndex((user) => user.id === id);
-  return index !== -1 ? users.splice(index, 1) : users;
+  users.splice(index, 1);
+  return users;
 };
 
 // Get room users
 export const getRoomUsers = (room: string) =>
   users.filter((user) => user.room === room);
+
+// Typing
+export const addTypingUser = (name: string) => typingUsers.add(name);
+export const removeTypingUser = (name: string) => typingUsers.delete(name);
+export const getTypingUsers = () => typingUsers;
