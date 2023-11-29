@@ -16,7 +16,9 @@ export const Join = ({ ...props }) => {
   const handleSubmit = (ev: React.SyntheticEvent) => {
     ev.preventDefault();
     client.connect();
-    state.username !== '' && client.emit('joinRoom', { ...state }, true);
+    client.on('connect', () => {
+      state.username !== '' && client.emit('joinRoom', { ...state }, true);
+    });
     props.history.push({
       pathname: `/${state.room}/${state.username}/${state.id}`,
       from: 'join',
