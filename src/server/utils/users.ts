@@ -23,8 +23,7 @@ export const getUser = (id: string) => users.find((user) => user.id === id);
 // Remove user
 export const removeUser = (id: User['id']): User[] => {
   const index = users.findIndex((user) => user.id === id);
-  users.splice(index, 1);
-  return users;
+  return users.splice(index, 1);
 };
 
 // Get room users
