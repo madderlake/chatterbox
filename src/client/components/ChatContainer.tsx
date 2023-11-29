@@ -21,8 +21,8 @@ export const ChatContainer = ({ ...props }) => {
   const roomName = titleCase(currentUser.room);
 
   const handleLogOff = () => {
-    const leaveRoom = window.confirm(`Are you sure you want to log off?`);
-    leaveRoom && client.emit('log off', { ...currentUser });
+    const leaveRoom = window.confirm(`Are you sure you want to logOff?`);
+    leaveRoom && client.emit('logOff', { ...currentUser });
     client.disconnect();
     props.history.replace('/');
   };
@@ -32,7 +32,7 @@ export const ChatContainer = ({ ...props }) => {
     if (
       window.confirm(`Are you sure you want to switch to the ${newRoom} room?`)
     ) {
-      client.emit('switch room', { ...currentUser }, newRoom);
+      client.emit('switchRoom', { ...currentUser }, newRoom);
       setCurrentUser({ ...currentUser, room: newRoom });
       client.emit('joinRoom', { ...currentUser, room: newRoom }, true);
       props.history.push(
@@ -85,7 +85,7 @@ export const ChatContainer = ({ ...props }) => {
             name="switch-room"
             id="switch-room"
             onChange={handleUserSwitchRoom}>
-            <option value="">Switch Rooms</option>
+            <option value="">switchRooms</option>
             {rooms.map(({ key, name }, i) => (
               <option value={key} key={i}>
                 {name}

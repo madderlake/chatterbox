@@ -60,7 +60,7 @@ const StartListeners = (server: any, socket: any): void => {
   });
 
   // Runs when server leaves the chat application
-  socket.on('leave room', ({ id, username, room }: User) => {
+  socket.on('leaveRoom', ({ id, username, room }: User) => {
     msgs.sendChatBotMsg(room, `😥 ${username} has left the room `);
     users.removeTypingUser(username);
     socket.leave(room);
@@ -68,16 +68,15 @@ const StartListeners = (server: any, socket: any): void => {
     refreshRoom(room);
   });
 
-  socket.on('log off', ({ id, username, room }: User) => {
+  socket.on('logOff', ({ id, username, room }: User) => {
     msgs.sendChatBotMsg(room, `😥 ${username} has logged off `);
     users.removeTypingUser(username);
     socket.leave(room);
     users.removeUser(id);
-    socket.disconnect();
     refreshRoom(room);
   });
 
-  socket.on('switch room', ({ ...user }, newRoom: string) => {
+  socket.on('switchRoom', ({ ...user }, newRoom: string) => {
     const { id, username, room } = user;
     msgs.sendChatBotMsg(room, `😥 ${username} has switched rooms `);
     users.switchUserRoom(id, newRoom);
