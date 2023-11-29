@@ -7,13 +7,13 @@ const StartListeners = (server: any, socket: any): void => {
   console.log(`${socket.id} connected from listeners `);
 
   const refreshRoom = (room: string) => {
-    server.to(room).emit('roomUsers', users.getAllUsers()); // currently filter by room on client side
+    server.to(room).emit('roomUsers', users.getRoomUsers(room));
     server.to(room).emit('roomMessages', msgs.getRoomMessages(room));
   };
   // TODO; make const for allUsers
   socket.on('joinRoom', ({ ...user }, newUser: null | boolean) => {
     const { id, username, room } = user;
-    user.sid = socket.id;
+    // user.sid = socket.id;
     socket.join(room);
 
     // Welcome current user
@@ -24,7 +24,7 @@ const StartListeners = (server: any, socket: any): void => {
       );
 
       users.getUser(id) === undefined &&
-        users.addUser({ id, username, room, sid: socket.id });
+        users.addUser({ id, username, room } as User);
     } else {
       users.updateUserSid(id, socket.id);
     }

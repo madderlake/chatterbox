@@ -102,10 +102,7 @@ export const ChatContainer = ({ ...props }) => {
       </div>
       <div className="d-flex">
         <div className="sidebar col-lg-3 col-xs-1">
-          <UserList
-            userList={userList.filter((user) => user.room === currentUser.room)}
-            currentUser={currentUser}
-          />
+          <UserList userList={userList} currentUser={currentUser} />
         </div>
         <div className="messages w-100 overflow-auto">
           <MessageList messageList={messageList} />
