@@ -20,14 +20,14 @@ export const ChatContainer = ({ ...props }) => {
 
   const roomName = titleCase(currentUser.room);
 
-  const handleLogOff = () => {
-    const leaveRoom = window.confirm(`Are you sure you want to logOff?`);
-    leaveRoom && client.emit('logOff', { ...currentUser });
+  const handleLogOut = () => {
+    const leaveRoom = window.confirm(`Are you sure you want to logOut?`);
+    leaveRoom && client.emit('logOut', { ...currentUser });
     client.disconnect();
     props.history.replace('/');
   };
 
-  const handleUserSwitchRoom = (ev: React.SyntheticEvent) => {
+  const handleSwitchRoom = (ev: React.SyntheticEvent) => {
     const newRoom = (ev.target as HTMLInputElement).value;
     if (
       window.confirm(`Are you sure you want to switch to the ${newRoom} room?`)
@@ -35,9 +35,10 @@ export const ChatContainer = ({ ...props }) => {
       client.emit('switchRoom', { ...currentUser }, newRoom);
       setCurrentUser({ ...currentUser, room: newRoom });
       client.emit('joinRoom', { ...currentUser, room: newRoom }, true);
-      props.history.push(
-        `/${newRoom}/${currentUser.username}/${currentUser.id}`
-      );
+      props.history.push({
+        pathname: `/${newRoom}/${currentUser.username}/${currentUser.id}`,
+        state: { ...currentUser, room: newRoom },
+      });
     }
   };
 
@@ -49,10 +50,10 @@ export const ChatContainer = ({ ...props }) => {
     client.on('roomMessages', (messages: Message[]) =>
       setMessageList(messages)
     );
-    /* If this is a user that is simply reconnecting, refreshing etc */
+
     client.on('connect', () => {
       if (currentUser.sid === '') {
-        client.emit('joinRoom', { ...currentUser, sid: client.id }, false);
+        client.emit('joinRoom', { ...currentUser }, false);
         setCurrentUser({ ...currentUser, sid: client.id });
       } else if (currentUser.sid !== client.id) {
         client.emit('reconnectUser', { ...currentUser, sid: client.id });
@@ -84,8 +85,8 @@ export const ChatContainer = ({ ...props }) => {
             }}
             name="switch-room"
             id="switch-room"
-            onChange={handleUserSwitchRoom}>
-            <option value="">switchRooms</option>
+            onChange={handleSwitchRoom}>
+            <option value="">Switch Rooms</option>
             {rooms.map(({ key, name }, i) => (
               <option value={key} key={i}>
                 {name}
@@ -94,7 +95,7 @@ export const ChatContainer = ({ ...props }) => {
           </select>
           <button
             className="btn btn-secondary btn-sm"
-            onClick={handleLogOff}
+            onClick={handleLogOut}
             style={{ marginBottom: 8 }}>
             Log Out &raquo;
           </button>

@@ -68,7 +68,7 @@ const StartListeners = (server: any, socket: any): void => {
     refreshRoom(room);
   });
 
-  socket.on('logOff', ({ id, username, room }: User) => {
+  socket.on('logOut', ({ id, username, room }: User) => {
     msgs.sendChatBotMsg(room, `😥 ${username} has logged off `);
     users.removeTypingUser(username);
     socket.leave(room);
@@ -86,8 +86,8 @@ const StartListeners = (server: any, socket: any): void => {
     refreshRoom(newRoom);
   });
 
-  socket.on('disconnect', () => {
-    console.log(`${socket.id} has disconnected`);
+  socket.on('disconnect', (reason: string) => {
+    console.log(`${socket.id} has disconnected - ${reason}`);
   });
 };
 
