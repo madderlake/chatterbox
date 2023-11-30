@@ -46,7 +46,10 @@ export const ChatContainer = ({ ...props }) => {
     document.title = `Chatterbox - ${
       currentUser.username !== undefined && currentUser.username
     }`;
-
+    client.on('roomUsers', (users: User[]) => setUserList(users));
+    client.on('roomMessages', (messages: Message[]) =>
+      setMessageList(messages)
+    );
     client.on('connect', () => {
       if (currentUser.sid === '') {
         client.emit('joinRoom', { ...currentUser }, false);
@@ -55,10 +58,6 @@ export const ChatContainer = ({ ...props }) => {
       }
       setCurrentUser({ ...currentUser, sid: client.id });
     });
-    client.on('roomUsers', (users: User[]) => setUserList(users));
-    client.on('roomMessages', (messages: Message[]) =>
-      setMessageList(messages)
-    );
   }, [client.id, currentUser, userList, messageList]);
 
   return (
