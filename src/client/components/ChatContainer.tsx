@@ -46,25 +46,20 @@ export const ChatContainer = ({ ...props }) => {
     document.title = `Chatterbox - ${
       currentUser.username !== undefined && currentUser.username
     }`;
-    client.on('roomUsers', (users: User[]) => setUserList(users));
-    client.on('roomMessages', (messages: Message[]) =>
-      setMessageList(messages)
-    );
 
     client.on('connect', () => {
       if (currentUser.sid === '') {
         client.emit('joinRoom', { ...currentUser }, false);
-        setCurrentUser({ ...currentUser, sid: client.id });
-      } else if (currentUser.sid !== client.id) {
-        client.emit('reconnectUser', { ...currentUser, sid: client.id });
-        setCurrentUser({ ...currentUser, sid: client.id });
-        client.on('roomUsers', (users: User[]) => setUserList(users));
-        client.on('roomMessages', (messages: Message[]) =>
-          setMessageList(messages)
-        );
+      } else {
+        client.emit('reconnectUser', { ...currentUser });
       }
+      setCurrentUser({ ...currentUser, sid: client.id });
     });
-  }, [client, currentUser, userList, messageList]);
+    client.on('roomUsers', (users: User[]) => setUserList(users));
+    client.on('roomMessages', (messages: Message[]) =>
+      setMessageList(messages)
+    );
+  }, [client.id, currentUser, userList, messageList]);
 
   return (
     <div className="container w-lg-80">
@@ -106,7 +101,7 @@ export const ChatContainer = ({ ...props }) => {
           <UserList userList={userList} currentUser={currentUser} />
         </div>
         <div className="messages w-100 overflow-auto">
-          <MessageList messageList={messageList} />
+          <MessageList messageList={messageList} currentUser={currentUser} />
         </div>
       </div>
       <div className="d-flex">
