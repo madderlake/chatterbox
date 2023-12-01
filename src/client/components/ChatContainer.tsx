@@ -51,14 +51,18 @@ export const ChatContainer = ({ ...props }) => {
       setMessageList(messages)
     );
     client.on('connect', () => {
+      // socket disconnects, server is running
       if (currentUser.sid === '') {
         client.emit('joinRoom', { ...currentUser }, false);
       } else {
+        // server is restarted
         client.emit('reconnectUser', { ...currentUser });
       }
+
       setCurrentUser({ ...currentUser, sid: client.id });
+      return () => client.removeAllListeners();
     });
-  }, [client.id, currentUser, userList, messageList]);
+  }, [client, currentUser, userList, messageList]);
 
   return (
     <div className="container w-lg-80">

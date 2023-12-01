@@ -13,7 +13,6 @@ const StartListeners = (server: any, socket: any): void => {
   // TODO; make const for allUsers
   socket.on('joinRoom', ({ ...user }, newUser: null | boolean) => {
     const { id, username, room } = user;
-    // user.sid = socket.id;
     socket.join(room);
 
     // Welcome current user
@@ -34,13 +33,13 @@ const StartListeners = (server: any, socket: any): void => {
   });
 
   socket.on('reconnectUser', (user: User) => {
-    if (users.getUser(user.id) === undefined) {
-      console.log(user.username, 'sid:', socket.id);
-      msgs.sendChatBotMsg(user.room, `${user.username} reconnected`);
-      users.addUser(user);
-    }
+    if (users.getUser(user.id)) return;
+    users.addUser(user);
+    users.updateUserSid(user.id, socket.id);
+    msgs.sendChatBotMsg(user.room, `${user.username} has reconnected`);
     refreshRoom(user.room);
   });
+
   socket.on('chatMessage', async (msg: Message) => {
     const { author, text, room } = msg;
     msgs.captureMessage({ author, text, room });
