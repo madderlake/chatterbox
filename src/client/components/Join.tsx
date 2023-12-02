@@ -2,11 +2,11 @@ import React, { useState, useContext, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { ClientContext } from '../contexts/ClientContext';
 import { rooms } from './room-list';
-
+import type { User } from '../../../types';
 export const Join = ({ ...props }) => {
   const client = useContext(ClientContext);
 
-  const [state, setState] = useState({
+  const [state, setState] = useState<User>({
     username: '',
     room: '',
     id: uuidv4(),
@@ -16,9 +16,8 @@ export const Join = ({ ...props }) => {
   const handleSubmit = (ev: React.SyntheticEvent) => {
     ev.preventDefault();
     client.connect();
-    client.on('connect', () => {
-      state.username !== '' && client.emit('joinRoom', { ...state }, true);
-    });
+    client.emit('joinRoom', { ...state }, true);
+
     props.history.push({
       pathname: `/${state.room}/${state.username}/${state.id}`,
       from: 'join',

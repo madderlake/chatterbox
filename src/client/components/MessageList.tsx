@@ -1,12 +1,16 @@
 import React, { useEffect, useRef } from 'react';
 import MessageComponent from './Message';
 
-import type { Message } from '../../../types';
+import type { Message, User } from '../../../types';
 
 interface MessageListProps {
   messageList: Message[];
+  currentUser: User;
 }
-const MessageList = ({ messageList }: MessageListProps): JSX.Element => {
+const MessageList = ({
+  messageList,
+  currentUser,
+}: MessageListProps): JSX.Element => {
   const msgsEndRef = useRef<HTMLDivElement>(null);
   const scrollToBottom = () => {
     return (
@@ -25,7 +29,13 @@ const MessageList = ({ messageList }: MessageListProps): JSX.Element => {
       <div className="message-list">
         {messageList.length > 0 &&
           messageList.map((msg, index) => {
-            return <MessageComponent message={msg} key={`msg-${index + 1}`} />;
+            return (
+              <MessageComponent
+                message={msg}
+                currentUser={currentUser}
+                key={`msg-${index + 1}`}
+              />
+            );
           })}
         <div ref={msgsEndRef} />
       </div>
