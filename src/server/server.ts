@@ -11,7 +11,7 @@ import StartListeners from './utils/listeners';
 
 const app = express();
 const httpServer = http.createServer(app);
-const PORT = process.env.REACT_APP_SERVER_PORT || process.env.PORT || 8083;
+const PORT = process.env.REACT_APP_SERVER_PORT || process.env.PORT;
 
 type Data = User | Message;
 type BasicEmit = (data: Data | Data[]) => void;
@@ -40,6 +40,7 @@ const corsOptions = {
 // Have Node serve the files for our built React app
 app.use(express.static(path.resolve(__dirname, './dist')));
 
+app.set('port', PORT);
 // Handle GET requests to /api route
 app.get('/', (req, res) => {
   res.json({ message: 'Hello from local server!' });
