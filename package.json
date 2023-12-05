@@ -2,7 +2,6 @@
   "name": "chatterbox",
   "version": "0.1.0",
   "private": true,
-  "homepage": ".",
   "dependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "autoprefixer": "^10.4.14",
@@ -27,8 +26,7 @@
     "build:css": "postcss src/client/styles/main.css -o src/index.css",
     "watch:css": "postcss src/styles/main.css -o src/index.css -w",
     "watch-node": "nodemon --watch src/server/listeners.ts server",
-    "start": "react-scripts start",
-    "serve": "PORT=8083 ts-node src/server/server.ts",
+    "start": "ts-node --transpile-only src/server.ts",
     "dev": "env-cmd -f .env.development react-scripts start",
     "build-js": "BUILD_PATH='./dist' react-scripts build",
     "build": "npm-run-all build:css build-js",
