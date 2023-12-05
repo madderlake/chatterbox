@@ -26,11 +26,10 @@
     "build:css": "postcss src/client/styles/main.css -o src/index.css",
     "watch:css": "postcss src/styles/main.css -o src/index.css -w",
     "watch-node": "nodemon --watch src/server/listeners.ts server",
-    "start": "react-scripts start",
-    "serve": "ts-node --transpile-only src/server.ts",
+    "start": "ts-node --transpile-only src/server.ts",
     "dev": "env-cmd -f .env.development react-scripts start",
     "build-js": "BUILD_PATH='./dist' react-scripts build",
-    "build": "npm-run-all build:css build-js serve",
+    "build": "npm-run-all build:css build-js",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
