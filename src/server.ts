@@ -48,12 +48,12 @@ app.get('/', (req, res) => {
 // All other GET requests not handled before will return our React app
 app.get('/*', (req, res) => {
   res.sendFile(path.join(__dirname, '../dist', 'index.html'));
-  res.writeHead(200, {
-    'Content-Type': 'text',
-    'Access-Control-Allow-Origin': corsOptions.origin,
-    'Access-Control-Allow-Methods': corsOptions.methods,
-    'Access-Control-Max-Age': 2592000,
-  });
+  // res.writeHead(200, {
+  //   'Content-Type': 'text',
+  //   'Access-Control-Allow-Origin': corsOptions.origin,
+  //   'Access-Control-Allow-Methods': corsOptions.methods,
+  //   'Access-Control-Max-Age': 2592000,
+  // });
 });
 
 export const io = new Server<
