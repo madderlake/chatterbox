@@ -3,7 +3,7 @@ import io from 'socket.io-client';
 //const socketUrl = `${process.env.REACT_APP_BACKEND_URL}:${process.env.REACT_APP_SERVER_PORT}`;
 const socketUrl =
   process.env.NODE_ENV === 'production'
-    ? `${process.env.APP_SERVER_URL}`
+    ? `${process.env.EXTERNAL_URL}`
     : `${process.env.REACT_APP_BACKEND_URL}:${process.env.REACT_APP_SERVER_PORT}`;
 console.log('socket url', socketUrl);
 export const socket =
