@@ -22,6 +22,7 @@ export const ChatContainer = ({ ...props }) => {
   const handleLogOut = () => {
     const confirmLogOut = window.confirm(`Are you sure you want to logOut?`);
     confirmLogOut && client.emit('logOut', { ...currentUser });
+    manager.skipReconnection = true;
     client.disconnect();
     props.history.replace('/');
   };
