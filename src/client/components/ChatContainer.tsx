@@ -18,12 +18,10 @@ export const ChatContainer = ({ ...props }) => {
   const [messageList, setMessageList] = useState<Message[]>([]);
 
   const roomName = titleCase(currentUser.room);
-  const manager = client.io;
 
   const handleLogOut = () => {
     const leaveRoom = window.confirm(`Are you sure you want to logOut?`);
     leaveRoom && client.emit('logOut', { ...currentUser });
-    manager.skipConnect = true;
     client.disconnect();
     props.history.replace('/');
   };
@@ -52,9 +50,8 @@ export const ChatContainer = ({ ...props }) => {
     client.on('roomMessages', (messages: Message[]) =>
       setMessageList(messages)
     );
-
+    /* Reconnection */
     client.on('connect', () => {
-      //console.log(currentUser.sid, client.id);
       if (currentUser.sid !== client.id) {
         setCurrentUser({ ...currentUser, sid: client.id });
         client.emit('joinRoom', { ...currentUser }, false);

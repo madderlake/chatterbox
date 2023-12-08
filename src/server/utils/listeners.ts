@@ -6,17 +6,12 @@ import { titleCase } from '../../client/utils/helpers';
 const StartListeners = (server: any, socket: any): void => {
   console.log(`${socket.id} connected from listeners `);
   const connectedClients = server.sockets.sockets;
-  // console.log(users.getAllUsers());
-  // let connectedIds: string[] = [];
-  // server.sockets.sockets.forEach((socket: any) => {
-  //   connectedIds.push(socket.id);
-  // });
-  // console.log('connected ids', connectedIds);
+
   const refreshRoom = (room: string) => {
     server.to(room).emit('roomUsers', users.getRoomUsers(room));
     server.to(room).emit('roomMessages', msgs.getRoomMessages(room));
   };
-  // TODO; make const for allUsers
+
   socket.on('joinRoom', ({ ...user }, newUser: null | boolean) => {
     const { id, username, room, sid } = user;
     socket.join(room);
@@ -26,14 +21,12 @@ const StartListeners = (server: any, socket: any): void => {
     if (newUser === true) {
       msgs.sendChatBotMsg(
         room,
-        `🤗 Welcome to the ${titleCase(room)} room, ${username} - ${sid}! `
+        `🤗 Welcome to the ${titleCase(room)} room, ${username}! `
       );
     } else {
       msgs.sendChatBotMsg(
         room,
-        `🤗 Reconnected to the ${titleCase(room)} room, ${username} - ${
-          socket.id
-        }! `
+        `🤗 Reconnected to the ${titleCase(room)} room, ${username}!`
       );
     }
     // Send users and messages back to room
@@ -58,7 +51,6 @@ const StartListeners = (server: any, socket: any): void => {
     server.to(data.room).emit('stillTyping', typingArr);
   });
 
-  // Runs when server leaves the chat application
   socket.on('leaveRoom', ({ id, username, room }: User) => {
     msgs.sendChatBotMsg(room, `😥 ${username} has left the room `);
     users.removeTypingUser(username);
