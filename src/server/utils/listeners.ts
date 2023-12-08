@@ -6,7 +6,6 @@ import { titleCase } from '../../client/utils/helpers';
 const StartListeners = (server: any, socket: any): void => {
   console.log(`${socket.id} connected from listeners `);
   const connectedClients = server.sockets.sockets;
-
   const refreshRoom = (room: string) => {
     server.to(room).emit('roomUsers', users.getRoomUsers(room));
     server.to(room).emit('roomMessages', msgs.getRoomMessages(room));
@@ -18,7 +17,7 @@ const StartListeners = (server: any, socket: any): void => {
     users.getUser(id) === undefined &&
       users.addUser({ id, username, room, sid } as User);
 
-    newUser
+    newUser === true
       ? msgs.sendChatBotMsg(
           room,
           `🤗 Welcome to the ${titleCase(room)} room, ${username}! `
