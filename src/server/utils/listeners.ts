@@ -20,14 +20,12 @@ const StartListeners = (server: any, socket: any): void => {
     if (newUser === true) {
       msgs.sendChatBotMsg(
         room,
-        `🤗 Welcome to the ${titleCase(room)} room, ${username} - ${sid}! `
+        `🤗 Welcome to the ${titleCase(room)} room, ${username}! `
       );
     } else {
       msgs.sendChatBotMsg(
         room,
-        `🤗 Reconnected to the ${titleCase(room)} room, ${username} - ${
-          socket.id
-        }! `
+        `🤗 Reconnected to the ${titleCase(room)} room, ${username}!`
       );
     }
     // Send users and messages back to room

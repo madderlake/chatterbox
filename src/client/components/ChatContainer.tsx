@@ -18,7 +18,6 @@ export const ChatContainer = ({ ...props }) => {
   const [messageList, setMessageList] = useState<Message[]>([]);
 
   const roomName = titleCase(currentUser.room);
-  const manager = client.io;
 
   const handleLogOut = () => {
     const confirmLogOut = window.confirm(`Are you sure you want to logOut?`);
@@ -50,7 +49,6 @@ export const ChatContainer = ({ ...props }) => {
     client.on('roomMessages', (messages: Message[]) =>
       setMessageList(messages)
     );
-
     /* Reconnection */
     client.on('connect', () => {
       if (currentUser.sid !== client.id) {
