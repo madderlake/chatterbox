@@ -5,39 +5,30 @@ import { titleCase } from '../../client/utils/helpers';
 
 const StartListeners = (server: any, socket: any): void => {
   console.log(`${socket.id} connected from listeners `);
+  const connectedClients = server.sockets.sockets;
 
   const refreshRoom = (room: string) => {
     server.to(room).emit('roomUsers', users.getRoomUsers(room));
     server.to(room).emit('roomMessages', msgs.getRoomMessages(room));
   };
-  // TODO; make const for allUsers
+
   socket.on('joinRoom', ({ ...user }, newUser: null | boolean) => {
-    const { id, username, room } = user;
+    const { id, username, room, sid } = user;
     socket.join(room);
+    users.getUser(id) === undefined &&
+      users.addUser({ id, username, room, sid } as User);
 
-    // Welcome current user
-    if (newUser !== false) {
-      msgs.sendChatBotMsg(
-        room,
-        `🤗 Welcome to the ${titleCase(room)} room, ${username}! `
-      );
-
-      users.getUser(id) === undefined &&
-        users.addUser({ id, username, room } as User);
-    } else {
-      users.updateUserSid(id, socket.id);
-    }
-
+    newUser
+      ? msgs.sendChatBotMsg(
+          room,
+          `🤗 Welcome to the ${titleCase(room)} room, ${username}! `
+        )
+      : msgs.sendChatBotMsg(
+          room,
+          `🤗 Reconnected to the ${titleCase(room)} room, ${username}!`
+        );
     // Send users and messages back to room
     refreshRoom(room);
-  });
-
-  socket.on('reconnectUser', (user: User) => {
-    if (users.getUser(user.id)) return;
-    users.addUser(user);
-    users.updateUserSid(user.id, socket.id);
-    msgs.sendChatBotMsg(user.room, `${user.username} has reconnected`);
-    refreshRoom(user.room);
   });
 
   socket.on('chatMessage', async (msg: Message) => {
@@ -58,7 +49,6 @@ const StartListeners = (server: any, socket: any): void => {
     server.to(data.room).emit('stillTyping', typingArr);
   });
 
-  // Runs when server leaves the chat application
   socket.on('leaveRoom', ({ id, username, room }: User) => {
     msgs.sendChatBotMsg(room, `😥 ${username} has left the room `);
     users.removeTypingUser(username);
@@ -67,10 +57,14 @@ const StartListeners = (server: any, socket: any): void => {
     refreshRoom(room);
   });
 
-  socket.on('logOut', ({ id, username, room }: User) => {
+  socket.on('logOut', ({ id, username, room, sid }: User) => {
     msgs.sendChatBotMsg(room, `😥 ${username} has logged off `);
     users.removeTypingUser(username);
     socket.leave(room);
+    connectedClients.forEach((socket: any) => {
+      if (socket.id === sid) socket.disconnect(true);
+    });
+
     users.removeUser(id);
     refreshRoom(room);
   });
