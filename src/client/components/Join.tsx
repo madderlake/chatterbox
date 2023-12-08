@@ -10,7 +10,7 @@ export const Join = ({ ...props }) => {
     username: '',
     room: '',
     id: uuidv4(),
-    sid: client.id,
+    sid: '',
   });
 
   const handleSubmit = (ev: React.SyntheticEvent) => {

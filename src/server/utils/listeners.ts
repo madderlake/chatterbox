@@ -17,17 +17,15 @@ const StartListeners = (server: any, socket: any): void => {
     users.getUser(id) === undefined &&
       users.addUser({ id, username, room, sid } as User);
 
-    if (newUser === true) {
-      msgs.sendChatBotMsg(
-        room,
-        `🤗 Welcome to the ${titleCase(room)} room, ${username}! `
-      );
-    } else {
-      msgs.sendChatBotMsg(
-        room,
-        `🤗 Reconnected to the ${titleCase(room)} room, ${username}!`
-      );
-    }
+    newUser === true
+      ? msgs.sendChatBotMsg(
+          room,
+          `🤗 Welcome to the ${titleCase(room)} room, ${username}! `
+        )
+      : msgs.sendChatBotMsg(
+          room,
+          `🤗 Reconnected to the ${titleCase(room)} room, ${username}!`
+        );
     // Send users and messages back to room
     refreshRoom(room);
   });

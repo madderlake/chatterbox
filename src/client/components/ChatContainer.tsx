@@ -9,7 +9,7 @@ import type { User, Message } from '../../../types';
 
 export const ChatContainer = ({ ...props }) => {
   const client = useContext(ClientContext);
-
+  const manager = client.io;
   const [currentUser, setCurrentUser] = useState<User>({
     ...props.history.location.state,
   });
