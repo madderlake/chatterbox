@@ -30,6 +30,7 @@
     "dev": "env-cmd -f .env.development react-scripts start",
     "build-js": "BUILD_PATH='./dist' react-scripts build",
     "build": "npm-run-all build:css build-js",
+    "serve": "ts-node src/server.ts",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
