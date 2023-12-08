@@ -12,17 +12,18 @@ export const ChatContainer = ({ ...props }) => {
 
   const [currentUser, setCurrentUser] = useState<User>({
     ...props.history.location.state,
-    sid: '',
   });
 
   const [userList, setUserList] = useState<User[]>([]);
   const [messageList, setMessageList] = useState<Message[]>([]);
 
   const roomName = titleCase(currentUser.room);
+  const manager = client.io;
 
   const handleLogOut = () => {
     const leaveRoom = window.confirm(`Are you sure you want to logOut?`);
     leaveRoom && client.emit('logOut', { ...currentUser });
+    manager.skipConnect = true;
     client.disconnect();
     props.history.replace('/');
   };
@@ -43,25 +44,23 @@ export const ChatContainer = ({ ...props }) => {
   };
 
   useEffect(() => {
-    document.title = `Chatterbox - ${
-      currentUser.username !== undefined && currentUser.username
-    }`;
-    client.on('roomUsers', (users: User[]) => setUserList(users));
+    document.title = `Chatterbox - ${currentUser.username}`;
+    client.on('roomUsers', (users: User[]) => {
+      // console.log(users);
+      setUserList(users);
+    });
     client.on('roomMessages', (messages: Message[]) =>
       setMessageList(messages)
     );
-    client.on('connect', () => {
-      // socket disconnects, server is running
-      if (currentUser.sid === '') {
-        client.emit('joinRoom', { ...currentUser }, false);
-      } else {
-        // server is restarted
-        client.emit('reconnectUser', { ...currentUser });
-      }
 
-      setCurrentUser({ ...currentUser, sid: client.id });
-      return () => client.removeAllListeners();
+    client.on('connect', () => {
+      //console.log(currentUser.sid, client.id);
+      if (currentUser.sid !== client.id) {
+        setCurrentUser({ ...currentUser, sid: client.id });
+        client.emit('joinRoom', { ...currentUser }, false);
+      }
     });
+    return () => client.removeAllListeners();
   }, [client, currentUser, userList, messageList]);
 
   return (
