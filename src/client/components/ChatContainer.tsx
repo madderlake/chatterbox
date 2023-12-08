@@ -4,7 +4,7 @@ import MessageList from './MessageList';
 import AddMessage from './AddMessage';
 import { ClientContext } from '../contexts/ClientContext';
 import { titleCase } from '../utils/helpers';
-import { rooms } from './room-list';
+import { rooms } from './room-data';
 import type { User, Message } from '../../../types';
 
 export const ChatContainer = ({ ...props }) => {
@@ -20,36 +20,36 @@ export const ChatContainer = ({ ...props }) => {
   const roomName = titleCase(currentUser.room);
 
   const handleLogOut = () => {
-    const leaveRoom = window.confirm(`Are you sure you want to logOut?`);
-    leaveRoom && client.emit('logOut', { ...currentUser });
+    const confirmLogOut = window.confirm(`Are you sure you want to logOut?`);
+    confirmLogOut && client.emit('logOut', { ...currentUser });
     client.disconnect();
     props.history.replace('/');
   };
 
   const handleSwitchRoom = (ev: React.SyntheticEvent) => {
     const newRoom = (ev.target as HTMLInputElement).value;
-    if (
-      window.confirm(`Are you sure you want to switch to the ${newRoom} room?`)
-    ) {
-      client.emit('switchRoom', { ...currentUser }, newRoom);
-      setCurrentUser({ ...currentUser, room: newRoom });
-      client.emit('joinRoom', { ...currentUser, room: newRoom }, true);
-      props.history.push({
-        pathname: `/${newRoom}/${currentUser.username}/${currentUser.id}`,
-        state: { ...currentUser, room: newRoom },
-      });
-    }
+    const confirmSwitch = window.confirm(
+      `Are you sure you want to switch to the ${newRoom} room, ${currentUser.username}?`
+    );
+    confirmSwitch && client.emit('switchRoom', { ...currentUser }, newRoom);
+    setCurrentUser({ ...currentUser, room: newRoom });
+    client.emit('joinRoom', { ...currentUser, room: newRoom }, true);
+    props.history.push({
+      pathname: `/${newRoom}/${currentUser.username}/${currentUser.id}`,
+      state: { ...currentUser, room: newRoom },
+    });
   };
 
   useEffect(() => {
     document.title = `Chatterbox - ${currentUser.username}`;
     client.on('roomUsers', (users: User[]) => {
-      // console.log(users);
       setUserList(users);
     });
+
     client.on('roomMessages', (messages: Message[]) =>
       setMessageList(messages)
     );
+
     /* Reconnection */
     client.on('connect', () => {
       if (currentUser.sid !== client.id) {
