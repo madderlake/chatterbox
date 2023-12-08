@@ -18,6 +18,7 @@ export const ChatContainer = ({ ...props }) => {
   const [messageList, setMessageList] = useState<Message[]>([]);
 
   const roomName = titleCase(currentUser.room);
+  const manager = client.io;
 
   const handleLogOut = () => {
     const confirmLogOut = window.confirm(`Are you sure you want to logOut?`);
