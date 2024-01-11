@@ -1,7 +1,7 @@
 import type { User } from '../../../types';
 
 // Init
-const users: User[] = [];
+export const users: User[] = [];
 const typingUsers = new Set();
 // Add user
 export const addUser = (user: User) => user.sid !== '' && users.push(user);

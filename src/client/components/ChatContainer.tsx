@@ -12,11 +12,11 @@ export const ChatContainer = ({ ...props }) => {
   const manager = client.io;
   const [currentUser, setCurrentUser] = useState<User>({
     ...props.history.location.state,
+    messages: [],
   });
 
   const [userList, setUserList] = useState<User[]>([]);
   const [messageList, setMessageList] = useState<Message[]>([]);
-
   const roomName = titleCase(currentUser.room);
 
   const handleLogOut = () => {
@@ -50,6 +50,15 @@ export const ChatContainer = ({ ...props }) => {
     client.on('roomMessages', (messages: Message[]) =>
       setMessageList(messages)
     );
+
+    client.on('privateServerMsg', (to: string, { ...message }: Message) => {
+      const messages = currentUser.messages || [];
+      if (to === currentUser.id)
+        setCurrentUser({
+          ...currentUser,
+          messages: [...messages, { ...message }],
+        });
+    });
     /* Reconnection */
     client.on('connect', () => {
       if (currentUser.sid !== client.id) {
@@ -59,7 +68,6 @@ export const ChatContainer = ({ ...props }) => {
     });
     return () => client.removeAllListeners();
   }, [client, currentUser, userList, messageList]);
-
   return (
     <div className="container w-lg-80">
       <div className="header d-flex justify-content-between">

@@ -3,6 +3,8 @@ export type User = {
   room: string;
   id: string;
   sid: string;
+  online?: boolean;
+  messages?: Message[];
 };
 
 export type Author = Omit<User, 'sid'>;
@@ -10,6 +12,6 @@ export type Author = Omit<User, 'sid'>;
 export type Message = {
   author: Author;
   text: string;
-  room: string;
+  room?: string;
   time?: string;
 };

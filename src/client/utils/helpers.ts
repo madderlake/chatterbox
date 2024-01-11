@@ -1,3 +1,2 @@
-export const titleCase = (txt: string) =>
-  txt !== undefined &&
-  txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+export const titleCase = (str: string) =>
+  str !== undefined && str.replace(/^(.)|\s+(.)/g, (c) => c.toUpperCase());

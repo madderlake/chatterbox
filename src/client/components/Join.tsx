@@ -10,14 +10,14 @@ export const Join = ({ ...props }) => {
     username: '',
     room: '',
     id: uuidv4(),
-    sid: client.id,
+    sid: '',
+    online: false,
+    messages: [],
   });
 
   const handleSubmit = (ev: React.SyntheticEvent) => {
     ev.preventDefault();
-    client.connect();
-    client.on('connect', () => setState({ ...state, sid: client.id }));
-    client.emit('joinRoom', { ...state }, true);
+    client.emit('joinRoom', { ...state });
 
     props.history.push({
       pathname: `/${state.room}/${state.username}/${state.id}`,
@@ -27,7 +27,14 @@ export const Join = ({ ...props }) => {
   };
   useEffect(() => {
     document.title = `Chatterbox - Join`;
-  }, []);
+    client.on('connect', () => {
+      setState({ ...state, sid: client.id, online: true, messages: [] });
+    });
+
+    return () => {
+      client.off('connect');
+    };
+  }, [client, state]);
 
   return (
     <div className="join-chat container">
