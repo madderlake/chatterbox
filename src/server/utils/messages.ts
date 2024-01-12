@@ -1,4 +1,4 @@
-import type { Message } from '../../../types';
+import type { Message, User } from '../../../types';
 import { users } from './users';
 const messages: Message[] = [];
 // Set time
