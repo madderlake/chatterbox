@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useMemo } from 'react';
 import MessageComponent from './Message';
 
 import type { Message, User } from '../../../types';
@@ -20,15 +20,26 @@ const MessageList = ({
       })
     );
   };
+
+  const serverMessages = currentUser.messages?.filter(
+    (message) => (message.author.id = '0')
+  );
+
+  const allMessageList = useMemo((): Message[] => {
+    return (
+      (serverMessages !== undefined && messageList.concat(serverMessages)) || []
+    );
+  }, [serverMessages, messageList]);
+
   useEffect(() => {
     scrollToBottom();
-  }, [messageList]);
+  }, [allMessageList]);
   return (
     <>
       <h4>Chat Feed</h4>
       <div className="message-list">
-        {messageList.length > 0 &&
-          messageList.map((msg, index) => {
+        {allMessageList.length > 0 &&
+          allMessageList.map((msg, index) => {
             return (
               <MessageComponent
                 message={msg}

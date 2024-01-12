@@ -1,8 +1,8 @@
 import type { Message } from '../../../types';
-
+import { users } from './users';
 const messages: Message[] = [];
-
-// Time utility
+console.log(messages);
+// Set time
 const setTime = (): string => {
   const hrs = new Date().getHours();
   const mins = new Date().getMinutes();
@@ -21,15 +21,29 @@ export const captureMessage = ({ ...message }: Message): Message => {
 };
 
 // Send message from ChatBot
-export const sendChatBotMsg = (room: string, text: string) => {
-  const chatBot = { username: 'Chatterbug', id: '0', room: '' };
+export const chatBot = { username: 'Chatterbug', id: '0', room: '' };
+
+export const privateServerMessage = (id: string, { ...message }: Message) => {
+  const recipient = users.find((user) => user.id === id);
+  console.log('recipient', recipient);
+  // const message = captureMessage({ text, author });
+  message.time = setTime();
+  recipient?.messages?.push({ ...message });
+  console.log('recipient', recipient);
+  return message;
+};
+
+export const addChatBotMsg = (room: string, text: string) => {
   return captureMessage({
     author: chatBot,
     text,
     room,
-    time: setTime(),
   });
 };
+
+// export const addServerMsg = (to: string, text: string) => {
+//   return captureMessage({ author: chatBot, text });
+// };
 
 // Get room messages
 export const getRoomMessages = (room: string) =>

@@ -12,6 +12,7 @@ export const ChatContainer = ({ ...props }) => {
   const manager = client.io;
   const [currentUser, setCurrentUser] = useState<User>({
     ...props.history.location.state,
+    messages: [],
   });
 
   const [userList, setUserList] = useState<User[]>([]);
@@ -41,22 +42,32 @@ export const ChatContainer = ({ ...props }) => {
     });
   };
 
+  const newUser =
+    currentUser.sid !== undefined && currentUser.sid !== client.id;
+
   useEffect(() => {
     document.title = `Chatterbox - ${currentUser.username}`;
     client.on('roomUsers', (users: User[]) => {
       setUserList(users);
     });
+    /* Reconnection */
+    client.on('connect', () => {
+      setCurrentUser({ ...currentUser, sid: client.id });
+      client.emit('joinRoom', { ...currentUser }, newUser);
+    });
 
     client.on('roomMessages', (messages: Message[]) =>
       setMessageList(messages)
     );
-    /* Reconnection */
-    client.on('connect', () => {
-      if (currentUser.sid !== client.id) {
-        setCurrentUser({ ...currentUser, sid: client.id });
-        client.emit('joinRoom', { ...currentUser }, false);
-      }
+    client.on('privateServerMsg', (to: string, { ...message }: Message) => {
+      const messages = currentUser.messages || [];
+      if (to === currentUser.id)
+        setCurrentUser({
+          ...currentUser,
+          messages: [...messages, { ...message }],
+        });
     });
+
     return () => client.removeAllListeners();
   }, [client, currentUser, userList, messageList]);
 
