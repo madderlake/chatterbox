@@ -5,35 +5,42 @@ import { titleCase } from '../../client/utils/helpers';
 
 const StartListeners = (server: any, socket: any): void => {
   console.log(`${socket.id} connected from listeners `);
+
   const connectedClients = server.sockets.sockets;
+
   const refreshRoom = (room: string) => {
     server.to(room).emit('roomUsers', users.getRoomUsers(room));
     server.to(room).emit('roomMessages', msgs.getRoomMessages(room));
   };
 
-  socket.on('joinRoom', ({ ...user }, newUser: null | boolean) => {
-    const { id, username, room, sid } = user;
+  socket.on('joinRoom', ({ ...user }, newUser: boolean) => {
+    const { id, username, room } = user;
     socket.join(room);
-    users.getUser(id) === undefined &&
-      users.addUser({ id, username, room, sid } as User);
+    users.getUser(id) === undefined && users.addUser({ ...user } as User);
 
-    newUser === true
-      ? msgs.sendChatBotMsg(
-          room,
-          `🤗 Welcome to the ${titleCase(room)} room, ${username}! `
-        )
-      : msgs.sendChatBotMsg(
-          room,
-          `🤗 Reconnected to the ${titleCase(room)} room, ${username}!`
-        );
-    // Send users and messages back to room
+    if (newUser) {
+      msgs.addChatBotMsg(
+        room,
+        `🤗 Welcome to the ${titleCase(room)} room, ${username}! `
+      );
+    } else {
+      users.updateUserSid(id, socket.id);
+
+      const privateMsg = msgs.privateChatBotMsg(id, {
+        text: `⚡️ ${username} reconnected!`,
+        author: msgs.chatBot,
+      });
+      server.to(socket.id).emit('privateServerMsg', id, { ...privateMsg });
+    }
+
+    // Send users and messages back to client
     refreshRoom(room);
   });
 
   socket.on('chatMessage', async (msg: Message) => {
     const { author, text, room } = msg;
     msgs.captureMessage({ author, text, room });
-    refreshRoom(room);
+    room !== undefined && refreshRoom(room);
   });
 
   socket.on('typing', (data: Author) => {
@@ -49,15 +56,15 @@ const StartListeners = (server: any, socket: any): void => {
   });
 
   socket.on('leaveRoom', ({ id, username, room }: User) => {
-    msgs.sendChatBotMsg(room, `😥 ${username} has left the room `);
+    msgs.addChatBotMsg(room, `😥 ${username} has left the room `);
     users.removeTypingUser(username);
     socket.leave(room);
     users.removeUser(id);
-    refreshRoom(room);
+    room !== undefined && refreshRoom(room);
   });
 
   socket.on('logOut', ({ id, username, room, sid }: User) => {
-    msgs.sendChatBotMsg(room, `😥 ${username} has logged off `);
+    msgs.addChatBotMsg(room, `😥 ${username} has logged off `);
     users.removeTypingUser(username);
     socket.leave(room);
     connectedClients.forEach((socket: any) => {
@@ -65,17 +72,17 @@ const StartListeners = (server: any, socket: any): void => {
     });
 
     users.removeUser(id);
-    refreshRoom(room);
+    room !== undefined && refreshRoom(room);
   });
 
   socket.on('switchRoom', ({ ...user }, newRoom: string) => {
     const { id, username, room } = user;
-    msgs.sendChatBotMsg(room, `😥 ${username} has switched rooms `);
+    msgs.addChatBotMsg(room, `😥 ${username} has switched rooms `);
     users.switchUserRoom(id, newRoom);
     socket.leave(room);
     socket.join(newRoom);
-    refreshRoom(room);
-    refreshRoom(newRoom);
+    room !== undefined && refreshRoom(room);
+    room !== undefined && refreshRoom(newRoom);
   });
 
   socket.on('disconnect', (reason: string) => {

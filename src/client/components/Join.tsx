@@ -10,13 +10,13 @@ export const Join = ({ ...props }) => {
     username: '',
     room: '',
     id: uuidv4(),
-    sid: client.id,
+    sid: undefined,
+    messages: [],
   });
 
   const handleSubmit = (ev: React.SyntheticEvent) => {
     ev.preventDefault();
     client.connect();
-    client.on('connect', () => setState({ ...state, sid: client.id }));
     client.emit('joinRoom', { ...state }, true);
 
     props.history.push({
@@ -27,7 +27,8 @@ export const Join = ({ ...props }) => {
   };
   useEffect(() => {
     document.title = `Chatterbox - Join`;
-  }, []);
+    return () => client.off('connect');
+  }, [client]);
 
   return (
     <div className="join-chat container">
