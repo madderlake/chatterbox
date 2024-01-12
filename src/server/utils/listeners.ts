@@ -5,6 +5,7 @@ import { titleCase } from '../../client/utils/helpers';
 
 const StartListeners = (server: any, socket: any): void => {
   console.log(`${socket.id} connected from listeners `);
+
   const connectedClients = server.sockets.sockets;
   const refreshRoom = (room: string) => {
     server.to(room).emit('roomUsers', users.getRoomUsers(room));
@@ -23,11 +24,12 @@ const StartListeners = (server: any, socket: any): void => {
       );
     } else {
       users.updateUserSid(id, socket.id);
-      const serverMsg = msgs.privateServerMessage(id, {
+
+      const privateMsg = msgs.privateChatBotMsg(id, {
         text: `⚡️ ${username} reconnected!`,
         author: msgs.chatBot,
       });
-      server.to(socket.id).emit('privateServerMsg', id, { ...serverMsg });
+      server.to(socket.id).emit('privateServerMsg', id, { ...privateMsg });
     }
 
     // Send users and messages back to client

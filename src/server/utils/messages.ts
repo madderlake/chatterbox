@@ -1,4 +1,4 @@
-import type { Message } from '../../../types';
+import type { Message, User } from '../../../types';
 import { users } from './users';
 const messages: Message[] = [];
 console.log(messages);
@@ -13,37 +13,31 @@ const setTime = (): string => {
   return hours + ':' + minutes + ampm;
 };
 
-// Add message to chat
-export const captureMessage = ({ ...message }: Message): Message => {
+// Add message to chat or to user messages
+export const captureMessage = (
+  { ...message }: Message,
+  id?: string
+): Message => {
   message.time = setTime();
-  messages.push(message);
+  if (!id) {
+    messages.push(message);
+  } else {
+    const foundUser = users.find((user) => user.id === id);
+    foundUser?.messages?.push(message);
+  }
   return message;
 };
 
 // Send message from ChatBot
 export const chatBot = { username: 'Chatterbug', id: '0', room: '' };
 
-export const privateServerMessage = (id: string, { ...message }: Message) => {
-  const recipient = users.find((user) => user.id === id);
-  console.log('recipient', recipient);
-  // const message = captureMessage({ text, author });
-  message.time = setTime();
-  recipient?.messages?.push({ ...message });
-  console.log('recipient', recipient);
-  return message;
+export const privateChatBotMsg = (id: string, { ...message }: Message) => {
+  return captureMessage({ ...message }, id);
 };
 
 export const addChatBotMsg = (room: string, text: string) => {
-  return captureMessage({
-    author: chatBot,
-    text,
-    room,
-  });
+  return captureMessage({ author: chatBot, room, text });
 };
-
-// export const addServerMsg = (to: string, text: string) => {
-//   return captureMessage({ author: chatBot, text });
-// };
 
 // Get room messages
 export const getRoomMessages = (room: string) =>
