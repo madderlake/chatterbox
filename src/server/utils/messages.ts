@@ -1,7 +1,6 @@
 import type { Message } from '../../../types';
 import { users } from './users';
 const messages: Message[] = [];
-
 // Set time
 const setTime = (): string => {
   const hrs = new Date().getHours();
