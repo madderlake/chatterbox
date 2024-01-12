@@ -1,7 +1,7 @@
-import type { Message, User } from '../../../types';
+import type { Message } from '../../../types';
 import { users } from './users';
 const messages: Message[] = [];
-console.log(messages);
+
 // Set time
 const setTime = (): string => {
   const hrs = new Date().getHours();
