@@ -69,7 +69,7 @@ export const ChatContainer = ({ ...props }) => {
     });
 
     return () => client.removeAllListeners();
-  }, [client, currentUser, userList, messageList]);
+  }, [newUser, client, currentUser, userList, messageList]);
 
   return (
     <div className="container w-lg-80">
