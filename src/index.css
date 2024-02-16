@@ -27,12 +27,13 @@ body {
 }
 .msg-wrapper {
   padding-top: 3.25rem;
+  max-height: 30em;
 }
 .sidebar,
 .chat-feed,
 .messages {
   padding: 1rem;
-  height: 25em;
+  height: auto;
 }
 
 .sidebar {

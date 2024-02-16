@@ -12,7 +12,12 @@ const StartListeners = (server: any, socket: any): void => {
     server.to(room).emit("roomUsers", users.getRoomUsers(room));
     server.to(room).emit("roomMessages", msgs.getRoomMessages(room));
   };
-
+  socket.on("getRoomMessages", (room: string) => {
+    server.to(room).emit("roomMessages", msgs.getRoomMessages(room));
+  });
+  socket.on("getRoomUsers", (room: string) => {
+    server.to(room).emit("roomUsers", users.getRoomUsers(room));
+  });
   socket.on("joinRoom", ({ ...user }) => {
     const { id, username, room } = user;
     socket.join(room);
