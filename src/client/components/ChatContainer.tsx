@@ -1,11 +1,11 @@
-import React, { useContext, useState, useEffect } from 'react';
-import UserList from './UserList';
-import MessageList from './MessageList';
-import AddMessage from './AddMessage';
-import { ClientContext } from '../contexts/ClientContext';
-import { titleCase } from '../utils/helpers';
-import { rooms } from './room-data';
-import type { User, Message } from '../../../types';
+import React, { useContext, useState, useEffect } from "react";
+import Header from "./Header";
+import UserList from "./UserList";
+import MessageList from "./MessageList";
+import AddMessage from "./AddMessage";
+import { ClientContext } from "../contexts/ClientContext";
+import { titleCase } from "../utils/helpers";
+import type { User, Message } from "../../../types";
 
 export const ChatContainer = ({ ...props }) => {
   const client = useContext(ClientContext);
@@ -14,7 +14,15 @@ export const ChatContainer = ({ ...props }) => {
     ...props.history.location.state,
     messages: [],
   });
+  const [isPrivate, setIsPrivate] = useState<boolean>(false);
+  const [serverMessage, setServerMessages] = useState("");
 
+  const togglePrivate = () => setIsPrivate(!isPrivate);
+  if (currentUser.username === undefined)
+    props.history.push({
+      pathname: `/`,
+      from: "chat",
+    });
   const [userList, setUserList] = useState<User[]>([]);
   const [messageList, setMessageList] = useState<Message[]>([]);
 
@@ -22,10 +30,10 @@ export const ChatContainer = ({ ...props }) => {
 
   const handleLogOut = () => {
     const confirmLogOut = window.confirm(`Are you sure you want to logOut?`);
-    confirmLogOut && client.emit('logOut', { ...currentUser });
+    confirmLogOut && client.emit("logOut", { ...currentUser });
     manager.skipReconnection = true;
     client.disconnect();
-    props.history.replace('/');
+    props.history.replace("/");
   };
 
   const handleSwitchRoom = (ev: React.SyntheticEvent) => {
@@ -33,9 +41,9 @@ export const ChatContainer = ({ ...props }) => {
     const confirmSwitch = window.confirm(
       `Are you sure you want to switch to the ${newRoom} room, ${currentUser.username}?`
     );
-    confirmSwitch && client.emit('switchRoom', { ...currentUser }, newRoom);
+    confirmSwitch && client.emit("switchRoom", { ...currentUser }, newRoom);
     setCurrentUser({ ...currentUser, room: newRoom });
-    client.emit('joinRoom', { ...currentUser, room: newRoom }, true);
+    client.emit("joinRoom", { ...currentUser, room: newRoom }, true);
     props.history.push({
       pathname: `/${newRoom}/${currentUser.username}/${currentUser.id}`,
       state: { ...currentUser, room: newRoom },
@@ -43,75 +51,72 @@ export const ChatContainer = ({ ...props }) => {
   };
 
   const newUser =
-    currentUser.sid !== undefined && currentUser.sid !== client.id;
+    // currentUser.sid !== undefined && currentUser.sid !== client.id;
+    currentUser.sid === undefined;
 
   useEffect(() => {
     document.title = `Chatterbox - ${currentUser.username}`;
-    client.on('roomUsers', (users: User[]) => {
-      setUserList(users);
-    });
-    /* Reconnection */
-    client.on('connect', () => {
+    // if (newUser) setCurrentUser({ ...currentUser, sid: client.id });
+    client.on("updateUserSid", (sid: string) => {
+      console.log(sid);
       setCurrentUser({ ...currentUser, sid: client.id });
-      client.emit('joinRoom', { ...currentUser }, newUser);
     });
+    client.on("connect", () => {
+      client.emit("joinRoom", { ...currentUser });
+      console.log(newUser);
 
-    client.on('roomMessages', (messages: Message[]) =>
-      setMessageList(messages)
-    );
-    client.on('privateServerMsg', (to: string, { ...message }: Message) => {
-      const messages = currentUser.messages || [];
-      if (to === currentUser.id)
-        setCurrentUser({
-          ...currentUser,
-          messages: [...messages, { ...message }],
-        });
+      // client.on("privateServerMsg", (to: string, { ...message }: Message) => {
+      //   const messages = currentUser.messages || [];
+      //   if (to === currentUser.id)
+      //     setCurrentUser({
+      //       ...currentUser,
+      //       messages: [...messages, { ...message }],
+      //     });
     });
 
     return () => client.removeAllListeners();
-  }, [newUser, client, currentUser, userList, messageList]);
+    // });
+  }, [newUser, client, currentUser]);
+
+  useEffect(() => {
+    client.on("roomUsers", (users: User[]) => {
+      setUserList(users);
+    });
+
+    client.on("roomMessages", (messages: Message[]) =>
+      setMessageList(messages)
+    );
+
+    client.on("serverMsg", (message: Message) => {
+      console.log("server msg:", message);
+      setServerMessages(message.text);
+    });
+
+    return () => client.removeAllListeners();
+  }, [client, userList, messageList]);
 
   return (
     <div className="container w-lg-80">
-      <div className="header d-flex justify-content-between">
-        <h4 className="text-no-wrap">
-          The {`${roomName}`} Room
-          <span className="d-block small">
-            <small>@Chatterbox</small>
-          </span>
-        </h4>
-
-        <div className="d-inline-flex text-end flex-column-reverse">
-          <select
-            required
-            className="btn btn-secondary btn-sm"
-            style={{
-              appearance: 'none',
-            }}
-            name="switch-room"
-            id="switch-room"
-            onChange={handleSwitchRoom}>
-            <option value="">Switch Rooms</option>
-            {rooms.map(({ key, name }, i) => (
-              <option value={key} key={i}>
-                {name}
-              </option>
-            ))}
-          </select>
-          <button
-            className="btn btn-secondary btn-sm"
-            onClick={handleLogOut}
-            style={{ marginBottom: 8 }}>
-            Log Out &raquo;
-          </button>
-        </div>
-      </div>
+      <Header
+        room={roomName}
+        handleSwitch={handleSwitchRoom}
+        handleLogOut={handleLogOut}
+      />
       <div className="d-flex">
         <div className="sidebar col-lg-3 col-xs-1">
-          <UserList userList={userList} currentUser={currentUser} />
+          <UserList
+            userList={userList}
+            updatePrivate={togglePrivate}
+            privateMode={isPrivate}
+            currentUser={currentUser}
+          />
         </div>
         <div className="messages w-100 overflow-auto">
-          <MessageList messageList={messageList} currentUser={currentUser} />
+          <MessageList
+            messageList={messageList}
+            currentUser={currentUser}
+            serverMessage={serverMessage}
+          />
         </div>
       </div>
       <div className="d-flex">

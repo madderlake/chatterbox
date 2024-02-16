@@ -4,16 +4,16 @@ import React, {
   useRef,
   useEffect,
   KeyboardEvent,
-} from 'react';
-import { ClientContext } from '../contexts/ClientContext';
-import { Author, Message } from '../../../types';
+} from "react";
+import { ClientContext } from "../contexts/ClientContext";
+import { Author, Message } from "../../../types";
 
 interface AddMessageProps {
   author: Author;
 }
 const AddMessage = ({ author }: AddMessageProps): JSX.Element => {
   const client = useContext(ClientContext);
-  const [message, setMessage] = useState<Omit<Message, 'time'> | null>(null);
+  const [message, setMessage] = useState<Omit<Message, "time"> | null>(null);
   const [typing, setTyping] = useState<boolean | null>(null);
 
   const notesRef = useRef<HTMLParagraphElement>(null);
@@ -21,10 +21,10 @@ const AddMessage = ({ author }: AddMessageProps): JSX.Element => {
   const handleSubmit = (ev: React.SyntheticEvent) => {
     ev.preventDefault();
     setTyping(false);
-    client.emit('typingEnd', { ...author });
+    client.emit("typingEnd", { ...author });
     message !== null &&
       message.text &&
-      client.emit('chatMessage', {
+      client.emit("chatMessage", {
         author: author,
         text: message.text,
         room: author.room,
@@ -33,7 +33,7 @@ const AddMessage = ({ author }: AddMessageProps): JSX.Element => {
   };
   const inputRef = useRef<HTMLInputElement>(null);
   const handleTyping = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key !== 'Enter' && e.key !== 'Tab') {
+    if (e.key !== "Enter" && e.key !== "Tab") {
       setTyping(true);
     } else {
       setTyping(false);
@@ -41,10 +41,10 @@ const AddMessage = ({ author }: AddMessageProps): JSX.Element => {
   };
 
   const formatTypingText = (arr: string[]): string => {
-    if (arr.length < 1) return '';
+    if (arr.length < 1) return "";
     const lastItem = arr[arr.length - 1];
     let typingString: string;
-    const delimiter = arr.length > 2 ? ', ' : ' and ';
+    const delimiter = arr.length > 2 ? ", " : " and ";
     if (arr.length === 1) {
       typingString = `${[...arr]} is typing...`;
     } else {
@@ -57,14 +57,14 @@ const AddMessage = ({ author }: AddMessageProps): JSX.Element => {
   useEffect(() => {
     inputRef.current && inputRef.current.focus();
     const emitString =
-      typing === true ? 'typing' : typing === false ? 'typingEnd' : null;
+      typing === true ? "typing" : typing === false ? "typingEnd" : null;
     emitString !== null && client.emit(emitString, { ...author });
 
     const onString =
-      typing === true ? 'showTyping' : typing === false ? 'stillTyping' : null;
+      typing === true ? "showTyping" : typing === false ? "stillTyping" : null;
 
     client.on(onString, (data: string[]) => {
-      const typingText = data.length > 0 ? formatTypingText(data) : '';
+      const typingText = data.length > 0 ? formatTypingText(data) : "";
       if (notesRef.current !== null) {
         notesRef.current.textContent = typingText;
       }
@@ -77,7 +77,7 @@ const AddMessage = ({ author }: AddMessageProps): JSX.Element => {
           type="text"
           ref={inputRef}
           placeholder="Type your Message"
-          value={message !== null ? message.text : ''}
+          value={message !== null ? message.text : ""}
           onChange={(ev) =>
             setMessage({
               author: author,
