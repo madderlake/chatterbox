@@ -31,7 +31,6 @@ const MessageList = ({
     });
   }, [messageList]);
 
-  // console.log(allMessageList);
   useEffect(() => {
     scrollToBottom();
   }, [allMessageList]);
