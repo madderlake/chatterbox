@@ -1,13 +1,20 @@
-import React from 'react';
-import cn from 'classnames';
-import { User } from '../../../types';
+import React from "react";
+import cn from "classnames";
+import { User } from "../../../types";
 
 interface UserListProps {
   currentUser: User;
   userList: User[];
+  privateMode: boolean;
+  updatePrivate: () => void;
 }
 
-const UserList = ({ userList, currentUser }: UserListProps): JSX.Element => {
+const UserList = ({
+  userList,
+  currentUser,
+  updatePrivate,
+  privateMode,
+}: UserListProps): JSX.Element => {
   return (
     <>
       <h4>Who's Online?</h4>
@@ -19,9 +26,11 @@ const UserList = ({ userList, currentUser }: UserListProps): JSX.Element => {
               username !== currentUser.username && (
                 <li
                   key={`usr-${idx + 1}`}
-                  className={cn('user', {
+                  onClick={updatePrivate}
+                  className={cn("user", {
                     current: username === currentUser.username,
-                  })}>
+                  })}
+                >
                   {username}
                 </li>
               )

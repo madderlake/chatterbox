@@ -1,13 +1,13 @@
-import * as express from 'express';
-import * as http from 'http';
-import * as cors from 'cors';
-import * as path from 'path';
+import * as express from "express";
+import * as http from "http";
+import * as cors from "cors";
+import * as path from "path";
 
-import { Server } from 'socket.io';
+import { Server } from "socket.io";
 
 //Types
-import type { User, Message } from '../types';
-import StartListeners from './server/utils/listeners';
+import type { User, Message } from "../types";
+import StartListeners from "./server/listeners";
 
 const app = express();
 const httpServer = http.createServer(app);
@@ -34,20 +34,20 @@ interface InterServerEvents {
 app.use(cors());
 
 const corsOptions = {
-  origin: '*',
-  methods: ['GET', 'OPTIONS'],
+  origin: "*",
+  methods: ["GET", "OPTIONS"],
 };
 // Have Node serve the files for our built React app
-app.use(express.static(path.resolve(__dirname, '../dist')));
+app.use(express.static(path.resolve(__dirname, "../dist")));
 
 // Handle GET requests to /api route
-app.get('/', (req, res) => {
-  res.json({ message: 'Hello from local server!' });
+app.get("/", (req, res) => {
+  res.json({ message: "Hello from local server!" });
 });
 
 // All other GET requests not handled before will return our React app
-app.get('/*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../dist', 'index.html'));
+app.get("/*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../dist", "index.html"));
 });
 
 export const io = new Server<
@@ -58,13 +58,13 @@ export const io = new Server<
   /* options */
   connectionStateRecovery: {},
   cors: corsOptions,
-  transports: ['websocket', 'polling'],
+  transports: ["websocket", "polling"],
 });
 
 httpServer.listen(PORT, function () {
   console.log(`listening on port ${PORT}`);
 });
 
-io.on('connect', (socket: any) => {
+io.on("connect", (socket: any) => {
   StartListeners(io, socket);
 });

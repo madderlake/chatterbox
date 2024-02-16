@@ -1,14 +1,14 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { v4 as uuidv4 } from 'uuid';
-import { ClientContext } from '../contexts/ClientContext';
-import { rooms } from './room-data';
-import type { User } from '../../../types';
+import React, { useState, useContext, useEffect } from "react";
+import { v4 as uuidv4 } from "uuid";
+import { ClientContext } from "../contexts/ClientContext";
+import { rooms } from "./room-data";
+import type { User } from "../../../types";
 export const Join = ({ ...props }) => {
   const client = useContext(ClientContext);
 
   const [state, setState] = useState<User>({
-    username: '',
-    room: '',
+    username: "",
+    room: "",
     id: uuidv4(),
     sid: undefined,
     messages: [],
@@ -17,17 +17,16 @@ export const Join = ({ ...props }) => {
   const handleSubmit = (ev: React.SyntheticEvent) => {
     ev.preventDefault();
     client.connect();
-    client.emit('joinRoom', { ...state }, true);
 
     props.history.push({
       pathname: `/${state.room}/${state.username}/${state.id}`,
-      from: 'join',
+      from: "join",
       state,
     });
   };
   useEffect(() => {
     document.title = `Chatterbox - Join`;
-    return () => client.off('connect');
+    return () => client.off("connect");
   }, [client]);
 
   return (
@@ -52,11 +51,11 @@ export const Join = ({ ...props }) => {
             <select
               required
               style={{
-                WebkitAppearance: 'none',
-                width: '100%',
-                backgroundColor: 'white',
-                border: '1px solid #e1e1e1',
-                padding: '3px 5px',
+                WebkitAppearance: "none",
+                width: "100%",
+                backgroundColor: "white",
+                border: "1px solid #e1e1e1",
+                padding: "3px 5px",
               }}
               name="room"
               id="room"
@@ -65,7 +64,8 @@ export const Join = ({ ...props }) => {
                   ...state,
                   room: ev.target.value,
                 })
-              }>
+              }
+            >
               <option value="">Select a Room</option>
               {rooms.map(({ key, name }, i) => (
                 <option value={key} key={i}>
