@@ -25,6 +25,9 @@ body {
 .container {
   background-color: white;
 }
+.msg-wrapper {
+  padding-top: 3.25rem;
+}
 .sidebar,
 .chat-feed,
 .messages {
@@ -46,13 +49,13 @@ form {
   flex-basis: 100%;
   padding-top: 1rem;
 }
-form input[type='text'] {
+form input[type="text"] {
     padding: 1rem;
     margin-right: 1rem;
     width: 80%;
     border: 1px solid #dddddd;
   }
-form input[type='submit'] {
+form input[type="submit"] {
     width: 20%;
     background-color: rgb(8, 181, 238);
   }

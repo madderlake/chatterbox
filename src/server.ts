@@ -38,7 +38,8 @@ const corsOptions = {
   methods: ["GET", "OPTIONS"],
 };
 // Have Node serve the files for our built React app
-app.use(express.static(path.resolve(__dirname, "../dist")));
+const root = require("path").join(__dirname, "client", "dist");
+app.use(express.static(root));
 
 // Handle GET requests to /api route
 app.get("/", (req, res) => {
@@ -46,8 +47,8 @@ app.get("/", (req, res) => {
 });
 
 // All other GET requests not handled before will return our React app
-app.get("/*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../dist", "index.html"));
+app.get("*", (req, res) => {
+  res.sendFile("index.html", { root });
 });
 
 export const io = new Server<
