@@ -47,7 +47,7 @@ app.get("/", (req, res) => {
 });
 
 // All other GET requests not handled before will return our React app
-app.get("*", (req, res) => {
+app.get("/*", (req, res) => {
   res.sendFile("index.html", { root });
 });
 
