@@ -56,7 +56,6 @@ export const ChatContainer = ({ ...props }) => {
 
   useEffect(() => {
     document.title = `Chatterbox - ${currentUser.username}`;
-    // if (newUser) setCurrentUser({ ...currentUser, sid: client.id });
     client.on("updateUserSid", (sid: string) => {
       console.log(sid);
       setCurrentUser({ ...currentUser, sid: client.id });
@@ -64,7 +63,7 @@ export const ChatContainer = ({ ...props }) => {
     client.on("connect", () => {
       client.emit("joinRoom", { ...currentUser });
       console.log(newUser);
-
+      // WIP
       // client.on("privateServerMsg", (to: string, { ...message }: Message) => {
       //   const messages = currentUser.messages || [];
       //   if (to === currentUser.id)

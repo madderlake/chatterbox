@@ -1,6 +1,5 @@
 import React from "react";
 import { rooms } from "./room-data";
-import type { Message } from "../../../types";
 
 interface HeaderProps {
   room: string | false;

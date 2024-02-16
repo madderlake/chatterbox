@@ -25,14 +25,12 @@ const MessageList = ({
 
   const allMessageList = useMemo((): Message[] => {
     return [...messageList].sort((a: Message, b: Message) => {
-      //if (a.time === undefined || b.time === undefined) return;
       const aTime = a.time !== undefined && Date.parse(a.time);
       const bTime = b.time !== undefined && Date.parse(b.time);
       return Number(aTime) - Number(bTime);
     });
   }, [messageList]);
 
-  // console.log(allMessageList);
   useEffect(() => {
     scrollToBottom();
   }, [allMessageList]);
