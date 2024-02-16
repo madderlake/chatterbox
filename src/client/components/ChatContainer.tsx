@@ -15,7 +15,7 @@ export const ChatContainer = ({ ...props }) => {
     messages: [],
   });
   const [isPrivate, setIsPrivate] = useState<boolean>(false);
-  const [serverMessage, setServerMessages] = useState("");
+  const [serverMessage, setServerMessage] = useState("");
 
   const togglePrivate = () => setIsPrivate(!isPrivate);
   if (currentUser.username === undefined)
@@ -50,19 +50,16 @@ export const ChatContainer = ({ ...props }) => {
     });
   };
 
-  const newUser =
-    // currentUser.sid !== undefined && currentUser.sid !== client.id;
-    currentUser.sid === undefined;
-
   useEffect(() => {
     document.title = `Chatterbox - ${currentUser.username}`;
     client.on("updateUserSid", (sid: string) => {
       console.log(sid);
       setCurrentUser({ ...currentUser, sid: client.id });
     });
+    if (client.connected === false) setServerMessage("Waiting for server...");
     client.on("connect", () => {
+      setServerMessage("");
       client.emit("joinRoom", { ...currentUser });
-      console.log(newUser);
       // WIP
       // client.on("privateServerMsg", (to: string, { ...message }: Message) => {
       //   const messages = currentUser.messages || [];
@@ -75,7 +72,7 @@ export const ChatContainer = ({ ...props }) => {
 
     return () => client.removeAllListeners();
     // });
-  }, [newUser, client, currentUser]);
+  }, [client, currentUser]);
 
   useEffect(() => {
     client.on("roomUsers", (users: User[]) => {
@@ -87,8 +84,7 @@ export const ChatContainer = ({ ...props }) => {
     );
 
     client.on("serverMsg", (message: Message) => {
-      console.log("server msg:", message);
-      setServerMessages(message.text);
+      setServerMessage(message.text);
     });
 
     return () => client.removeAllListeners();
@@ -110,12 +106,14 @@ export const ChatContainer = ({ ...props }) => {
             currentUser={currentUser}
           />
         </div>
-        <div className="messages w-100 overflow-auto">
-          <MessageList
-            messageList={messageList}
-            currentUser={currentUser}
-            serverMessage={serverMessage}
-          />
+        <div className="msg-wrapper position-relative w-100">
+          <div className="msg-header position-absolute top-0 left-0 bg-white w-100 z-3 p-2">
+            <h4 className="p-0 m-0">Chat Feed</h4>
+            {serverMessage ? <div>⚡️ {serverMessage}</div> : null}
+          </div>
+          <div className="messages w-100 overflow-auto position-relative pt-0">
+            <MessageList messageList={messageList} currentUser={currentUser} />
+          </div>
         </div>
       </div>
       <div className="d-flex">

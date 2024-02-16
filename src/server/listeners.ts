@@ -30,10 +30,10 @@ const StartListeners = (server: any, socket: any): void => {
     } else {
       users.updateUserSid(id, socket.id);
       user.sid = socket.id;
-      const serverMsg = msgs.privateChatBotMsg(id, {
-        text: `⚡️ ${username} reconnected!`,
+      const serverMsg = {
+        text: `${username} reconnected!`,
         author: msgs.chatBot,
-      });
+      };
       server.to(socket.id).emit("serverMsg", { ...serverMsg });
     }
     refreshRoom(room);
