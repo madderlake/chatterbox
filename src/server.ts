@@ -38,16 +38,16 @@ const corsOptions = {
   methods: ["GET", "OPTIONS"],
 };
 // Have Node serve the files for our built React app
-app.use(express.static(path.resolve(__dirname, "../dist")));
+app.use(express.static(path.resolve(__dirname, "dist")));
 
 // Handle GET requests to /api route
-app.get("/", (req, res) => {
-  res.json({ message: "Hello from local server!" });
-});
+// app.get("/", (req, res) => {
+//   res.json({ message: "Hello from local server!" });
+// });
 
 // All other GET requests not handled before will return our React app
-app.get("/*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../dist", "index.html"));
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "index.html"));
 });
 
 export const io = new Server<
