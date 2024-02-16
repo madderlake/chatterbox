@@ -90,7 +90,7 @@ const AddMessage = ({ author }: AddMessageProps): JSX.Element => {
         <input type="submit" className="btn btn-primary" value="Send" />
       </form>
       <div className="typing mt-2 small">
-        <p id="#typing" ref={notesRef}></p>
+        <p id="typing" ref={notesRef}></p>
       </div>
     </>
   );
