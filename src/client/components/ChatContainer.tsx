@@ -49,32 +49,22 @@ export const ChatContainer = ({ ...props }) => {
       state: { ...currentUser, room: newRoom },
     });
   };
-
+  useEffect(() => {
+    if (client.connected === false) setServerMessage("Waiting for server...");
+  }, [client]);
   useEffect(() => {
     document.title = `Chatterbox - ${currentUser.username}`;
     client.on("updateUserSid", (sid: string) => {
       console.log(sid);
       setCurrentUser({ ...currentUser, sid: client.id });
     });
-    if (client.connected === false) setServerMessage("Waiting for server...");
+    client.emit("getRoomMessages", currentUser.room);
+    client.emit("getRoomUsers", currentUser.room);
     client.on("connect", () => {
       setServerMessage("");
       client.emit("joinRoom", { ...currentUser });
-      // WIP
-      // client.on("privateServerMsg", (to: string, { ...message }: Message) => {
-      //   const messages = currentUser.messages || [];
-      //   if (to === currentUser.id)
-      //     setCurrentUser({
-      //       ...currentUser,
-      //       messages: [...messages, { ...message }],
-      //     });
     });
 
-    return () => client.removeAllListeners();
-    // });
-  }, [client, currentUser]);
-
-  useEffect(() => {
     client.on("roomUsers", (users: User[]) => {
       setUserList(users);
     });
@@ -88,7 +78,7 @@ export const ChatContainer = ({ ...props }) => {
     });
 
     return () => client.removeAllListeners();
-  }, [client, userList, messageList]);
+  }, [client, currentUser]);
 
   return (
     <div className="container w-lg-80">
@@ -106,7 +96,7 @@ export const ChatContainer = ({ ...props }) => {
             currentUser={currentUser}
           />
         </div>
-        <div className="msg-wrapper position-relative w-100">
+        <div className="msg-wrapper position-relative w-100 overflow-auto">
           <div className="msg-header position-absolute top-0 left-0 bg-white w-100 z-3 p-2">
             <h4 className="p-0 m-0">Chat Feed</h4>
             {serverMessage ? <div>⚡️ {serverMessage}</div> : null}
