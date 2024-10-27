@@ -1,25 +1,48 @@
 {
+  // "compilerOptions": {
+  //   "target": "es6",
+  //   "lib": ["dom", "dom.iterable", "esnext"],
+  //   "allowJs": true,
+  //   "skipLibCheck": true,
+  //   "esModuleInterop": false,
+  //   "allowSyntheticDefaultImports": true,
+  //   "strict": true,
+  //   "forceConsistentCasingInFileNames": true,
+  //   "module": "commonjs",
+  //   "moduleResolution": "node",
+  //   "resolveJsonModule": true,
+  //   "isolatedModules": true,
+  //   "noEmit": true,
+  //   "jsx": "react"
+  // },
+  // "include": [
+  //   "**/*.ts",
+  //   "**/*.tsx",
+  //   "./App.tsx",
+  //   "./index.tsx",
+  //   "react-app-env.d.ts"
+  // ]
   "compilerOptions": {
-    "target": "es6",
+    "target": "ESNext",
     "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": true,
+    "allowJs": false,
     "skipLibCheck": true,
-    "esModuleInterop": false,
+    "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "module": "commonjs",
+    "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react"
+    "noFallthroughCasesInSwitch": true,
+    "jsx": "react-jsx",
+    "types": ["vite/client", "vite-plugin-svgr/client"]
   },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    "./App.tsx",
-    "./index.tsx",
-    "react-app-env.d.ts"
-  ]
+  "ts-node": {
+    "esm": true,
+    "experimentalSpecifierResolution": "node"
+  },
+  "include": ["src"]
 }

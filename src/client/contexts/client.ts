@@ -1,9 +1,9 @@
-import io from 'socket.io-client';
+import io from "socket.io-client";
 
 const socketUrl =
-  process.env.NODE_ENV === 'production'
+  import.meta.env.NODE_ENV === "production"
     ? `https://chatterbox.adaptable.app`
-    : `${process.env.REACT_APP_BACKEND_URL}:${process.env.REACT_APP_SERVER_PORT}`;
+    : `${import.meta.env.VITE_BACKEND_URL}:${import.meta.env.VITE_SERVER_PORT}`;
 
 export const socket =
   socketUrl !== undefined &&
