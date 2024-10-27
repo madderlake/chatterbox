@@ -18,7 +18,7 @@ import StartListeners from "./server/listeners";
 
 const app = express();
 const httpServer = http.createServer(app);
-const PORT = import.meta.env.VITE_SERVER_PORT || import.meta.env.PORT || 8083;
+const PORT = process.env.VITE_SERVER_PORT || process.env.PORT || 8083;
 
 type Data = User | Message;
 type BasicEmit = (data: Data | Data[]) => void;
