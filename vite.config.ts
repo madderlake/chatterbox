@@ -8,7 +8,10 @@ export default defineConfig(({ command, mode }) => {
   return {
     plugins: [react()],
     define: {
-      __APP_ENV__: JSON.stringify(env.APP_ENV),
+      NODE_ENV: JSON.stringify(env.NODE_ENV),
+      "process.env.VITE_SERVER_PORT": JSON.stringify(env.VITE_SERVER_PORT),
+      "process.env.VITE_CLIENT_PORT": JSON.stringify(env.VITE_CLIENT_PORT),
+      "process.env.VITE_BACKEND_URL": JSON.stringify(env.VITE_BACKEND_URL),
     },
     resolve: {
       alias: {
