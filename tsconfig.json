@@ -1,27 +1,4 @@
 {
-  // "compilerOptions": {
-  //   "target": "es6",
-  //   "lib": ["dom", "dom.iterable", "esnext"],
-  //   "allowJs": true,
-  //   "skipLibCheck": true,
-  //   "esModuleInterop": false,
-  //   "allowSyntheticDefaultImports": true,
-  //   "strict": true,
-  //   "forceConsistentCasingInFileNames": true,
-  //   "module": "commonjs",
-  //   "moduleResolution": "node",
-  //   "resolveJsonModule": true,
-  //   "isolatedModules": true,
-  //   "noEmit": true,
-  //   "jsx": "react"
-  // },
-  // "include": [
-  //   "**/*.ts",
-  //   "**/*.tsx",
-  //   "./App.tsx",
-  //   "./index.tsx",
-  //   "react-app-env.d.ts"
-  // ]
   "compilerOptions": {
     "target": "ESNext",
     "lib": ["dom", "dom.iterable", "esnext"],
@@ -44,5 +21,5 @@
     "esm": true,
     "experimentalSpecifierResolution": "node"
   },
-  "include": ["src"]
+  "include": ["src", "vite-env.d.ts"]
 }

@@ -34,7 +34,7 @@
     "watch:css": "postcss src/client/styles/main.css -o src/index.css -w",
     "watch-node": "nodemon --watch src/server/listeners.ts server.ts",
     "start": "tsx src/server.ts",
-    "dev": "vite --port 3000 && env-cmd -f .env.development  watch:css",
+    "dev": "vite --port 8000 && env-cmd -f .env.development  watch:css",
     "build": "tsc && vite build",
     "serve": "vite preview",
     "test": "react-scripts test --env=jsdom",
