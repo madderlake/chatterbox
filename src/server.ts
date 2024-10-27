@@ -1,7 +1,14 @@
-import * as express from "express";
-import * as http from "http";
-import * as cors from "cors";
-import * as path from "path";
+import express from "express";
+import http from "http";
+import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
+
+// get the resolved path to the file
+const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
+
+// get the name of the directory
+const __dirname = path.dirname(__filename); // get the name of the directory
 
 import { Server } from "socket.io";
 
@@ -11,7 +18,7 @@ import StartListeners from "./server/listeners";
 
 const app = express();
 const httpServer = http.createServer(app);
-const PORT = process.env.REACT_APP_SERVER_PORT || process.env.PORT || 8083;
+const PORT = import.meta.env.VITE_SERVER_PORT || import.meta.env.PORT || 8083;
 
 type Data = User | Message;
 type BasicEmit = (data: Data | Data[]) => void;
