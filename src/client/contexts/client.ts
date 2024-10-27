@@ -3,7 +3,7 @@ import io from "socket.io-client";
 const socketUrl =
   import.meta.env.NODE_ENV === "production"
     ? `https://famous-aurie-madderlake-6cff3876.koyeb.app/`
-    : `${import.meta.env.VITE_BACKEND_URL}:${import.meta.env.VITE_SERVER_PORT}`;
+    : `${process.env.VITE_BACKEND_URL}:${process.env.VITE_SERVER_PORT}`;
 
 export const socket =
   socketUrl !== undefined &&
